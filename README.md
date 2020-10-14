@@ -12,7 +12,7 @@
 
 ## philips-air adapter for ioBroker
 Connects Philips air purifier with ioBroker.
-** Tested only with AC2729**, but should work with new purifier that communicate via COAP with encryption.
+**Tested only with AC2729**, but should work with new purifier that communicate via COAP with encryption.
 ![AC2729](img/device.png)
 
 [Link to philips web site](https://www.philips.de/c-m-ho/luftreiniger-und-luftbefeuchter/kombi)
@@ -24,7 +24,7 @@ It can happen, that some devices have not all variables and they will stay unfil
 ![Objects](img/objects.png)
 ## Changelog
 
-### 0.0.1
+### 0.1.0 (2020-10-14)
 * (ioBroker) initial release
 
 ## License

@@ -10,7 +10,7 @@
 
 [![NPM](https://nodei.co/npm/iobroker.philips-air.png?downloads=true)](https://nodei.co/npm/iobroker.philips-air/)
 
-## philips-air adapter for ioBroker
+## Philips air purifier adapter for ioBroker
 Connects Philips air purifier with ioBroker.
 **Tested only with AC2729**, but should work with new purifier that communicate via COAP with encryption.
 ![AC2729](img/device.png)

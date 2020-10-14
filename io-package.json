@@ -1,0 +1,624 @@
+{
+    "common": {
+        "name": "philips-air",
+        "version": "0.0.1",
+        "news": {
+            "0.0.1": {
+                "en": "initial release",
+                "de": "Erstveröffentlichung",
+                "ru": "Начальная версия",
+                "pt": "lançamento inicial",
+                "nl": "Eerste uitgave",
+                "fr": "Première version",
+                "it": "Versione iniziale",
+                "es": "Versión inicial",
+                "pl": "Pierwsze wydanie",
+                "zh-cn": "首次出版"
+            }
+        },
+        "title": "Philips air purifier",
+        "titleLang": {
+            "en": "Philips air purifier",
+            "de": "Philips Luftreiniger",
+            "ru": "Очиститель воздуха Philips",
+            "pt": "Purificador de ar Philips",
+            "nl": "Philips luchtreiniger",
+            "fr": "Purificateur d'air Philips",
+            "it": "Purificatore d'aria Philips",
+            "es": "Purificador de aire Philips",
+            "pl": "Oczyszczacz powietrza firmy Philips",
+            "zh-cn": "飞利浦空气净化器"
+        },
+        "desc": {
+            "en": "Connects Philips air purifier with ioBroker",
+            "de": "Verbindet den Philips Luftreiniger mit ioBroker",
+            "ru": "Соединяет очиститель воздуха Philips с ioBroker",
+            "pt": "Conecta purificador de ar Philips com ioBroker",
+            "nl": "Verbindt de Philips-luchtreiniger met ioBroker",
+            "fr": "Connecte le purificateur d'air Philips à ioBroker",
+            "it": "Collega il purificatore d'aria Philips a ioBroker",
+            "es": "Conecta el purificador de aire Philips con ioBroker",
+            "pl": "Łączy oczyszczacz powietrza Philips z ioBroker",
+            "zh-cn": "将飞利浦空气净化器与ioBroker连接"
+        },
+        "authors": [
+            "dogafox <dogafox@gmail.com>"
+        ],
+        "keywords": [
+            "philips",
+            "air purifier"
+        ],
+        "license": "MIT",
+        "platform": "Javascript/Node.js",
+        "main": "main.js",
+        "icon": "philips-air.png",
+        "enabled": true,
+        "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.philips-air/master/admin/philips-air.png",
+        "readme": "https://github.com/ioBroker/ioBroker.philips-air/blob/master/README.md",
+        "loglevel": "info",
+        "mode": "daemon",
+        "type": "household",
+        "compact": true,
+        "materialize": true
+    },
+    "native": {
+        "host": "",
+        "aliveTimeout": 30000,
+        "reconnectInterval": 30000
+    },
+    "objects": [],
+    "instanceObjects": [
+        {
+            "_id": "info",
+            "type": "channel",
+            "common": {
+                "name": "Information"
+            },
+            "native": {}
+        },
+        {
+            "_id": "info.connection",
+            "type": "state",
+            "common": {
+                "role": "indicator.connected",
+                "name": "Device or service connected",
+                "type": "boolean",
+                "read": true,
+                "write": false,
+                "def": false
+            },
+            "native": {}
+        },
+        {
+            "_id": "control",
+            "type": "channel",
+            "common": {
+                "name": "Control air purifier"
+            },
+            "native": {}
+        },
+        {
+            "_id": "control.targetHumidity",
+            "type": "state",
+            "common": {
+                "role": "level.humidity",
+                "name": "Target humidity",
+                "type": "number",
+                "read": true,
+                "write": true,
+                "unit": "%",
+                "min": 0,
+                "max": 100
+            },
+            "native": {}
+        },
+        {
+            "_id": "control.power",
+            "type": "state",
+            "common": {
+                "role": "switch.power",
+                "name": "Power",
+                "type": "boolean",
+                "read": true,
+                "write": true
+            },
+            "native": {}
+        },
+        {
+            "_id": "control.function",
+            "type": "state",
+            "common": {
+                "role": "switch.mode.humidification",
+                "name": "Humidification",
+                "type": "boolean",
+                "read": true,
+                "write": true,
+                "desc": "Is humidification is on, else only purification is on"
+            },
+            "native": {}
+        },
+        {
+            "_id": "control.fanSpeed",
+            "type": "state",
+            "common": {
+                "role": "level.speed",
+                "name": "Fan speed",
+                "type": "string",
+                "states": {"silent": "Silent", "turbo": "Turbo", "auto": "Auto", "1": "Speed 1", "2": "Speed 2", "3": "Speed 3"},
+                "read": true,
+                "write": true
+            },
+            "native": {}
+        },
+        {
+            "_id": "control.lightBrightness",
+            "type": "state",
+            "common": {
+                "role": "level.brightness",
+                "name": "Light brightness of display",
+                "type": "number",
+                "min": 0,
+                "max": 100,
+                "step": 25,
+                "states": {"0": "0", "25": "25", "50": "50", "75": "75", "100": "100"},
+                "read": true,
+                "write": true,
+                "unit": "%"
+            },
+            "native": {}
+        },
+        {
+            "_id": "control.airQualityNotificationThreshold",
+            "type": "state",
+            "common": {
+                "role": "level.quality",
+                "name": "Air quality notification threshold",
+                "type": "number",
+                "read": true,
+                "write": true
+            },
+            "native": {}
+        },
+        {
+            "_id": "control.buttonLight",
+            "type": "state",
+            "common": {
+                "role": "switch.light",
+                "name": "Buttons light",
+                "type": "boolean",
+                "read": true,
+                "write": true
+            },
+            "native": {}
+        },
+        {
+            "_id": "control.childLock",
+            "type": "state",
+            "common": {
+                "role": "switch.lock",
+                "name": "Child lock",
+                "type": "boolean",
+                "read": true,
+                "write": true
+            },
+            "native": {}
+        },
+        {
+            "_id": "control.mode",
+            "type": "state",
+            "common": {
+                "role": "state",
+                "name": "Operation mode",
+                "type": "string",
+                "states": {"auto": "auto", "allergen": "allergen", "sleep": "sleep", "manual": "manual", "bacteria": "bacteria", "night": "night"},
+                "read": true,
+                "write": true
+            },
+            "native": {}
+        },
+        {
+            "_id": "control.usedIndex",
+            "type": "state",
+            "common": {
+                "role": "state",
+                "name": "Used index for control",
+                "type": "string",
+                "states": {"humidity": "Humidity", "pm2.5": "PM2.5", "iai": "IAI"},
+                "read": true,
+                "write": true
+            },
+            "native": {}
+        },
+        {
+            "_id": "control.timerHours",
+            "type": "state",
+            "common": {
+                "role": "level.timer.sleep",
+                "name": "Timer in hours to switch off",
+                "type": "number",
+                "read": true,
+                "write": true,
+                "unit": "hours"
+            },
+            "native": {}
+        },
+        {
+            "_id": "filter",
+            "type": "channel",
+            "common": {
+                "name": "Filter information"
+            },
+            "native": {}
+        },
+        {
+            "_id": "filter.hepaFilterType",
+            "type": "state",
+            "common": {
+                "role": "state",
+                "name": "HEPA filter type",
+                "type": "string",
+                "read": true,
+                "write": false
+            },
+            "native": {}
+        },
+        {
+            "_id": "filter.activeCarbonFilterType",
+            "type": "state",
+            "common": {
+                "role": "state",
+                "name": "Active carbon filter type",
+                "type": "string",
+                "read": true,
+                "write": false
+            },
+            "native": {}
+        },
+        {
+            "_id": "filter.preFilterCleanInHours",
+            "type": "state",
+            "common": {
+                "role": "state",
+                "name": "Pre-filter and Wick clean in hours",
+                "type": "number",
+                "read": true,
+                "write": false,
+                "unit": "hours"
+            },
+            "native": {}
+        },
+        {
+            "_id": "filter.hepaFilterReplaceInHours",
+            "type": "state",
+            "common": {
+                "role": "state",
+                "name": "HEPA filter replace in hours",
+                "type": "number",
+                "read": true,
+                "write": false,
+                "unit": "hours"
+            },
+            "native": {}
+        },
+        {
+            "_id": "filter.activeCarbonFilterReplaceInHours",
+            "type": "state",
+            "common": {
+                "role": "state",
+                "name": "Active carbon filter replace in hours",
+                "type": "number",
+                "read": true,
+                "write": false,
+                "unit": "hours"
+            },
+            "native": {}
+        },
+        {
+            "_id": "filter.wickFilterReplaceInHours",
+            "type": "state",
+            "common": {
+                "role": "state",
+                "name": "Wick filter replace in hours",
+                "type": "number",
+                "read": true,
+                "write": false,
+                "unit": "hours"
+            },
+            "native": {}
+        },
+        {
+            "_id": "status",
+            "type": "channel",
+            "common": {
+                "name": "Device status"
+            },
+            "native": {}
+        },
+        {
+            "_id": "status.humidity",
+            "type": "state",
+            "common": {
+                "role": "value.humidity",
+                "name": "Actual humidity",
+                "type": "number",
+                "read": true,
+                "write": false,
+                "min": 0,
+                "max": 100,
+                "unit": "%"
+            },
+            "native": {}
+        },
+        {
+            "_id": "status.allergenIndex",
+            "type": "state",
+            "common": {
+                "role": "value.index",
+                "name": "Allergen index",
+                "type": "number",
+                "read": true,
+                "write": false,
+                "min": 1,
+                "max": 12
+            },
+            "native": {}
+        },
+        {
+            "_id": "status.temperature",
+            "type": "state",
+            "common": {
+                "role": "value.temperature",
+                "name": "Actual temperature",
+                "type": "number",
+                "read": true,
+                "write": false,
+                "unit": "°C"
+            },
+            "native": {}
+        },
+        {
+            "_id": "status.waterLevel",
+            "type": "state",
+            "common": {
+                "role": "value.fill",
+                "name": "Water tank level",
+                "type": "number",
+                "read": true,
+                "write": false,
+                "unit": "%",
+                "min": 0,
+                "max": 100
+            },
+            "native": {}
+        },
+        {
+            "_id": "status.pm25",
+            "type": "state",
+            "common": {
+                "role": "value",
+                "name": "PM2.5 level",
+                "type": "number",
+                "read": true,
+                "write": false,
+                "unit": "ug/m3",
+                "min": 0,
+                "max": 100
+            },
+            "native": {}
+        },
+        {
+            "_id": "status.tvoc",
+            "type": "state",
+            "common": {
+                "role": "value",
+                "name": "Total volatile organic compounds",
+                "type": "number",
+                "read": true,
+                "write": false
+            },
+            "native": {}
+        },
+        {
+            "_id": "status.rddp",
+            "type": "state",
+            "common": {
+                "role": "value",
+                "name": "RDDP (unknown",
+                "type": "number",
+                "read": true,
+                "write": false
+            },
+            "native": {}
+        },
+        {
+            "_id": "status.timerMinutes",
+            "type": "state",
+            "common": {
+                "role": "value.timer",
+                "name": "Rest timer in minutes",
+                "type": "number",
+                "read": true,
+                "write": false,
+                "unit": "minutes"
+            },
+            "native": {}
+        },
+        {
+            "_id": "device",
+            "type": "channel",
+            "common": {
+                "name": "Device information"
+            },
+            "native": {}
+        },
+        {
+            "_id": "device.name",
+            "type": "state",
+            "common": {
+                "role": "state",
+                "name": "Name",
+                "type": "string",
+                "read": true,
+                "write": false
+            },
+            "native": {}
+        },
+        {
+            "_id": "device.type",
+            "type": "state",
+            "common": {
+                "role": "state",
+                "name": "Device type",
+                "type": "string",
+                "read": true,
+                "write": false
+            },
+            "native": {}
+        },
+        {
+            "_id": "device.modelId",
+            "type": "state",
+            "common": {
+                "role": "state",
+                "name": "Model ID",
+                "type": "string",
+                "read": true,
+                "write": false
+            },
+            "native": {}
+        },
+        {
+            "_id": "device.wifiVersion",
+            "type": "state",
+            "common": {
+                "role": "state",
+                "name": "Wifi version",
+                "type": "string",
+                "read": true,
+                "write": false
+            },
+            "native": {}
+        },
+        {
+            "_id": "device.productId",
+            "type": "state",
+            "common": {
+                "role": "state",
+                "name": "Product ID",
+                "type": "string",
+                "read": true,
+                "write": false
+            },
+            "native": {}
+        },
+        {
+            "_id": "device.deviceId",
+            "type": "state",
+            "common": {
+                "role": "state",
+                "name": "Device ID",
+                "type": "string",
+                "read": true,
+                "write": false
+            },
+            "native": {}
+        },
+        {
+            "_id": "device.statusType",
+            "type": "state",
+            "common": {
+                "role": "state",
+                "name": "Status type",
+                "type": "string",
+                "read": true,
+                "write": false
+            },
+            "native": {}
+        },
+        {
+            "_id": "device.connectType",
+            "type": "state",
+            "common": {
+                "role": "state",
+                "name": "Connect type",
+                "type": "string",
+                "read": true,
+                "write": false
+            },
+            "native": {}
+        },
+        {
+            "_id": "device.softwareVersion",
+            "type": "state",
+            "common": {
+                "role": "state",
+                "name": "Software version",
+                "type": "string",
+                "read": true,
+                "write": false
+            },
+            "native": {}
+        },
+        {
+            "_id": "device.overTheAirUpdates",
+            "type": "state",
+            "common": {
+                "role": "state",
+                "name": "Over the air updates",
+                "type": "boolean",
+                "read": true,
+                "write": false
+            },
+            "native": {}
+        },
+        {
+            "_id": "device.uptime",
+            "type": "state",
+            "common": {
+                "role": "value.interval",
+                "name": "Runtime in ",
+                "type": "number",
+                "read": true,
+                "write": false,
+                "unit": "ms"
+            },
+            "native": {}
+        },
+        {
+            "_id": "device.started",
+            "type": "state",
+            "common": {
+                "role": "value.time",
+                "name": "Runtime in ",
+                "type": "string",
+                "read": true,
+                "write": false
+            },
+            "native": {}
+        },
+        {
+            "_id": "device.maintenance",
+            "type": "state",
+            "common": {
+                "role": "indicator.maintenance",
+                "name": "Is some error occurred",
+                "type": "boolean",
+                "read": true,
+                "write": false
+            },
+            "native": {}
+        },
+        {
+            "_id": "device.error",
+            "type": "state",
+            "common": {
+                "role": "state",
+                "name": "Error",
+                "type": "string",
+                "read": true,
+                "write": false
+            },
+            "native": {}
+        }
+    ]
+}

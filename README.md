@@ -24,7 +24,7 @@ It can happen, that some devices have not all variables and they will stay unfil
 ![Objects](img/objects.png)
 ## Changelog
 
-### 0.1.0 (2020-10-14)
+### 0.1.1 (2020-10-14)
 * (ioBroker) initial release
 
 ## License

@@ -6,7 +6,7 @@
     "name": "bdeluefox",
     "email": "dogafox@gmail.com"
   },
-  "homepage": "https://github.com/bluefox <dogafox@gmail.com>/ioBroker.philips-air",
+  "homepage": "https://github.com/iobroker-community-adapters/ioBroker.philips-air",
   "license": "MIT",
   "keywords": [
     "philips",
@@ -14,7 +14,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/bluefox <dogafox@gmail.com>/ioBroker.philips-air"
+    "url": "https://github.com/iobroker-community-adapters/ioBroker.philips-air"
   },
   "dependencies": {
     "@iobroker/adapter-core": "^2.4.0",
@@ -52,7 +52,7 @@
     "release": "node node_modules/@alcalzone/release-script/bin/release.js"
   },
   "bugs": {
-    "url": "https://github.com/bluefox <dogafox@gmail.com>/ioBroker.philips-air/issues"
+    "url": "https://github.com/iobroker-community-adapters/ioBroker.philips-air/issues"
   },
   "readmeFilename": "README.md"
 }

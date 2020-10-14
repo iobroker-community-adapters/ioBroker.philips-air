@@ -5,8 +5,8 @@
 [![Downloads](https://img.shields.io/npm/dm/iobroker.philips-air.svg)](https://www.npmjs.com/package/iobroker.philips-air)
 ![Number of Installations (latest)](http://iobroker.live/badges/philips-air-installed.svg)
 ![Number of Installations (stable)](http://iobroker.live/badges/philips-air-stable.svg)
-[![Dependency Status](https://img.shields.io/david/bluefox <dogafox@gmail.com>/iobroker.philips-air.svg)](https://david-dm.org/bluefox <dogafox@gmail.com>/iobroker.philips-air)
-[![Known Vulnerabilities](https://snyk.io/test/github/bluefox <dogafox@gmail.com>/ioBroker.philips-air/badge.svg)](https://snyk.io/test/github/bluefox <dogafox@gmail.com>/ioBroker.philips-air)
+[![Dependency Status](https://img.shields.io/david/iobroker-community-adapters/iobroker.philips-air.svg)](https://david-dm.org/iobroker-community-adapters/iobroker.philips-air)
+[![Known Vulnerabilities](https://snyk.io/test/github/iobroker-community-adapters/ioBroker.philips-air/badge.svg)](https://snyk.io/test/github/iobroker-community-adapters/ioBroker.philips-air)
 
 [![NPM](https://nodei.co/npm/iobroker.philips-air.png?downloads=true)](https://nodei.co/npm/iobroker.philips-air/)
 

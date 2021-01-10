@@ -210,7 +210,7 @@
                 "role": "state",
                 "name": "Operation mode",
                 "type": "string",
-                "states": {"auto": "auto", "allergen": "allergen", "sleep": "sleep", "manual": "manual", "bacteria": "bacteria", "night": "night"},
+                "states": {"auto": "auto", "allergen": "allergen", "sleep": "sleep", "manual": "manual", "bacteria": "bacteria", "night": "night", "turbo": "turbo", "automode": "automode"},
                 "read": true,
                 "write": true
             },

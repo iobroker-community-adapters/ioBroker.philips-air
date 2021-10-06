@@ -109,7 +109,10 @@ async function main() {
 
     // In order to get state updates, you need to subscribe to them. The following line adds a subscription for our variable we have created above.
     adapter.subscribeStates('control.*');
-    airPurifier = new AirPurifier(adapter.config.host, adapter.config);
+    adapter.log.debug('start with ' + adapter.config.host + " " + JSON.stringify(adapter.config));
+    airPurifier = new AirPurifier(adapter.config.host, adapter.config,adapter);
+    adapter.log.debug('started');
+
     airPurifier.on('connected', connected => {
         adapter.log.debug(connected ? 'connected' : 'disconnected');
         adapter.setState('info.connection', connected, true);

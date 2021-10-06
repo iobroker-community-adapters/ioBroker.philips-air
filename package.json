@@ -1,6 +1,6 @@
 {
   "name": "iobroker.philips-air",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Connects Philips air purifier with ioBroker",
   "author": {
     "name": "bdeluefox",
@@ -17,8 +17,8 @@
     "url": "https://github.com/iobroker-community-adapters/ioBroker.philips-air"
   },
   "dependencies": {
-    "@iobroker/adapter-core": "^2.4.0",
-    "coap": "^0.24.0"
+    "@iobroker/adapter-core": "2.5.1",
+    "coap": "0.25.0"
   },
   "devDependencies": {
     "@iobroker/testing": "^2.3.0",

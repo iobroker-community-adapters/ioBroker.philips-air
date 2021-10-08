@@ -429,7 +429,7 @@
         "write": false,
         "unit": "ug/m3",
         "min": 0,
-        "max": 100
+        "max": 1000
       },
       "native": {}
     },

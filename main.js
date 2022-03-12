@@ -56,6 +56,7 @@ function startAdapter(options) {
 
         // is called if a subscribed state changes
         stateChange: (id, state) => {
+            adapter.log.debug(`State change: ${JSON.stringify(state)}`);
             if (state && !state.ack && id.startsWith(adapter.namespace + '.control.')) {
                 const name = id.substring((adapter.namespace + '.control.').length);
                 if (name === 'function') {

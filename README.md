@@ -24,8 +24,7 @@ It can happen, that some devices have not all variables and they will stay unfil
 
 ![Objects](img/objects.png)
 ## Changelog
-
-### __WORK IN PROGRESS__
+### 0.1.3 (2022-03-12)
 * (Apollon77) General updates and optimizations
 
 ### 0.1.1 (2020-10-14)

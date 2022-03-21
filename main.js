@@ -62,7 +62,11 @@ function startAdapter(options) {
                 if (name === 'function') {
                     airPurifier && airPurifier.control({function: state.val ? 'humidification' : 'purification'});
                 } else {
-                    airPurifier && airPurifier.control({[name]: state.val});
+                    try {
+                        airPurifier && airPurifier.control({[name]: state.val});
+                    } catch (err) {
+                        adapter.log.warn(`Could not control ${name}: ${err.message}`);
+                    }
                 }
             }
         }

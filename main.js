@@ -57,8 +57,8 @@ function startAdapter(options) {
         // is called if a subscribed state changes
         stateChange: (id, state) => {
             adapter.log.debug(`State change: ${JSON.stringify(state)}`);
-            if (state && !state.ack && id.startsWith(adapter.namespace + '.control.')) {
-                const name = id.substring((adapter.namespace + '.control.').length);
+            if (state && !state.ack && id.startsWith(`${adapter.namespace}.control.`)) {
+                const name = id.substring((`${adapter.namespace}.control.`).length);
                 if (name === 'function') {
                     airPurifier && airPurifier.control({function: state.val ? 'humidification' : 'purification'});
                 } else {
@@ -76,9 +76,9 @@ async function updateStatus(status) {
         const item = MAPPING[keys[i]];
         if (status.hasOwnProperty(item.name)) {
             if (item.control) {
-                await adapter.setStateAsync('control.' + item.name, status[item.name], true);
+                await adapter.setStateAsync(`control.${item.name}`, status[item.name], true);
             } else if (item.filter) {
-                await adapter.setStateAsync('filter.' + item.name, status[item.name], true);
+                await adapter.setStateAsync(`filter.${item.name}`, status[item.name], true);
             } else if (item.device) {
                 if (item.name === 'function') {
                     await adapter.setStateAsync('device.function', status[item.name] === 'humidification', true);
@@ -88,13 +88,13 @@ async function updateStatus(status) {
                     date.setMilliseconds(date.getMilliseconds() - status[item.name]);
                     await adapter.setStateAsync('device.started', date.toISOString(), true);
                 } else {
-                    await adapter.setStateAsync('device.' + item.name, status[item.name], true);
+                    await adapter.setStateAsync(`device.${item.name}`, status[item.name], true);
                     if (item.name === 'error') {
                         await adapter.setStateAsync('device.maintenance', status[item.name] !== 'none', true);
                     }
                 }
             } else {
-                await adapter.setStateAsync('status.' + item.name, status[item.name], true);
+                await adapter.setStateAsync(`status.${item.name}`, status[item.name], true);
             }
         }
     }
@@ -110,7 +110,7 @@ async function main() {
 
     // In order to get state updates, you need to subscribe to them. The following line adds a subscription for our variable we have created above.
     adapter.subscribeStates('control.*');
-    adapter.log.debug('start with ' + adapter.config.host + " " + JSON.stringify(adapter.config));
+    adapter.log.debug(`start with ${adapter.config.host} ${JSON.stringify(adapter.config)}`);
     airPurifier = new AirPurifier(adapter.config.host, adapter.config);
     adapter.log.debug('started');
 
@@ -119,20 +119,20 @@ async function main() {
         adapter.setState('info.connection', connected, true);
     });
     airPurifier.on('status', async status => {
-        adapter.log.debug('STATUS: ' + JSON.stringify(status));
+        adapter.log.debug(`STATUS: ${JSON.stringify(status)}`);
         await updateStatus(status);
-    })
+    });
 
 
     airPurifier.on('info', async status => {
         adapter.log.info(status);
-    })
+    });
     airPurifier.on('debug', async status => {
         adapter.log.debug(status);
-    })
+    });
     airPurifier.on('error', async status => {
         adapter.log.error(status);
-    })
+    });
 
 }
 

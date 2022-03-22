@@ -80,7 +80,11 @@ async function updateStatus(status) {
         const item = MAPPING[keys[i]];
         if (status.hasOwnProperty(item.name)) {
             if (item.control) {
-                await adapter.setStateAsync(`control.${item.name}`, status[item.name], true);
+                if (item.name === 'function') {
+                    await adapter.setStateAsync('control.function', status[item.name] === 'humidification', true);
+                } else {
+                    await adapter.setStateAsync(`control.${item.name}`, status[item.name], true);
+                }
             } else if (item.filter) {
                 await adapter.setStateAsync(`filter.${item.name}`, status[item.name], true);
             } else if (item.device) {

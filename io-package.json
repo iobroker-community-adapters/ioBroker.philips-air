@@ -1,8 +1,20 @@
 {
   "common": {
     "name": "philips-air",
-    "version": "0.1.3",
+    "version": "0.1.4",
     "news": {
+      "0.1.4": {
+        "en": "Downgrade coap library to restore functionality for some devices\nPrevent crash case and make control more flexible\ncorrectly handle control.function state",
+        "de": "Führen Sie ein Downgrade der Coap-Bibliothek durch, um die Funktionalität für einige Geräte wiederherzustellen\nCrashfall verhindern und Steuerung flexibler gestalten\ncontrol.function-Zustand korrekt handhaben",
+        "ru": "Понизить версию библиотеки coap для восстановления функциональности некоторых устройств\nПредотвратить сбой и сделать управление более гибким\nправильно обрабатывать состояние control.function",
+        "pt": "Faça downgrade da biblioteca coap para restaurar a funcionalidade de alguns dispositivos\nPrevenir caso de colisão e tornar o controle mais flexível\nmanipular corretamente o estado control.function",
+        "nl": "Downgrade de coap-bibliotheek om de functionaliteit voor sommige apparaten te herstellen\nVoorkom een crash en maak de controle flexibeler\ncorrect omgaan met controle. functiestatus:",
+        "fr": "Rétrograder la bibliothèque coap pour restaurer les fonctionnalités de certains appareils\nPrévenir les cas de crash et rendre le contrôle plus flexible\ngérer correctement l'état de la fonction control.function",
+        "it": "Esegui il downgrade della libreria COAP per ripristinare la funzionalità per alcuni dispositivi\nPrevieni il crash case e rendi il controllo più flessibile\ngestire correttamente lo stato della funzione di controllo",
+        "es": "Bajar de categoría la biblioteca de cooperación para restaurar la funcionalidad de algunos dispositivos\nPrevenga el caso de accidente y haga que el control sea más flexible\nmanejar correctamente el estado de control.function",
+        "pl": "Obniżenie wersji biblioteki Coap, aby przywrócić funkcjonalność niektórych urządzeń\nZapobiegaj przypadkom awarii i spraw, aby kontrola była bardziej elastyczna\npoprawnie obsługuj stan kontroli",
+        "zh-cn": "降级 coap 库以恢复某些设备的功能\n防止碰撞情况，使控制更灵活\n正确处理 control.function 状态"
+      },
       "0.1.3": {
         "en": "General updates and optimizations",
         "de": "Allgemeine Updates und Optimierungen",

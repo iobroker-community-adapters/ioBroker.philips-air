@@ -23,7 +23,7 @@ let airPurifier;
  */
 function startAdapter(options) {
     // Create the adapter and define its methods
-    return adapter = utils.adapter(Object.assign({}, options, {
+    return adapter = utils.Adapter(Object.assign({}, options, {
         name: adapterName,
 
         // The ready callback is called when databases are connected and adapter received configuration.

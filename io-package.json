@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "philips-air",
-    "version": "0.1.5",
+    "version": "0.1.6",
     "news": {
       "0.1.4": {
         "en": "Downgrade coap library to restore functionality for some devices\nPrevent crash case and make control more flexible\ncorrectly handle control.function state",

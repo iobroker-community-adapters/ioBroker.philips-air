@@ -1,6 +1,6 @@
 {
   "name": "iobroker.philips-air",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Connects Philips air purifier with ioBroker",
   "author": {
     "name": "bdeluefox",

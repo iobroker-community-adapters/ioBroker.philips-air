@@ -1,8 +1,20 @@
 {
   "common": {
     "name": "philips-air",
-    "version": "0.1.6",
+    "version": "0.1.7",
     "news": {
+      "0.1.7": {
+        "en": "Upgrade coap library",
+        "de": "Aktualisieren Sie die Coap-Bibliothek",
+        "ru": "Обновить библиотеку coap",
+        "pt": "Atualizar biblioteca coap",
+        "nl": "Upgrade coap-bibliotheek",
+        "fr": "Mettre à niveau la bibliothèque de coap",
+        "it": "Aggiorna la libreria di copioni",
+        "es": "Actualizar biblioteca cooperativa",
+        "pl": "Uaktualnij bibliotekę Coap",
+        "zh-cn": "升级 coap 库"
+      },
       "0.1.4": {
         "en": "Downgrade coap library to restore functionality for some devices\nPrevent crash case and make control more flexible\ncorrectly handle control.function state",
         "de": "Führen Sie ein Downgrade der Coap-Bibliothek durch, um die Funktionalität für einige Geräte wiederherzustellen\nCrashfall verhindern und Steuerung flexibler gestalten\ncontrol.function-Zustand korrekt handhaben",

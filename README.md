@@ -16,21 +16,28 @@ Connects Philips air purifier with ioBroker.
 **Tested only with AC2729**, but should work with new purifier that communicate via COAP with encryption.
 ![AC2729](img/device.png)
 
-[Link to philips web site](https://www.philips.de/c-m-ho/luftreiniger-und-luftbefeuchter/kombi)
+[Link to philips website](https://www.philips.de/c-m-ho/luftreiniger-und-luftbefeuchter/kombi)
 
 ## Usage
 Only IP address of device is required. Find it in your router (e.g. `MiCO`).
-It can happen, that some devices have not all variables and they will stay unfilled in object tree.
+It can happen, that some devices have not all variables, and they will stay unfilled in object tree.
 
 ![Objects](img/objects.png)
+
+<!--
+    ### **WORK IN PROGRESS**
+-->
 ## Changelog
+### **WORK IN PROGRESS**
+* (bluefox) Small fixes done
+
 ### 0.1.7 (2022-05-19)
 * (Apollon77) Upgrade coap library
 
 ### 0.1.4 (2022-03-23)
 * (Apollon77) Downgrade coap library to restore functionality for some devices
 * (Apollon77) Prevent crash case and make control more flexible
-* (Apollon77) correctly handle control.function state
+* (Apollon77) correctly handle `control.function` state
 
 ### 0.1.3 (2022-03-12)
 * (Apollon77) General updates and optimizations

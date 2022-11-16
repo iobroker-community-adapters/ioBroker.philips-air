@@ -112,6 +112,13 @@ async function main() {
     // Reset the connection indicator during startup
     await adapter.setStateAsync('info.connection', false, true);
 
+    // fix type of overTheAirUpdates
+    const overTheAirUpdates = await adapter.getObjectAsync('device.overTheAirUpdates');
+    if (overTheAirUpdates.common.type !== 'string') {
+        overTheAirUpdates.common.type = 'string';
+        await adapter.setObjectAsync('device.overTheAirUpdates', overTheAirUpdates);
+    }
+
     if (!adapter.config.host) {
         return adapter.log.warn('No IP defined');
     }

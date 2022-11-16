@@ -1,0 +1,33 @@
+{
+  "i18n": true,
+  "type": "panel",
+  "items": {
+    "host": {
+      "type": "text",
+      "label": "Device IP",
+      "sm": 12,
+      "md": 4
+    },
+    "aliveTimeout": {
+      "newLine": true,
+      "type": "number",
+      "label": "Alive timeout",
+      "help": "ms",
+      "default": 30000,
+      "min": 1000,
+      "max": 600000,
+      "sm": 6,
+      "md": 2
+    },
+    "reconnectInterval": {
+      "type": "number",
+      "label": "Reconnect interval",
+      "help": "ms",
+      "default": 30000,
+      "min": 1000,
+      "max": 600000,
+      "sm": 6,
+      "md": 2
+    }
+  }
+}

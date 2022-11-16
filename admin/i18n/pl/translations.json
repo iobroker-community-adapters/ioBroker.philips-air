@@ -1,11 +1,6 @@
 {
-    "Instance": "Instancja",
-    "extraAttr": "extraAttr",
-    "group_extraMyset": "extraMyset",
-    "htmlText": "htmlText",
-    "myColor": "mójKolor",
-    "myColor_tooltip": "Opis myColor",
-    "option1": "opcja 1",
-    "option2": "Opcja 2",
-    "philips-air adapter settings": "Ustawienia adaptera dla philips-air"
+  "Device IP": "Adres IP urządzenia",
+  "Alive timeout": "Limit czasu życia",
+  "Reconnect interval": "Interwał ponownego łączenia",
+  "ms": "w milisekundach"
 }

@@ -98,6 +98,9 @@
     "materialize": true,
     "connectionType": "local",
     "dataSource": "push",
+    "adminUI": {
+      "config": "json"
+    },
     "tier": 2,
     "dependencies": [
       {
@@ -653,7 +656,7 @@
       "common": {
         "role": "state",
         "name": "Over the air updates",
-        "type": "boolean",
+        "type": "string",
         "read": true,
         "write": false
       },

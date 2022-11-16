@@ -296,7 +296,8 @@
           "bacteria": "bacteria",
           "night": "night",
           "turbo": "turbo",
-          "automode": "automode"
+          "automode": "automode",
+	  "gentle": "gentle"
         },
         "read": true,
         "write": true

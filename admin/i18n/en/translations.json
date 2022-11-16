@@ -2,5 +2,6 @@
   "Device IP": "Device IP",
   "Alive timeout": "Alive timeout",
   "Reconnect interval": "Reconnect interval",
-  "ms": "in milliseconds"
+  "ms": "in milliseconds",
+  "Communication protocol": "Communication protocol"
 }

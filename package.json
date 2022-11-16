@@ -16,6 +16,9 @@
     "type": "git",
     "url": "https://github.com/iobroker-community-adapters/ioBroker.philips-air"
   },
+  "optionalDependencies": {
+    "philips-air": "^0.6.0"
+  },
   "dependencies": {
     "@iobroker/adapter-core": "^2.6.7",
     "coap": "^1.2.1"

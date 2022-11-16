@@ -28,8 +28,9 @@ It can happen, that some devices have not all variables, and they will stay unfi
     ### **WORK IN PROGRESS**
 -->
 ## Changelog
-### 1.0.0 (2022-11-16)
+### **WORK IN PROGRESS**
 * (bluefox) Small fixes done
+* (bluefox) Added HTTP communication protocol (untested!)
 
 ### 0.1.7 (2022-05-19)
 * (Apollon77) Upgrade coap library

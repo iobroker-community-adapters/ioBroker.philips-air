@@ -1,14 +1,11 @@
 'use strict';
 
-/*
- * Created with @iobroker/create-adapter v1.26.3
- */
-
 // The adapter-core module gives you access to the core ioBroker functions
 // you need to create an adapter
-const utils       = require('@iobroker/adapter-core');
-const adapterName = require('./package.json').name.split('.').pop();
-const AirPurifier = require('./lib/coap');
+const utils           = require('@iobroker/adapter-core');
+const adapterName     = require('./package.json').name.split('.').pop();
+const AirPurifier     = require('./lib/coap');
+const AirHttpPurifier = require('./lib/http');
 
 /**
  * The adapter instance
@@ -78,7 +75,7 @@ async function updateStatus(status) {
     const keys = Object.keys(MAPPING);
     for (let i = 0; i < keys.length; i++) {
         const item = MAPPING[keys[i]];
-        if (status.hasOwnProperty(item.name)) {
+        if (Object.prototype.hasOwnProperty.call(status, item.name)) {
             if (item.control) {
                 if (item.name === 'function') {
                     await adapter.setStateAsync('control.function', status[item.name] === 'humidification', true);
@@ -96,9 +93,11 @@ async function updateStatus(status) {
                     date.setMilliseconds(date.getMilliseconds() - status[item.name]);
                     await adapter.setStateAsync('device.started', date.toISOString(), true);
                 } else {
-                    await adapter.setStateAsync(`device.${item.name}`, status[item.name], true);
                     if (item.name === 'error') {
+                        await adapter.setStateAsync(`device.error`, status.error.toString(), true);
                         await adapter.setStateAsync('device.maintenance', status[item.name] !== 'none', true);
+                    } else {
+                        await adapter.setStateAsync(`device.${item.name}`, status[item.name], true);
                     }
                 }
             } else {
@@ -126,29 +125,30 @@ async function main() {
     // In order to get state updates, you need to subscribe to them. The following line adds a subscription for our variable we have created above.
     adapter.subscribeStates('control.*');
     adapter.log.debug(`start with ${adapter.config.host} ${JSON.stringify(adapter.config)}`);
-    airPurifier = new AirPurifier(adapter.config.host, adapter.config);
+    airPurifier = new (adapter.config.protocol === 'http' ? AirHttpPurifier : AirPurifier)(adapter.config.host, adapter.config, adapter);
     adapter.log.debug('started');
 
     airPurifier.on('connected', connected => {
         adapter.log.debug(connected ? 'connected' : 'disconnected');
         adapter.setState('info.connection', connected, true);
     });
+
     airPurifier.on('status', async status => {
         adapter.log.debug(`STATUS: ${JSON.stringify(status)}`);
         await updateStatus(status);
     });
 
-
     airPurifier.on('info', async status => {
         adapter.log.info(status);
     });
+
     airPurifier.on('debug', async status => {
         adapter.log.debug(status);
     });
+
     airPurifier.on('error', async status => {
         adapter.log.error(status);
     });
-
 }
 
 // @ts-ignore parent is a valid property on module

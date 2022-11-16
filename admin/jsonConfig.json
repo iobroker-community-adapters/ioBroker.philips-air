@@ -28,6 +28,25 @@
       "max": 600000,
       "sm": 6,
       "md": 2
+    },
+    "protocol": {
+      "newLine": true,
+      "type": "select",
+      "options": [
+        {
+          "label": "CoAP",
+          "value": "coap"
+        },
+        {
+          "label": "HTTP",
+          "value": "http"
+        }
+      ],
+      "noTranslation": true,
+      "label": "Communication protocol",
+      "default": "coap",
+      "sm": 12,
+      "md": 4
     }
   }
 }

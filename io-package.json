@@ -129,7 +129,8 @@
   "native": {
     "host": "",
     "aliveTimeout": 30000,
-    "reconnectInterval": 30000
+    "reconnectInterval": 30000,
+    "protocol": "coap"
   },
   "objects": [],
   "instanceObjects": [
@@ -151,6 +152,19 @@
         "read": true,
         "write": false,
         "def": false
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.key",
+      "type": "state",
+      "common": {
+        "role": "state",
+        "name": "HTTP secret key",
+        "type": "string",
+        "read": true,
+        "write": false,
+        "def": ""
       },
       "native": {}
     },

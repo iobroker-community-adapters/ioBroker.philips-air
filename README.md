@@ -31,6 +31,7 @@ It can happen, that some devices have not all variables, and they will stay unfi
 ### 1.0.1 (2022-11-16)
 * (bluefox) Small fixes done
 * (bluefox) Added HTTP communication protocol (untested!)
+* (mdax82) Added `gentle/GT` for AC2939
 
 ### 0.1.7 (2022-05-19)
 * (Apollon77) Upgrade coap library

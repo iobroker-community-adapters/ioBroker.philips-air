@@ -28,7 +28,7 @@ It can happen, that some devices have not all variables, and they will stay unfi
     ### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 1.0.0 (2022-11-16)
 * (bluefox) Small fixes done
 
 ### 0.1.7 (2022-05-19)

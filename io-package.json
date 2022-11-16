@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "philips-air",
-    "version": "0.1.7",
+    "version": "1.0.0",
     "news": {
+      "1.0.0": {
+        "en": "Small fixes done",
+        "de": "Kleine Reparaturen erledigt",
+        "ru": "Небольшие исправления сделаны",
+        "pt": "Pequenas correções feitas",
+        "nl": "Kleine reparaties gedaan",
+        "fr": "Petites corrections faites",
+        "it": "Piccoli corredi fatti",
+        "es": "Pequeños arreglos realizados",
+        "pl": "Drobne poprawki",
+        "uk": "Маленькі застібки",
+        "zh-cn": "小额配件"
+      },
       "0.1.7": {
         "en": "Upgrade coap library",
         "de": "Aktualisieren Sie die Coap-Bibliothek",

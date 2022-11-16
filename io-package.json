@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "philips-air",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "news": {
+      "1.0.2": {
+        "en": "Small fixes done\nAdded HTTP communication protocol (untested!)\nAdded `gentle/GT` for AC2939",
+        "de": "Kleine Reparaturen erledigt\nHTTP-Kommunikationsprotokoll (nicht getestet) hinzugefügt\nHinzugefügt sanft/GT für AC2939",
+        "ru": "Небольшие исправления сделаны\nДобавлен протокол связи HTTP (до конца)\nДобавлено нежное/GT для AC2939",
+        "pt": "Pequenas correções feitas\nAdicionado protocolo de comunicação HTTP (untested)\nAdicionado suave/GT para AC2939",
+        "nl": "Kleine reparaties gedaan\nVoeg HTP communicatie protocol toe\nAC2939",
+        "fr": "Petites corrections faites\nAjout du protocole de communication HTTP (non testé) \nAjouté doux/GT pour AC2939",
+        "it": "Piccoli corredi fatti\nAggiunto protocollo di comunicazione HTTP (non testato)\nAggiunto gentile/GT per AC2939",
+        "es": "Pequeños arreglos realizados\n¡Agregado protocolo de comunicación HTTP (usted)\nAñadido suave/GT para AC2939",
+        "pl": "Drobne poprawki\nAdded HTTP Communication Protocol (ang.)\nAdddition for AC293939 (ang.)",
+        "uk": "Маленькі застібки\nДодано протокол зв'язку HTTP (докладений)\nДодано ніжний / GT для AC2939",
+        "zh-cn": "小额配件\n添加了HTTP通信议定书(无证)\n增加AC2939的智囊团"
+      },
       "1.0.0": {
         "en": "Small fixes done",
         "de": "Kleine Reparaturen erledigt",
@@ -311,7 +324,7 @@
           "night": "night",
           "turbo": "turbo",
           "automode": "automode",
-	  "gentle": "gentle"
+          "gentle": "gentle"
         },
         "read": true,
         "write": true

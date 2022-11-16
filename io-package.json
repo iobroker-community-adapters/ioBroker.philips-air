@@ -3,19 +3,6 @@
     "name": "philips-air",
     "version": "1.0.1",
     "news": {
-      "1.0.1": {
-        "en": "Small fixes done\nAdded HTTP communication protocol (untested!)",
-        "de": "Kleine Reparaturen erledigt\nHTTP-Kommunikationsprotokoll (nicht getestet) hinzugefügt",
-        "ru": "Небольшие исправления сделаны\nДобавлен протокол связи HTTP (до конца)",
-        "pt": "Pequenas correções feitas\nAdicionado protocolo de comunicação HTTP (untested)",
-        "nl": "Kleine reparaties gedaan\nVoeg HTP communicatie protocol toe",
-        "fr": "Petites corrections faites\nAjout du protocole de communication HTTP (non testé) ",
-        "it": "Piccoli corredi fatti\nAggiunto protocollo di comunicazione HTTP (non testato)",
-        "es": "Pequeños arreglos realizados\n¡Agregado protocolo de comunicación HTTP (usted)",
-        "pl": "Drobne poprawki\nAdded HTTP Communication Protocol (ang.)",
-        "uk": "Маленькі застібки\nДодано протокол зв'язку HTTP (докладений)",
-        "zh-cn": "小额配件\n添加了HTTP通信议定书(无证)"
-      },
       "1.0.0": {
         "en": "Small fixes done",
         "de": "Kleine Reparaturen erledigt",

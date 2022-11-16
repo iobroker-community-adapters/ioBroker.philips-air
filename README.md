@@ -28,7 +28,7 @@ It can happen, that some devices have not all variables, and they will stay unfi
     ### **WORK IN PROGRESS**
 -->
 ## Changelog
-### 1.0.1 (2022-11-16)
+### **WORK IN PROGRESS**
 * (bluefox) Small fixes done
 * (bluefox) Added HTTP communication protocol (untested!)
 * (mdax82) Added `gentle/GT` for AC2939

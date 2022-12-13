@@ -2,5 +2,6 @@
   "Device IP": "设备IP",
   "Alive timeout": "存活超时",
   "Reconnect interval": "重连间隔",
-  "ms": "以毫秒为单位"
+  "ms": "以毫秒为单位",
+  "Communication protocol": "通讯协议"
 }

@@ -2,5 +2,6 @@
   "Device IP": "Adres IP urządzenia",
   "Alive timeout": "Limit czasu życia",
   "Reconnect interval": "Interwał ponownego łączenia",
-  "ms": "w milisekundach"
+  "ms": "w milisekundach",
+  "Communication protocol": "Protokół komunikacyjny"
 }

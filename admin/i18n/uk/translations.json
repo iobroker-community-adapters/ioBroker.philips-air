@@ -2,5 +2,6 @@
   "Device IP": "IP пристрою",
   "Alive timeout": "Живий тайм-аут",
   "Reconnect interval": "Інтервал повторного підключення",
-  "ms": "в мілісекундах"
+  "ms": "в мілісекундах",
+  "Communication protocol": "Протокол зв'язку"
 }

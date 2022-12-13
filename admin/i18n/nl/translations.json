@@ -2,5 +2,6 @@
   "Device IP": "Apparaat IP",
   "Alive timeout": "Levende time-out",
   "Reconnect interval": "Interval opnieuw verbinden",
-  "ms": "in milliseconden"
+  "ms": "in milliseconden",
+  "Communication protocol": "Communicatie protocol"
 }

@@ -76,6 +76,9 @@ async function updateStatus(status) {
     for (let i = 0; i < keys.length; i++) {
         const item = MAPPING[keys[i]];
         if (Object.prototype.hasOwnProperty.call(status, item.name)) {
+            if (item.name === 'error') {
+                status[item.name] = typeof status[item.name] === 'number' ? status[item.name].toString() : (status[item.name] || '').toString();
+            }
             if (item.control) {
                 if (item.name === 'function') {
                     await adapter.setStateAsync('control.function', status[item.name] === 'humidification', true);

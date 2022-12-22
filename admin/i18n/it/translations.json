@@ -1,7 +1,16 @@
 {
-  "Device IP": "IP del dispositivo",
-  "Alive timeout": "Timeout vivo",
-  "Reconnect interval": "Intervallo di riconnessione",
-  "ms": "in millisecondi",
-  "Communication protocol": "Protocollo di comunicazione"
+    "Alive timeout": "Timeout vivo",
+    "Communication protocol": "Protocollo di comunicazione",
+    "Device IP": "IP del dispositivo",
+    "Instance": "Esempio",
+    "Reconnect interval": "Intervallo di riconnessione",
+    "extraAttr": "extraAttr",
+    "group_extraMyset": "extraMyset",
+    "htmlText": "htmlText",
+    "ms": "in millisecondi",
+    "myColor": "mioColore",
+    "myColor_tooltip": "Descrizione di myColor",
+    "option1": "opzione 1",
+    "option2": "opzione 2",
+    "philips-air adapter settings": "Impostazioni dell'adattatore per philips-air"
 }

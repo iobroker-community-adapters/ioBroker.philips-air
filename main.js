@@ -71,7 +71,7 @@ function startAdapter(options) {
 }
 
 async function updateStatus(status) {
-    const MAPPING = AirPurifier.getMapping();
+    const MAPPING = adapter.config.protocol === 'http' ? AirHttpPurifier.getMapping() : AirPurifier.getMapping();
     const keys = Object.keys(MAPPING);
     for (let i = 0; i < keys.length; i++) {
         const item = MAPPING[keys[i]];

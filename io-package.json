@@ -1,762 +1,775 @@
 {
-    "common": {
-        "name": "philips-air",
-        "version": "1.0.2",
-        "news": {
-            "1.0.2": {
-                "en": "Small fixes done\nAdded HTTP communication protocol (untested!)\nAdded `gentle/GT` for AC2939",
-                "de": "Kleine Reparaturen erledigt\nHTTP-Kommunikationsprotokoll (nicht getestet) hinzugefügt\nHinzugefügt sanft/GT für AC2939",
-                "ru": "Небольшие исправления сделаны\nДобавлен протокол связи HTTP (до конца)\nДобавлено нежное/GT для AC2939",
-                "pt": "Pequenas correções feitas\nAdicionado protocolo de comunicação HTTP (untested)\nAdicionado suave/GT para AC2939",
-                "nl": "Kleine reparaties gedaan\nVoeg HTP communicatie protocol toe\nAC2939",
-                "fr": "Petites corrections faites\nAjout du protocole de communication HTTP (non testé) \nAjouté doux/GT pour AC2939",
-                "it": "Piccoli corredi fatti\nAggiunto protocollo di comunicazione HTTP (non testato)\nAggiunto gentile/GT per AC2939",
-                "es": "Pequeños arreglos realizados\n¡Agregado protocolo de comunicación HTTP (usted)\nAñadido suave/GT para AC2939",
-                "pl": "Drobne poprawki\nAdded HTTP Communication Protocol (ang.)\nAdddition for AC293939 (ang.)",
-                "uk": "Маленькі застібки\nДодано протокол зв'язку HTTP (докладений)\nДодано ніжний / GT для AC2939",
-                "zh-cn": "小额配件\n添加了HTTP通信议定书(无证)\n增加AC2939的智囊团"
-            },
-            "1.0.0": {
-                "en": "Small fixes done",
-                "de": "Kleine Reparaturen erledigt",
-                "ru": "Небольшие исправления сделаны",
-                "pt": "Pequenas correções feitas",
-                "nl": "Kleine reparaties gedaan",
-                "fr": "Petites corrections faites",
-                "it": "Piccoli corredi fatti",
-                "es": "Pequeños arreglos realizados",
-                "pl": "Drobne poprawki",
-                "uk": "Маленькі застібки",
-                "zh-cn": "小额配件"
-            },
-            "0.1.7": {
-                "en": "Upgrade coap library",
-                "de": "Aktualisieren Sie die Coap-Bibliothek",
-                "ru": "Обновить библиотеку coap",
-                "pt": "Atualizar biblioteca coap",
-                "nl": "Upgrade coap-bibliotheek",
-                "fr": "Mettre à niveau la bibliothèque de coap",
-                "it": "Aggiorna la libreria di copioni",
-                "es": "Actualizar biblioteca cooperativa",
-                "pl": "Uaktualnij bibliotekę Coap",
-                "zh-cn": "升级 coap 库",
-                "uk": "Оновити бібліотеку Coap"
-            },
-            "0.1.4": {
-                "en": "Downgrade coap library to restore functionality for some devices\nPrevent crash case and make control more flexible\ncorrectly handle control.function state",
-                "de": "Führen Sie ein Downgrade der Coap-Bibliothek durch, um die Funktionalität für einige Geräte wiederherzustellen\nCrashfall verhindern und Steuerung flexibler gestalten\ncontrol.function-Zustand korrekt handhaben",
-                "ru": "Понизить версию библиотеки coap для восстановления функциональности некоторых устройств\nПредотвратить сбой и сделать управление более гибким\nправильно обрабатывать состояние control.function",
-                "pt": "Faça downgrade da biblioteca coap para restaurar a funcionalidade de alguns dispositivos\nPrevenir caso de colisão e tornar o controle mais flexível\nmanipular corretamente o estado control.function",
-                "nl": "Downgrade de coap-bibliotheek om de functionaliteit voor sommige apparaten te herstellen\nVoorkom een crash en maak de controle flexibeler\ncorrect omgaan met controle. functiestatus:",
-                "fr": "Rétrograder la bibliothèque coap pour restaurer les fonctionnalités de certains appareils\nPrévenir les cas de crash et rendre le contrôle plus flexible\ngérer correctement l'état de la fonction control.function",
-                "it": "Esegui il downgrade della libreria COAP per ripristinare la funzionalità per alcuni dispositivi\nPrevieni il crash case e rendi il controllo più flessibile\ngestire correttamente lo stato della funzione di controllo",
-                "es": "Bajar de categoría la biblioteca de cooperación para restaurar la funcionalidad de algunos dispositivos\nPrevenga el caso de accidente y haga que el control sea más flexible\nmanejar correctamente el estado de control.function",
-                "pl": "Obniżenie wersji biblioteki Coap, aby przywrócić funkcjonalność niektórych urządzeń\nZapobiegaj przypadkom awarii i spraw, aby kontrola była bardziej elastyczna\npoprawnie obsługuj stan kontroli",
-                "zh-cn": "降级 coap 库以恢复某些设备的功能\n防止碰撞情况，使控制更灵活\n正确处理 control.function 状态",
-                "uk": "Понизити бібліотеку Coap, щоб відновити функціональність деяких пристроїв\nЗапобігайте випадкам аварії та зробіть керування більш гнучким\nправильно керувати станом функції"
-            },
-            "0.1.3": {
-                "en": "General updates and optimizations",
-                "de": "Allgemeine Updates und Optimierungen",
-                "ru": "Общие обновления и оптимизации",
-                "pt": "Atualizações e otimizações gerais",
-                "nl": "Algemene updates en optimalisaties",
-                "fr": "Mises à jour et optimisations générales",
-                "it": "Aggiornamenti e ottimizzazioni generali",
-                "es": "Actualizaciones generales y optimizaciones",
-                "pl": "Ogólne aktualizacje i optymalizacje",
-                "zh-cn": "一般更新和优化",
-                "uk": "Загальні оновлення та оптимізації"
-            },
-            "0.1.1": {
-                "en": "initial release",
-                "de": "Erstveröffentlichung",
-                "ru": "Начальная версия",
-                "pt": "lançamento inicial",
-                "nl": "Eerste uitgave",
-                "fr": "Première version",
-                "it": "Versione iniziale",
-                "es": "Versión inicial",
-                "pl": "Pierwsze wydanie",
-                "zh-cn": "首次出版",
-                "uk": "початковий випуск"
-            }
-        },
-        "title": "Philips air purifier",
-        "titleLang": {
-            "en": "Philips air purifier",
-            "de": "Philips Luftreiniger",
-            "ru": "Очиститель воздуха Philips",
-            "pt": "Purificador de ar Philips",
-            "nl": "Philips luchtreiniger",
-            "fr": "Purificateur d'air Philips",
-            "it": "Purificatore d'aria Philips",
-            "es": "Purificador de aire Philips",
-            "pl": "Oczyszczacz powietrza firmy Philips",
-            "zh-cn": "飞利浦空气净化器",
-            "uk": "Очищувач повітря Philips"
-        },
-        "desc": {
-            "en": "Connects Philips air purifier with ioBroker",
-            "de": "Verbindet den Philips Luftreiniger mit ioBroker",
-            "ru": "Соединяет очиститель воздуха Philips с ioBroker",
-            "pt": "Conecta purificador de ar Philips com ioBroker",
-            "nl": "Verbindt de Philips-luchtreiniger met ioBroker",
-            "fr": "Connecte le purificateur d'air Philips à ioBroker",
-            "it": "Collega il purificatore d'aria Philips a ioBroker",
-            "es": "Conecta el purificador de aire Philips con ioBroker",
-            "pl": "Łączy oczyszczacz powietrza Philips z ioBroker",
-            "zh-cn": "将飞利浦空气净化器与ioBroker连接",
-            "uk": "Підключає очищувач повітря Philips до ioBroker"
-        },
-        "authors": [
-            "dogafox <dogafox@gmail.com>"
-        ],
-        "keywords": [
-            "philips",
-            "air purifier"
-        ],
-        "license": "MIT",
-        "platform": "Javascript/Node.js",
-        "main": "main.js",
-        "icon": "philips-air.png",
-        "enabled": true,
-        "extIcon": "https://raw.githubusercontent.com/iobroker-community-adapters/ioBroker.philips-air/master/admin/philips-air.png",
-        "readme": "https://github.com/iobroker-community-adapters/ioBroker.philips-air/blob/master/README.md",
-        "loglevel": "info",
-        "mode": "daemon",
-        "type": "household",
-        "compact": true,
-        "materialize": true,
-        "connectionType": "local",
-        "dataSource": "push",
-        "adminUI": {
-            "config": "json"
-        },
-        "tier": 2,
-        "dependencies": [
-            {
-                "js-controller": ">=2.0.0"
-            }
-        ],
-        "plugins": {
-            "sentry": {
-                "dsn": "https://69439afbafc848aeb6680c294ea14093@sentry.iobroker.net/178"
-            }
-        }
+  "common": {
+    "name": "philips-air",
+    "version": "1.0.3",
+    "news": {
+      "1.0.3": {
+        "en": "Finalized and optimized HTTP communication protocol\nFixed type issues with device.error",
+        "de": "Endgültiges und optimiertes HTTP-Kommunikationsprotokoll\nBehobene Typprobleme mit Gerät. Fehler",
+        "ru": "Заключенный и оптимизированный протокол связи HTTP\nИсправлены проблемы типа с устройством. ошибка",
+        "pt": "Protocolo de comunicação HTTP finalizado e otimizado\nProblemas de tipo fixo com dispositivo. erro",
+        "nl": "Eindig en optimaal HTP communicatie protocol\nGerepareerde type kwesties met apparaat. Error",
+        "fr": "Protocole de communication HTTP finalisé et optimisé\nProblèmes de type fixe avec l'appareil. erreur",
+        "it": "Protocollo di comunicazione HTTP finalizzato e ottimizzato\nProblemi di tipo fisso con dispositivo. errore",
+        "es": "Protocolo de comunicación HTTP finalizado y optimizado\nProblemas de tipo fijo con dispositivo. error",
+        "pl": "Ostateczny i zoptymalizowany protokół komunikacyjny HTTP\nZagadnienia typów z urządzeniem. błąd",
+        "uk": "Закінчений і оптимізований протокол зв'язку HTTP\nФіксовані питання типу з пристроєм. Про нас",
+        "zh-cn": "四. 最后和最佳的技术转让议定书\n有装置的混合类型问题。 错误"
+      },
+      "1.0.2": {
+        "en": "Small fixes done\nAdded HTTP communication protocol (untested!)\nAdded `gentle/GT` for AC2939",
+        "de": "Kleine Reparaturen erledigt\nHTTP-Kommunikationsprotokoll (nicht getestet) hinzugefügt\nHinzugefügt sanft/GT für AC2939",
+        "ru": "Небольшие исправления сделаны\nДобавлен протокол связи HTTP (до конца)\nДобавлено нежное/GT для AC2939",
+        "pt": "Pequenas correções feitas\nAdicionado protocolo de comunicação HTTP (untested)\nAdicionado suave/GT para AC2939",
+        "nl": "Kleine reparaties gedaan\nVoeg HTP communicatie protocol toe\nAC2939",
+        "fr": "Petites corrections faites\nAjout du protocole de communication HTTP (non testé) \nAjouté doux/GT pour AC2939",
+        "it": "Piccoli corredi fatti\nAggiunto protocollo di comunicazione HTTP (non testato)\nAggiunto gentile/GT per AC2939",
+        "es": "Pequeños arreglos realizados\n¡Agregado protocolo de comunicación HTTP (usted)\nAñadido suave/GT para AC2939",
+        "pl": "Drobne poprawki\nAdded HTTP Communication Protocol (ang.)\nAdddition for AC293939 (ang.)",
+        "uk": "Маленькі застібки\nДодано протокол зв'язку HTTP (докладений)\nДодано ніжний / GT для AC2939",
+        "zh-cn": "小额配件\n添加了HTTP通信议定书(无证)\n增加AC2939的智囊团"
+      },
+      "1.0.0": {
+        "en": "Small fixes done",
+        "de": "Kleine Reparaturen erledigt",
+        "ru": "Небольшие исправления сделаны",
+        "pt": "Pequenas correções feitas",
+        "nl": "Kleine reparaties gedaan",
+        "fr": "Petites corrections faites",
+        "it": "Piccoli corredi fatti",
+        "es": "Pequeños arreglos realizados",
+        "pl": "Drobne poprawki",
+        "uk": "Маленькі застібки",
+        "zh-cn": "小额配件"
+      },
+      "0.1.7": {
+        "en": "Upgrade coap library",
+        "de": "Aktualisieren Sie die Coap-Bibliothek",
+        "ru": "Обновить библиотеку coap",
+        "pt": "Atualizar biblioteca coap",
+        "nl": "Upgrade coap-bibliotheek",
+        "fr": "Mettre à niveau la bibliothèque de coap",
+        "it": "Aggiorna la libreria di copioni",
+        "es": "Actualizar biblioteca cooperativa",
+        "pl": "Uaktualnij bibliotekę Coap",
+        "zh-cn": "升级 coap 库",
+        "uk": "Оновити бібліотеку Coap"
+      },
+      "0.1.4": {
+        "en": "Downgrade coap library to restore functionality for some devices\nPrevent crash case and make control more flexible\ncorrectly handle control.function state",
+        "de": "Führen Sie ein Downgrade der Coap-Bibliothek durch, um die Funktionalität für einige Geräte wiederherzustellen\nCrashfall verhindern und Steuerung flexibler gestalten\ncontrol.function-Zustand korrekt handhaben",
+        "ru": "Понизить версию библиотеки coap для восстановления функциональности некоторых устройств\nПредотвратить сбой и сделать управление более гибким\nправильно обрабатывать состояние control.function",
+        "pt": "Faça downgrade da biblioteca coap para restaurar a funcionalidade de alguns dispositivos\nPrevenir caso de colisão e tornar o controle mais flexível\nmanipular corretamente o estado control.function",
+        "nl": "Downgrade de coap-bibliotheek om de functionaliteit voor sommige apparaten te herstellen\nVoorkom een crash en maak de controle flexibeler\ncorrect omgaan met controle. functiestatus:",
+        "fr": "Rétrograder la bibliothèque coap pour restaurer les fonctionnalités de certains appareils\nPrévenir les cas de crash et rendre le contrôle plus flexible\ngérer correctement l'état de la fonction control.function",
+        "it": "Esegui il downgrade della libreria COAP per ripristinare la funzionalità per alcuni dispositivi\nPrevieni il crash case e rendi il controllo più flessibile\ngestire correttamente lo stato della funzione di controllo",
+        "es": "Bajar de categoría la biblioteca de cooperación para restaurar la funcionalidad de algunos dispositivos\nPrevenga el caso de accidente y haga que el control sea más flexible\nmanejar correctamente el estado de control.function",
+        "pl": "Obniżenie wersji biblioteki Coap, aby przywrócić funkcjonalność niektórych urządzeń\nZapobiegaj przypadkom awarii i spraw, aby kontrola była bardziej elastyczna\npoprawnie obsługuj stan kontroli",
+        "zh-cn": "降级 coap 库以恢复某些设备的功能\n防止碰撞情况，使控制更灵活\n正确处理 control.function 状态",
+        "uk": "Понизити бібліотеку Coap, щоб відновити функціональність деяких пристроїв\nЗапобігайте випадкам аварії та зробіть керування більш гнучким\nправильно керувати станом функції"
+      },
+      "0.1.3": {
+        "en": "General updates and optimizations",
+        "de": "Allgemeine Updates und Optimierungen",
+        "ru": "Общие обновления и оптимизации",
+        "pt": "Atualizações e otimizações gerais",
+        "nl": "Algemene updates en optimalisaties",
+        "fr": "Mises à jour et optimisations générales",
+        "it": "Aggiornamenti e ottimizzazioni generali",
+        "es": "Actualizaciones generales y optimizaciones",
+        "pl": "Ogólne aktualizacje i optymalizacje",
+        "zh-cn": "一般更新和优化",
+        "uk": "Загальні оновлення та оптимізації"
+      },
+      "0.1.1": {
+        "en": "initial release",
+        "de": "Erstveröffentlichung",
+        "ru": "Начальная версия",
+        "pt": "lançamento inicial",
+        "nl": "Eerste uitgave",
+        "fr": "Première version",
+        "it": "Versione iniziale",
+        "es": "Versión inicial",
+        "pl": "Pierwsze wydanie",
+        "zh-cn": "首次出版",
+        "uk": "початковий випуск"
+      }
     },
-    "native": {
-        "host": "",
-        "aliveTimeout": 30000,
-        "reconnectInterval": 30000,
-        "protocol": "coap"
+    "title": "Philips air purifier",
+    "titleLang": {
+      "en": "Philips air purifier",
+      "de": "Philips Luftreiniger",
+      "ru": "Очиститель воздуха Philips",
+      "pt": "Purificador de ar Philips",
+      "nl": "Philips luchtreiniger",
+      "fr": "Purificateur d'air Philips",
+      "it": "Purificatore d'aria Philips",
+      "es": "Purificador de aire Philips",
+      "pl": "Oczyszczacz powietrza firmy Philips",
+      "zh-cn": "飞利浦空气净化器",
+      "uk": "Очищувач повітря Philips"
     },
-    "objects": [],
-    "instanceObjects": [
-        {
-            "_id": "info",
-            "type": "channel",
-            "common": {
-                "name": "Information"
-            },
-            "native": {}
+    "desc": {
+      "en": "Connects Philips air purifier with ioBroker",
+      "de": "Verbindet den Philips Luftreiniger mit ioBroker",
+      "ru": "Соединяет очиститель воздуха Philips с ioBroker",
+      "pt": "Conecta purificador de ar Philips com ioBroker",
+      "nl": "Verbindt de Philips-luchtreiniger met ioBroker",
+      "fr": "Connecte le purificateur d'air Philips à ioBroker",
+      "it": "Collega il purificatore d'aria Philips a ioBroker",
+      "es": "Conecta el purificador de aire Philips con ioBroker",
+      "pl": "Łączy oczyszczacz powietrza Philips z ioBroker",
+      "zh-cn": "将飞利浦空气净化器与ioBroker连接",
+      "uk": "Підключає очищувач повітря Philips до ioBroker"
+    },
+    "authors": [
+      "dogafox <dogafox@gmail.com>"
+    ],
+    "keywords": [
+      "philips",
+      "air purifier"
+    ],
+    "license": "MIT",
+    "platform": "Javascript/Node.js",
+    "main": "main.js",
+    "icon": "philips-air.png",
+    "enabled": true,
+    "extIcon": "https://raw.githubusercontent.com/iobroker-community-adapters/ioBroker.philips-air/master/admin/philips-air.png",
+    "readme": "https://github.com/iobroker-community-adapters/ioBroker.philips-air/blob/master/README.md",
+    "loglevel": "info",
+    "mode": "daemon",
+    "type": "household",
+    "compact": true,
+    "materialize": true,
+    "connectionType": "local",
+    "dataSource": "push",
+    "adminUI": {
+      "config": "json"
+    },
+    "tier": 2,
+    "dependencies": [
+      {
+        "js-controller": ">=2.0.0"
+      }
+    ],
+    "plugins": {
+      "sentry": {
+        "dsn": "https://69439afbafc848aeb6680c294ea14093@sentry.iobroker.net/178"
+      }
+    }
+  },
+  "native": {
+    "host": "",
+    "aliveTimeout": 30000,
+    "reconnectInterval": 30000,
+    "protocol": "coap"
+  },
+  "objects": [],
+  "instanceObjects": [
+    {
+      "_id": "info",
+      "type": "channel",
+      "common": {
+        "name": "Information"
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.connection",
+      "type": "state",
+      "common": {
+        "role": "indicator.connected",
+        "name": "Device or service connected",
+        "type": "boolean",
+        "read": true,
+        "write": false,
+        "def": false
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.key",
+      "type": "state",
+      "common": {
+        "role": "state",
+        "name": "HTTP secret key",
+        "type": "string",
+        "read": true,
+        "write": false,
+        "def": ""
+      },
+      "native": {}
+    },
+    {
+      "_id": "control",
+      "type": "channel",
+      "common": {
+        "name": "Control air purifier"
+      },
+      "native": {}
+    },
+    {
+      "_id": "control.targetHumidity",
+      "type": "state",
+      "common": {
+        "role": "level.humidity",
+        "name": "Target humidity",
+        "type": "number",
+        "read": true,
+        "write": true,
+        "unit": "%",
+        "min": 0,
+        "max": 100
+      },
+      "native": {}
+    },
+    {
+      "_id": "control.power",
+      "type": "state",
+      "common": {
+        "role": "switch.power",
+        "name": "Power",
+        "type": "boolean",
+        "read": true,
+        "write": true
+      },
+      "native": {}
+    },
+    {
+      "_id": "control.function",
+      "type": "state",
+      "common": {
+        "role": "switch.mode.humidification",
+        "name": "Humidification",
+        "type": "boolean",
+        "read": true,
+        "write": true,
+        "desc": "Is humidification is on, else only purification is on"
+      },
+      "native": {}
+    },
+    {
+      "_id": "control.fanSpeed",
+      "type": "state",
+      "common": {
+        "role": "level.speed",
+        "name": "Fan speed",
+        "type": "string",
+        "states": {
+          "1": "Speed 1",
+          "2": "Speed 2",
+          "3": "Speed 3",
+          "silent": "Silent",
+          "turbo": "Turbo",
+          "auto": "Auto"
         },
-        {
-            "_id": "info.connection",
-            "type": "state",
-            "common": {
-                "role": "indicator.connected",
-                "name": "Device or service connected",
-                "type": "boolean",
-                "read": true,
-                "write": false,
-                "def": false
-            },
-            "native": {}
+        "read": true,
+        "write": true
+      },
+      "native": {}
+    },
+    {
+      "_id": "control.lightBrightness",
+      "type": "state",
+      "common": {
+        "role": "level.brightness",
+        "name": "Light brightness of display",
+        "type": "number",
+        "min": 0,
+        "max": 100,
+        "step": 25,
+        "states": {
+          "0": "0",
+          "25": "25",
+          "50": "50",
+          "75": "75",
+          "100": "100"
         },
-        {
-            "_id": "info.key",
-            "type": "state",
-            "common": {
-                "role": "state",
-                "name": "HTTP secret key",
-                "type": "string",
-                "read": true,
-                "write": false,
-                "def": ""
-            },
-            "native": {}
+        "read": true,
+        "write": true,
+        "unit": "%"
+      },
+      "native": {}
+    },
+    {
+      "_id": "control.airQualityNotificationThreshold",
+      "type": "state",
+      "common": {
+        "role": "level.quality",
+        "name": "Air quality notification threshold",
+        "type": "number",
+        "read": true,
+        "write": true
+      },
+      "native": {}
+    },
+    {
+      "_id": "control.buttonLight",
+      "type": "state",
+      "common": {
+        "role": "switch.light",
+        "name": "Buttons light",
+        "type": "boolean",
+        "read": true,
+        "write": true
+      },
+      "native": {}
+    },
+    {
+      "_id": "control.childLock",
+      "type": "state",
+      "common": {
+        "role": "switch.lock",
+        "name": "Child lock",
+        "type": "boolean",
+        "read": true,
+        "write": true
+      },
+      "native": {}
+    },
+    {
+      "_id": "control.mode",
+      "type": "state",
+      "common": {
+        "role": "state",
+        "name": "Operation mode",
+        "type": "string",
+        "states": {
+          "auto": "auto",
+          "allergen": "allergen",
+          "sleep": "sleep",
+          "manual": "manual",
+          "bacteria": "bacteria",
+          "night": "night",
+          "turbo": "turbo",
+          "automode": "automode",
+          "gentle": "gentle"
         },
-        {
-            "_id": "control",
-            "type": "channel",
-            "common": {
-                "name": "Control air purifier"
-            },
-            "native": {}
+        "read": true,
+        "write": true
+      },
+      "native": {}
+    },
+    {
+      "_id": "control.usedIndex",
+      "type": "state",
+      "common": {
+        "role": "state",
+        "name": "Used index for control",
+        "type": "string",
+        "states": {
+          "humidity": "Humidity",
+          "pm2.5": "PM2.5",
+          "iai": "IAI"
         },
-        {
-            "_id": "control.targetHumidity",
-            "type": "state",
-            "common": {
-                "role": "level.humidity",
-                "name": "Target humidity",
-                "type": "number",
-                "read": true,
-                "write": true,
-                "unit": "%",
-                "min": 0,
-                "max": 100
-            },
-            "native": {}
-        },
-        {
-            "_id": "control.power",
-            "type": "state",
-            "common": {
-                "role": "switch.power",
-                "name": "Power",
-                "type": "boolean",
-                "read": true,
-                "write": true
-            },
-            "native": {}
-        },
-        {
-            "_id": "control.function",
-            "type": "state",
-            "common": {
-                "role": "switch.mode.humidification",
-                "name": "Humidification",
-                "type": "boolean",
-                "read": true,
-                "write": true,
-                "desc": "Is humidification is on, else only purification is on"
-            },
-            "native": {}
-        },
-        {
-            "_id": "control.fanSpeed",
-            "type": "state",
-            "common": {
-                "role": "level.speed",
-                "name": "Fan speed",
-                "type": "string",
-                "states": {
-                    "1": "Speed 1",
-                    "2": "Speed 2",
-                    "3": "Speed 3",
-                    "silent": "Silent",
-                    "turbo": "Turbo",
-                    "auto": "Auto"
-                },
-                "read": true,
-                "write": true
-            },
-            "native": {}
-        },
-        {
-            "_id": "control.lightBrightness",
-            "type": "state",
-            "common": {
-                "role": "level.brightness",
-                "name": "Light brightness of display",
-                "type": "number",
-                "min": 0,
-                "max": 100,
-                "step": 25,
-                "states": {
-                    "0": "0",
-                    "25": "25",
-                    "50": "50",
-                    "75": "75",
-                    "100": "100"
-                },
-                "read": true,
-                "write": true,
-                "unit": "%"
-            },
-            "native": {}
-        },
-        {
-            "_id": "control.airQualityNotificationThreshold",
-            "type": "state",
-            "common": {
-                "role": "level.quality",
-                "name": "Air quality notification threshold",
-                "type": "number",
-                "read": true,
-                "write": true
-            },
-            "native": {}
-        },
-        {
-            "_id": "control.buttonLight",
-            "type": "state",
-            "common": {
-                "role": "switch.light",
-                "name": "Buttons light",
-                "type": "boolean",
-                "read": true,
-                "write": true
-            },
-            "native": {}
-        },
-        {
-            "_id": "control.childLock",
-            "type": "state",
-            "common": {
-                "role": "switch.lock",
-                "name": "Child lock",
-                "type": "boolean",
-                "read": true,
-                "write": true
-            },
-            "native": {}
-        },
-        {
-            "_id": "control.mode",
-            "type": "state",
-            "common": {
-                "role": "state",
-                "name": "Operation mode",
-                "type": "string",
-                "states": {
-                    "auto": "auto",
-                    "allergen": "allergen",
-                    "sleep": "sleep",
-                    "manual": "manual",
-                    "bacteria": "bacteria",
-                    "night": "night",
-                    "turbo": "turbo",
-                    "automode": "automode",
-                    "gentle": "gentle"
-                },
-                "read": true,
-                "write": true
-            },
-            "native": {}
-        },
-        {
-            "_id": "control.usedIndex",
-            "type": "state",
-            "common": {
-                "role": "state",
-                "name": "Used index for control",
-                "type": "string",
-                "states": {
-                    "humidity": "Humidity",
-                    "pm2.5": "PM2.5",
-                    "iai": "IAI"
-                },
-                "read": true,
-                "write": true
-            },
-            "native": {}
-        },
-        {
-            "_id": "control.timerHours",
-            "type": "state",
-            "common": {
-                "role": "level.timer.sleep",
-                "name": "Timer in hours to switch off",
-                "type": "number",
-                "read": true,
-                "write": true,
-                "unit": "hours"
-            },
-            "native": {}
-        },
-        {
-            "_id": "filter",
-            "type": "channel",
-            "common": {
-                "name": "Filter information"
-            },
-            "native": {}
-        },
-        {
-            "_id": "filter.hepaFilterType",
-            "type": "state",
-            "common": {
-                "role": "state",
-                "name": "HEPA filter type",
-                "type": "string",
-                "read": true,
-                "write": false
-            },
-            "native": {}
-        },
-        {
-            "_id": "filter.activeCarbonFilterType",
-            "type": "state",
-            "common": {
-                "role": "state",
-                "name": "Active carbon filter type",
-                "type": "string",
-                "read": true,
-                "write": false
-            },
-            "native": {}
-        },
-        {
-            "_id": "filter.preFilterCleanInHours",
-            "type": "state",
-            "common": {
-                "role": "state",
-                "name": "Pre-filter and Wick clean in hours",
-                "type": "number",
-                "read": true,
-                "write": false,
-                "unit": "hours"
-            },
-            "native": {}
-        },
-        {
-            "_id": "filter.hepaFilterReplaceInHours",
-            "type": "state",
-            "common": {
-                "role": "state",
-                "name": "HEPA filter replace in hours",
-                "type": "number",
-                "read": true,
-                "write": false,
-                "unit": "hours"
-            },
-            "native": {}
-        },
-        {
-            "_id": "filter.activeCarbonFilterReplaceInHours",
-            "type": "state",
-            "common": {
-                "role": "state",
-                "name": "Active carbon filter replace in hours",
-                "type": "number",
-                "read": true,
-                "write": false,
-                "unit": "hours"
-            },
-            "native": {}
-        },
-        {
-            "_id": "filter.wickFilterReplaceInHours",
-            "type": "state",
-            "common": {
-                "role": "state",
-                "name": "Wick filter replace in hours",
-                "type": "number",
-                "read": true,
-                "write": false,
-                "unit": "hours"
-            },
-            "native": {}
-        },
-        {
-            "_id": "status",
-            "type": "channel",
-            "common": {
-                "name": "Device status"
-            },
-            "native": {}
-        },
-        {
-            "_id": "status.humidity",
-            "type": "state",
-            "common": {
-                "role": "value.humidity",
-                "name": "Actual humidity",
-                "type": "number",
-                "read": true,
-                "write": false,
-                "min": 0,
-                "max": 100,
-                "unit": "%"
-            },
-            "native": {}
-        },
-        {
-            "_id": "status.allergenIndex",
-            "type": "state",
-            "common": {
-                "role": "value.index",
-                "name": "Allergen index",
-                "type": "number",
-                "read": true,
-                "write": false,
-                "min": 1,
-                "max": 12
-            },
-            "native": {}
-        },
-        {
-            "_id": "status.temperature",
-            "type": "state",
-            "common": {
-                "role": "value.temperature",
-                "name": "Actual temperature",
-                "type": "number",
-                "read": true,
-                "write": false,
-                "unit": "°C"
-            },
-            "native": {}
-        },
-        {
-            "_id": "status.waterLevel",
-            "type": "state",
-            "common": {
-                "role": "value.fill",
-                "name": "Water tank level",
-                "type": "number",
-                "read": true,
-                "write": false,
-                "unit": "%",
-                "min": 0,
-                "max": 100
-            },
-            "native": {}
-        },
-        {
-            "_id": "status.pm25",
-            "type": "state",
-            "common": {
-                "role": "value",
-                "name": "PM2.5 level",
-                "type": "number",
-                "read": true,
-                "write": false,
-                "unit": "ug/m3",
-                "min": 0,
-                "max": 1000
-            },
-            "native": {}
-        },
-        {
-            "_id": "status.tvoc",
-            "type": "state",
-            "common": {
-                "role": "value",
-                "name": "Total volatile organic compounds",
-                "type": "number",
-                "read": true,
-                "write": false
-            },
-            "native": {}
-        },
-        {
-            "_id": "status.rddp",
-            "type": "state",
-            "common": {
-                "role": "value",
-                "name": "RDDP (unknown)",
-                "type": "string",
-                "read": true,
-                "write": false
-            },
-            "native": {}
-        },
-        {
-            "_id": "status.timerMinutes",
-            "type": "state",
-            "common": {
-                "role": "value.timer",
-                "name": "Rest timer in minutes",
-                "type": "number",
-                "read": true,
-                "write": false,
-                "unit": "minutes"
-            },
-            "native": {}
-        },
-        {
-            "_id": "status.totalVolatileOrganicCompounds",
-            "type": "state",
-            "common": {
-                "role": "value",
-                "name": "Total Volatile Organic Compounds",
-                "type": "number",
-                "read": true,
-                "write": false,
-                "unit": ""
-            },
-            "native": {}
-        },
-        {
-            "_id": "device",
-            "type": "channel",
-            "common": {
-                "name": "Device information"
-            },
-            "native": {}
-        },
-        {
-            "_id": "device.name",
-            "type": "state",
-            "common": {
-                "role": "state",
-                "name": "Name",
-                "type": "string",
-                "read": true,
-                "write": false
-            },
-            "native": {}
-        },
-        {
-            "_id": "device.type",
-            "type": "state",
-            "common": {
-                "role": "state",
-                "name": "Device type",
-                "type": "string",
-                "read": true,
-                "write": false
-            },
-            "native": {}
-        },
-        {
-            "_id": "device.modelId",
-            "type": "state",
-            "common": {
-                "role": "state",
-                "name": "Model ID",
-                "type": "string",
-                "read": true,
-                "write": false
-            },
-            "native": {}
-        },
-        {
-            "_id": "device.wifiVersion",
-            "type": "state",
-            "common": {
-                "role": "state",
-                "name": "Wifi version",
-                "type": "string",
-                "read": true,
-                "write": false
-            },
-            "native": {}
-        },
-        {
-            "_id": "device.productId",
-            "type": "state",
-            "common": {
-                "role": "state",
-                "name": "Product ID",
-                "type": "string",
-                "read": true,
-                "write": false
-            },
-            "native": {}
-        },
-        {
-            "_id": "device.deviceId",
-            "type": "state",
-            "common": {
-                "role": "state",
-                "name": "Device ID",
-                "type": "string",
-                "read": true,
-                "write": false
-            },
-            "native": {}
-        },
-        {
-            "_id": "device.statusType",
-            "type": "state",
-            "common": {
-                "role": "state",
-                "name": "Status type",
-                "type": "string",
-                "read": true,
-                "write": false
-            },
-            "native": {}
-        },
-        {
-            "_id": "device.connectType",
-            "type": "state",
-            "common": {
-                "role": "state",
-                "name": "Connect type",
-                "type": "string",
-                "read": true,
-                "write": false
-            },
-            "native": {}
-        },
-        {
-            "_id": "device.softwareVersion",
-            "type": "state",
-            "common": {
-                "role": "state",
-                "name": "Software version",
-                "type": "string",
-                "read": true,
-                "write": false
-            },
-            "native": {}
-        },
-        {
-            "_id": "device.overTheAirUpdates",
-            "type": "state",
-            "common": {
-                "role": "state",
-                "name": "Over the air updates",
-                "type": "string",
-                "read": true,
-                "write": false
-            },
-            "native": {}
-        },
-        {
-            "_id": "device.uptime",
-            "type": "state",
-            "common": {
-                "role": "value.interval",
-                "name": "Runtime in ",
-                "type": "number",
-                "read": true,
-                "write": false,
-                "unit": "ms"
-            },
-            "native": {}
-        },
-        {
-            "_id": "device.started",
-            "type": "state",
-            "common": {
-                "role": "value.time",
-                "name": "Runtime in ",
-                "type": "string",
-                "read": true,
-                "write": false
-            },
-            "native": {}
-        },
-        {
-            "_id": "device.maintenance",
-            "type": "state",
-            "common": {
-                "role": "indicator.maintenance",
-                "name": "Is some error occurred",
-                "type": "boolean",
-                "read": true,
-                "write": false
-            },
-            "native": {}
-        },
-        {
-            "_id": "device.error",
-            "type": "state",
-            "common": {
-                "role": "state",
-                "name": "Error",
-                "type": "string",
-                "read": true,
-                "write": false
-            },
-            "native": {}
-        }
-    ]
+        "read": true,
+        "write": true
+      },
+      "native": {}
+    },
+    {
+      "_id": "control.timerHours",
+      "type": "state",
+      "common": {
+        "role": "level.timer.sleep",
+        "name": "Timer in hours to switch off",
+        "type": "number",
+        "read": true,
+        "write": true,
+        "unit": "hours"
+      },
+      "native": {}
+    },
+    {
+      "_id": "filter",
+      "type": "channel",
+      "common": {
+        "name": "Filter information"
+      },
+      "native": {}
+    },
+    {
+      "_id": "filter.hepaFilterType",
+      "type": "state",
+      "common": {
+        "role": "state",
+        "name": "HEPA filter type",
+        "type": "string",
+        "read": true,
+        "write": false
+      },
+      "native": {}
+    },
+    {
+      "_id": "filter.activeCarbonFilterType",
+      "type": "state",
+      "common": {
+        "role": "state",
+        "name": "Active carbon filter type",
+        "type": "string",
+        "read": true,
+        "write": false
+      },
+      "native": {}
+    },
+    {
+      "_id": "filter.preFilterCleanInHours",
+      "type": "state",
+      "common": {
+        "role": "state",
+        "name": "Pre-filter and Wick clean in hours",
+        "type": "number",
+        "read": true,
+        "write": false,
+        "unit": "hours"
+      },
+      "native": {}
+    },
+    {
+      "_id": "filter.hepaFilterReplaceInHours",
+      "type": "state",
+      "common": {
+        "role": "state",
+        "name": "HEPA filter replace in hours",
+        "type": "number",
+        "read": true,
+        "write": false,
+        "unit": "hours"
+      },
+      "native": {}
+    },
+    {
+      "_id": "filter.activeCarbonFilterReplaceInHours",
+      "type": "state",
+      "common": {
+        "role": "state",
+        "name": "Active carbon filter replace in hours",
+        "type": "number",
+        "read": true,
+        "write": false,
+        "unit": "hours"
+      },
+      "native": {}
+    },
+    {
+      "_id": "filter.wickFilterReplaceInHours",
+      "type": "state",
+      "common": {
+        "role": "state",
+        "name": "Wick filter replace in hours",
+        "type": "number",
+        "read": true,
+        "write": false,
+        "unit": "hours"
+      },
+      "native": {}
+    },
+    {
+      "_id": "status",
+      "type": "channel",
+      "common": {
+        "name": "Device status"
+      },
+      "native": {}
+    },
+    {
+      "_id": "status.humidity",
+      "type": "state",
+      "common": {
+        "role": "value.humidity",
+        "name": "Actual humidity",
+        "type": "number",
+        "read": true,
+        "write": false,
+        "min": 0,
+        "max": 100,
+        "unit": "%"
+      },
+      "native": {}
+    },
+    {
+      "_id": "status.allergenIndex",
+      "type": "state",
+      "common": {
+        "role": "value.index",
+        "name": "Allergen index",
+        "type": "number",
+        "read": true,
+        "write": false,
+        "min": 1,
+        "max": 12
+      },
+      "native": {}
+    },
+    {
+      "_id": "status.temperature",
+      "type": "state",
+      "common": {
+        "role": "value.temperature",
+        "name": "Actual temperature",
+        "type": "number",
+        "read": true,
+        "write": false,
+        "unit": "°C"
+      },
+      "native": {}
+    },
+    {
+      "_id": "status.waterLevel",
+      "type": "state",
+      "common": {
+        "role": "value.fill",
+        "name": "Water tank level",
+        "type": "number",
+        "read": true,
+        "write": false,
+        "unit": "%",
+        "min": 0,
+        "max": 100
+      },
+      "native": {}
+    },
+    {
+      "_id": "status.pm25",
+      "type": "state",
+      "common": {
+        "role": "value",
+        "name": "PM2.5 level",
+        "type": "number",
+        "read": true,
+        "write": false,
+        "unit": "ug/m3",
+        "min": 0,
+        "max": 1000
+      },
+      "native": {}
+    },
+    {
+      "_id": "status.tvoc",
+      "type": "state",
+      "common": {
+        "role": "value",
+        "name": "Total volatile organic compounds",
+        "type": "number",
+        "read": true,
+        "write": false
+      },
+      "native": {}
+    },
+    {
+      "_id": "status.rddp",
+      "type": "state",
+      "common": {
+        "role": "value",
+        "name": "RDDP (unknown)",
+        "type": "string",
+        "read": true,
+        "write": false
+      },
+      "native": {}
+    },
+    {
+      "_id": "status.timerMinutes",
+      "type": "state",
+      "common": {
+        "role": "value.timer",
+        "name": "Rest timer in minutes",
+        "type": "number",
+        "read": true,
+        "write": false,
+        "unit": "minutes"
+      },
+      "native": {}
+    },
+    {
+      "_id": "status.totalVolatileOrganicCompounds",
+      "type": "state",
+      "common": {
+        "role": "value",
+        "name": "Total Volatile Organic Compounds",
+        "type": "number",
+        "read": true,
+        "write": false,
+        "unit": ""
+      },
+      "native": {}
+    },
+    {
+      "_id": "device",
+      "type": "channel",
+      "common": {
+        "name": "Device information"
+      },
+      "native": {}
+    },
+    {
+      "_id": "device.name",
+      "type": "state",
+      "common": {
+        "role": "state",
+        "name": "Name",
+        "type": "string",
+        "read": true,
+        "write": false
+      },
+      "native": {}
+    },
+    {
+      "_id": "device.type",
+      "type": "state",
+      "common": {
+        "role": "state",
+        "name": "Device type",
+        "type": "string",
+        "read": true,
+        "write": false
+      },
+      "native": {}
+    },
+    {
+      "_id": "device.modelId",
+      "type": "state",
+      "common": {
+        "role": "state",
+        "name": "Model ID",
+        "type": "string",
+        "read": true,
+        "write": false
+      },
+      "native": {}
+    },
+    {
+      "_id": "device.wifiVersion",
+      "type": "state",
+      "common": {
+        "role": "state",
+        "name": "Wifi version",
+        "type": "string",
+        "read": true,
+        "write": false
+      },
+      "native": {}
+    },
+    {
+      "_id": "device.productId",
+      "type": "state",
+      "common": {
+        "role": "state",
+        "name": "Product ID",
+        "type": "string",
+        "read": true,
+        "write": false
+      },
+      "native": {}
+    },
+    {
+      "_id": "device.deviceId",
+      "type": "state",
+      "common": {
+        "role": "state",
+        "name": "Device ID",
+        "type": "string",
+        "read": true,
+        "write": false
+      },
+      "native": {}
+    },
+    {
+      "_id": "device.statusType",
+      "type": "state",
+      "common": {
+        "role": "state",
+        "name": "Status type",
+        "type": "string",
+        "read": true,
+        "write": false
+      },
+      "native": {}
+    },
+    {
+      "_id": "device.connectType",
+      "type": "state",
+      "common": {
+        "role": "state",
+        "name": "Connect type",
+        "type": "string",
+        "read": true,
+        "write": false
+      },
+      "native": {}
+    },
+    {
+      "_id": "device.softwareVersion",
+      "type": "state",
+      "common": {
+        "role": "state",
+        "name": "Software version",
+        "type": "string",
+        "read": true,
+        "write": false
+      },
+      "native": {}
+    },
+    {
+      "_id": "device.overTheAirUpdates",
+      "type": "state",
+      "common": {
+        "role": "state",
+        "name": "Over the air updates",
+        "type": "string",
+        "read": true,
+        "write": false
+      },
+      "native": {}
+    },
+    {
+      "_id": "device.uptime",
+      "type": "state",
+      "common": {
+        "role": "value.interval",
+        "name": "Runtime in ",
+        "type": "number",
+        "read": true,
+        "write": false,
+        "unit": "ms"
+      },
+      "native": {}
+    },
+    {
+      "_id": "device.started",
+      "type": "state",
+      "common": {
+        "role": "value.time",
+        "name": "Runtime in ",
+        "type": "string",
+        "read": true,
+        "write": false
+      },
+      "native": {}
+    },
+    {
+      "_id": "device.maintenance",
+      "type": "state",
+      "common": {
+        "role": "indicator.maintenance",
+        "name": "Is some error occurred",
+        "type": "boolean",
+        "read": true,
+        "write": false
+      },
+      "native": {}
+    },
+    {
+      "_id": "device.error",
+      "type": "state",
+      "common": {
+        "role": "state",
+        "name": "Error",
+        "type": "string",
+        "read": true,
+        "write": false
+      },
+      "native": {}
+    }
+  ]
 }

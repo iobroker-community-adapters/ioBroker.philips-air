@@ -28,8 +28,7 @@ It can happen, that some devices have not all variables, and they will stay unfi
     ### **WORK IN PROGRESS**
 -->
 ## Changelog
-
-### **WORK IN PROGRESS**
+### 1.0.3 (2022-12-23)
 * (Apollon77) Finalized and optimized HTTP communication protocol
 * (Apollon77) Fixed type issues with device.error
 

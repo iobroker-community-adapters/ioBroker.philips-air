@@ -30,7 +30,7 @@ It can happen, that some devices have not all variables, and they will stay unfi
 ## Changelog
 
 ### **WORK IN PROGRESS**
-* (Apollon77) Finalize HTTP communication protocol
+* (Apollon77) Finalized and optimized HTTP communication protocol
 * (Apollon77) Fixed type issues with device.error
 
 ### 1.0.2 (2022-11-16)

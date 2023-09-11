@@ -19,6 +19,9 @@
   "optionalDependencies": {
     "philips-air": "^0.6.0"
   },
+  "engines": {
+    "node": ">=16"
+  },
   "dependencies": {
     "@iobroker/adapter-core": "^2.6.8",
     "coap": "^1.2.2"

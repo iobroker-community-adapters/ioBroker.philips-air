@@ -5,8 +5,11 @@
     "host": {
       "type": "text",
       "label": "Device IP",
+      "xs": 12,
       "sm": 12,
-      "md": 4
+      "md": 4,
+      "lg": 4,
+      "xl": 4
     },
     "aliveTimeout": {
       "newLine": true,
@@ -16,8 +19,11 @@
       "default": 30000,
       "min": 1000,
       "max": 600000,
+      "xs": 6,
       "sm": 6,
-      "md": 2
+      "md": 2,
+      "lg": 2,
+      "xl": 2
     },
     "reconnectInterval": {
       "type": "number",
@@ -26,8 +32,11 @@
       "default": 30000,
       "min": 1000,
       "max": 600000,
+      "xs": 6,
       "sm": 6,
-      "md": 2
+      "md": 2,
+      "lg": 2,
+      "xl": 2
     },
     "protocol": {
       "newLine": true,
@@ -45,8 +54,11 @@
       "noTranslation": true,
       "label": "Communication protocol",
       "default": "coap",
+      "xs": 12,
       "sm": 12,
-      "md": 4
+      "md": 4,
+      "lg": 4,
+      "xl": 4
     }
   }
 }

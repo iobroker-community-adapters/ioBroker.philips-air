@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "philips-air",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "news": {
+      "1.2.0": {
+        "en": "Adapter requires node.js >= 20, js-controller >= 6 and admin >= 6 now.\nAdapter migrated to eslint 9 / @iobroker/eslint-config\nMaterialize UI support has been removed\njsonConfig responsive design size attributes have been added\nDependencies have been updated",
+        "de": "Adapter benötigt node.js >= 20, js-controller >= 6 und admin >= 6 jetzt.\nAdapter migriert auf Eslint 9 / @iobroker/eslint-config\nMaterialize UI-Unterstützung wurde entfernt\njsonConfig responsive design size Attributes wurden hinzugefügt\nAbhängigkeiten wurden aktualisiert",
+        "ru": "Адаптер требует node.js >=20, js-контроллер >= 6 и admin >= Сейчас 6.\nАдаптер мигрировал в eslint 9 / @iobroker/eslint-config\nМатериализоваться поддержка пользовательского интерфейса была удалена\nдобавлены адаптивные атрибуты дизайна jsonConfig\nЗависимость обновлена",
+        "pt": "Adapter requer node.js >= 20, js-controller >= 6 e admin >= 6 agora.\nAdaptador migrado para eslint 9 / @iobroker/eslint-config\nMaterializar apoio UI foi removido\njsonConfig atributos de tamanho de design responsivo foram adicionados\nAs dependências foram atualizadas",
+        "nl": "Voor adapters zijn node.js (m.u.v. js-controller) 6 en admin Zes nu.\nAdapter gemigreerd naar eslint 9 / @iobroker/eslint-config\nMateriaal UI ondersteuning is verwijderd\njsonConfig responsieve ontwerpgrootte attributen zijn toegevoegd\nAfhankelijkheden zijn bijgewerkt",
+        "fr": "Adaptateur nécessite node.js >= 20, js-controller >= 6 et administrateur >= 6 maintenant.\nAdaptateur migré vers eslint 9 / @iobroker/eslint-config\nMatérialiser le soutien à l'assurance-chômage a été supprimé\ndes attributs de taille de conception responsive jsonConfig ont été ajoutés\nLes dépendances ont été actualisées",
+        "it": "Adattatore richiede node.js >= 20, js-controller >= 6 e admin >= Ora sei.\nAdattatore migrato a eslint 9 / @iobroker/eslint-config\nIl supporto UI è stato rimosso\njsonConfig caratteristiche di dimensione reattiva del design sono stati aggiunti\nLe dipendenze sono state aggiornate",
+        "es": "Adaptador requiere node.js >= 20, js-controller √= 6 y admin= 6 ahora.\nAdaptador migrado a eslint 9 / @iobroker/eslint-config\nMaterialize UI support has been removed\njsonConfig sensible tamaño atributos de diseño se han añadido\nSe han actualizado las dependencias",
+        "pl": "Adapter wymaga node.js > = 20, kontroler js- > = 6 i admin > = 6 teraz.\nAdapter migrated to eslint 9 / @ iobroker / eslint- config\nMatrialize UI wsparcie zostało usunięte\ndodano atrybuty wielkości projektu jsonConfig\nZaktualizowano zależności",
+        "uk": "Адаптер вимагає node.js >= 20, js-controller >= 6 і admin >= 6 тепер.\nАдаптер мігрований до eslint 9 / @iobroker/eslint-config\nВидалено підтримку UI\njsonConfig додано чуйні атрибути розмірів дизайну\nЗалежність було оновлено",
+        "zh-cn": "适配器需要节点.js QQ20,js控制器QQ 第6条 行政 六点了.\n适应器迁移到 Eslint 9 / @iobroster/eslint-config\n实现用户界面支持已被删除\n添加了 jsonConfig 响应设计大小属性\n依赖关系已更新"
+      },
       "1.1.0": {
         "en": "Adapter requires node.js >= 18 and js-controller >= 5 now\nDependencies have been updated",
         "de": "Adapter benötigt node.js >= 18 und js-controller >= 5 jetzt\nAbhängigkeiten wurden aktualisiert",
@@ -80,19 +93,6 @@
         "pl": "Obniżenie wersji biblioteki Coap, aby przywrócić funkcjonalność niektórych urządzeń\nZapobiegaj przypadkom awarii i spraw, aby kontrola była bardziej elastyczna\npoprawnie obsługuj stan kontroli",
         "zh-cn": "降级 coap 库以恢复某些设备的功能\n防止碰撞情况，使控制更灵活\n正确处理 control.function 状态",
         "uk": "Понизити бібліотеку Coap, щоб відновити функціональність деяких пристроїв\nЗапобігайте випадкам аварії та зробіть керування більш гнучким\nправильно керувати станом функції"
-      },
-      "0.1.3": {
-        "en": "General updates and optimizations",
-        "de": "Allgemeine Updates und Optimierungen",
-        "ru": "Общие обновления и оптимизации",
-        "pt": "Atualizações e otimizações gerais",
-        "nl": "Algemene updates en optimalisaties",
-        "fr": "Mises à jour et optimisations générales",
-        "it": "Aggiornamenti e ottimizzazioni generali",
-        "es": "Actualizaciones generales y optimizaciones",
-        "pl": "Ogólne aktualizacje i optymalizacje",
-        "zh-cn": "一般更新和优化",
-        "uk": "Загальні оновлення та оптимізації"
       }
     },
     "titleLang": {

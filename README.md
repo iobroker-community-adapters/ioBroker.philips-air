@@ -31,6 +31,7 @@ It can happen, that some devices have not all variables, and they will stay unfi
 -->
 ### **WORK IN PROGRESS**
 * (mcm1957) Adapter requires node.js >= 20, js-controller >= 6 and admin >= 6 now0
+* (mcm1957) Adapter migrated to eslint 9 / @iobroker/eslint-config
 * (mcm1957) Materialize UI support has been removed
 * (mcm1957) jsonConfig responsive design size attributes have been added
 * (mcm1957) Dependencies have been updated

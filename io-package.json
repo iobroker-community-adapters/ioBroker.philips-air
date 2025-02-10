@@ -141,7 +141,6 @@
     "mode": "daemon",
     "type": "household",
     "compact": true,
-    "materialize": true,
     "connectionType": "local",
     "dataSource": "push",
     "adminUI": {
@@ -150,12 +149,12 @@
     "tier": 2,
     "dependencies": [
       {
-        "js-controller": ">=5.0.19"
+        "js-controller": ">=6.0.11"
       }
     ],
     "globalDependencies": [
       {
-        "admin": ">=6.13.16"
+        "admin": ">=6.17.14"
       }
     ],
     "plugins": {

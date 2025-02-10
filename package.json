@@ -9,6 +9,7 @@
   "homepage": "https://github.com/iobroker-community-adapters/ioBroker.philips-air",
   "license": "MIT",
   "keywords": [
+    "ioBroker",
     "philips",
     "air purifier"
   ],

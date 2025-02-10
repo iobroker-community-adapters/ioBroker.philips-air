@@ -23,7 +23,7 @@
     "node": ">=20"
   },
   "dependencies": {
-    "@iobroker/adapter-core": "^3.1.6",
+    "@iobroker/adapter-core": "^3.2.3",
     "coap": "^1.2.2"
   },
   "devDependencies": {

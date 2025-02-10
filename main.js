@@ -2,72 +2,75 @@
 
 // The adapter-core module gives you access to the core ioBroker functions
 // you need to create an adapter
-const utils           = require('@iobroker/adapter-core');
-const adapterName     = require('./package.json').name.split('.').pop();
-const AirPurifier     = require('./lib/coap');
+const utils = require('@iobroker/adapter-core');
+const adapterName = require('./package.json').name.split('.').pop();
+const AirPurifier = require('./lib/coap');
 const AirHttpPurifier = require('./lib/http');
 
 /**
  * The adapter instance
- * @type {ioBroker.Adapter}
+ *
  */
 let adapter;
 let airPurifier;
 
 /**
  * Starts the adapter instance
- * @param {Partial<utils.AdapterOptions>} [options]
+ *
+ * @param [options]
  */
 function startAdapter(options) {
     // Create the adapter and define its methods
-    return adapter = utils.Adapter(Object.assign({}, options, {
-        name: adapterName,
+    return (adapter = utils.Adapter(
+        Object.assign({}, options, {
+            name: adapterName,
 
-        // The ready callback is called when databases are connected and adapter received configuration.
-        // start here!
-        ready: main, // Main method defined below for readability
+            // The ready callback is called when databases are connected and adapter received configuration.
+            // start here!
+            ready: main, // Main method defined below for readability
 
-        // is called when adapter shuts down - callback has to be called under any circumstances!
-        unload: (callback) => {
-            try {
-                adapter.setState('info.connection', false, true);
-                airPurifier && airPurifier.destroy();
-                airPurifier = null;
-                callback();
-            } catch (e) {
-                callback();
-            }
-        },
+            // is called when adapter shuts down - callback has to be called under any circumstances!
+            unload: callback => {
+                try {
+                    adapter.setState('info.connection', false, true);
+                    airPurifier && airPurifier.destroy();
+                    airPurifier = null;
+                    callback();
+                } catch {
+                    callback();
+                }
+            },
 
-        // If you need to react to object changes, uncomment the following method.
-        // You also need to subscribe to the objects with `adapter.subscribeObjects`, similar to `adapter.subscribeStates`.
-        // objectChange: (id, obj) => {
-        //     if (obj) {
-        //         // The object was changed
-        //         adapter.log.info(`object ${id} changed: ${JSON.stringify(obj)}`);
-        //     } else {
-        //         // The object was deleted
-        //         adapter.log.info(`object ${id} deleted`);
-        //     }
-        // },
+            // If you need to react to object changes, uncomment the following method.
+            // You also need to subscribe to the objects with `adapter.subscribeObjects`, similar to `adapter.subscribeStates`.
+            // objectChange: (id, obj) => {
+            //     if (obj) {
+            //         // The object was changed
+            //         adapter.log.info(`object ${id} changed: ${JSON.stringify(obj)}`);
+            //     } else {
+            //         // The object was deleted
+            //         adapter.log.info(`object ${id} deleted`);
+            //     }
+            // },
 
-        // is called if a subscribed state changes
-        stateChange: (id, state) => {
-            adapter.log.debug(`State change: ${JSON.stringify(state)}`);
-            if (state && !state.ack && id.startsWith(`${adapter.namespace}.control.`)) {
-                const name = id.substring((`${adapter.namespace}.control.`).length);
-                if (name === 'function') {
-                    airPurifier && airPurifier.control({function: state.val ? 'humidification' : 'purification'});
-                } else {
-                    try {
-                        airPurifier && airPurifier.control({[name]: state.val});
-                    } catch (err) {
-                        adapter.log.warn(`Could not control ${name}: ${err.message}`);
+            // is called if a subscribed state changes
+            stateChange: (id, state) => {
+                adapter.log.debug(`State change: ${JSON.stringify(state)}`);
+                if (state && !state.ack && id.startsWith(`${adapter.namespace}.control.`)) {
+                    const name = id.substring(`${adapter.namespace}.control.`.length);
+                    if (name === 'function') {
+                        airPurifier && airPurifier.control({ function: state.val ? 'humidification' : 'purification' });
+                    } else {
+                        try {
+                            airPurifier && airPurifier.control({ [name]: state.val });
+                        } catch (err) {
+                            adapter.log.warn(`Could not control ${name}: ${err.message}`);
+                        }
                     }
                 }
-            }
-        }
-    }));
+            },
+        }),
+    ));
 }
 
 async function updateStatus(status) {
@@ -125,7 +128,11 @@ async function main() {
     // In order to get state updates, you need to subscribe to them. The following line adds a subscription for our variable we have created above.
     adapter.subscribeStates('control.*');
     adapter.log.debug(`start with ${adapter.config.host} ${JSON.stringify(adapter.config)}`);
-    airPurifier = new (adapter.config.protocol === 'http' ? AirHttpPurifier : AirPurifier)(adapter.config.host, adapter.config, adapter);
+    airPurifier = new (adapter.config.protocol === 'http' ? AirHttpPurifier : AirPurifier)(
+        adapter.config.host,
+        adapter.config,
+        adapter,
+    );
     adapter.log.debug('started');
 
     airPurifier.on('connected', connected => {
@@ -151,7 +158,6 @@ async function main() {
     });
 }
 
-// @ts-ignore parent is a valid property on module
 if (module.parent) {
     // Export startAdapter in compact mode
     module.exports = startAdapter;

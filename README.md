@@ -71,8 +71,7 @@ It can happen, that some devices have not all variables, and they will stay unfi
 MIT License
 
 
-Copyright (c) 2026 iobroker-community-adapters <iobroker-community-adapters@gmx.de>  
-Copyright (c) 2023-2025 ioBroker Community Developers <iobroker-community-adapters@gmx.de>  
+Copyright (c) 2023-2026 iobroker-community-adapters <iobroker-community-adapters@gmx.de>  
 Copyright (c) 2020-2022 ioBroker <dogafox@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy

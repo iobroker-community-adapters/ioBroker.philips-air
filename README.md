@@ -31,14 +31,11 @@ It can happen, that some devices have not all variables, and they will stay unfi
 -->
 
 ### **WORK IN PROGRESS**
-- (tt-tom17) Reimplemented the HTTP protocol on top of the built-in `fetch`/`node:crypto`, removing the `philips-air` dependency and its outdated axios 0.20 transitive dependency
-- (tt-tom17) Fixed crash on CoAP-only installations when the optional `philips-air` package is missing (protocol module is now loaded lazily)
-- (tt-tom17) Fixed CoAP requests hanging forever on send/receive errors and leaking pending requests
-- (tt-tom17) Fixed CoAP observer leak on every reconnect
-- (tt-tom17) Fixed `destroy()` cleanup for the HTTP protocol and prevented timers from being re-armed after shutdown
-- (tt-tom17) Replaced stray `console.log`/`console.error` output with adapter logging
+- (tt-tom17) Connection to CoAP and HTTP devices is much more reliable now: several cases that could crash the adapter, freeze the connection or stop it from reconnecting have been fixed
+- (tt-tom17) Air quality, filter and on/off values are now shown with the correct type and update reliably
+- (tt-tom17) Clearer log messages, including a hint to switch to CoAP when a device does not answer on HTTP
+- (tt-tom17) HTTP mode no longer needs the extra "philips-air" package and its outdated dependencies
 - (copilot) Adapter requires admin >= 7.7.22 now
-- (copilot) Adapter requires admin >= 7.6.17 now
 
 ### 1.2.0 (2025-02-10)
 * (mcm1957) Adapter requires node.js >= 20, js-controller >= 6 and admin >= 6 now.

@@ -18,7 +18,7 @@ let PurifierClass;
 /**
  * Starts the adapter instance
  *
- * @param [options]
+ * @param [options] adapter options passed through to the ioBroker adapter
  */
 function startAdapter(options) {
     // Create the adapter and define its methods

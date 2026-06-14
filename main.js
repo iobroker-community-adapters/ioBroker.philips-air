@@ -107,8 +107,14 @@ async function updateStatus(status) {
                     await adapter.setStateAsync('device.started', date.toISOString(), true);
                 } else {
                     if (item.name === 'error') {
-                        await adapter.setStateAsync(`device.error`, status.error.toString(), true);
-                        await adapter.setStateAsync('device.maintenance', status[item.name] !== 'none', true);
+                        // Known error codes are mapped to a text by renameAttributes; unknown codes stay
+                        // numeric. Only a known, non-'none' error means real maintenance is required -
+                        // some models (e.g. AC2889) constantly report an undocumented code (193) while
+                        // perfectly healthy, which must not raise a false maintenance flag.
+                        const isKnownError = typeof status.error === 'string';
+                        const errorText = isKnownError ? status.error : `unknown (${status.error})`;
+                        await adapter.setStateAsync('device.error', errorText, true);
+                        await adapter.setStateAsync('device.maintenance', isKnownError && status.error !== 'none', true);
                     } else {
                         await adapter.setStateAsync(`device.${item.name}`, status[item.name], true);
                     }

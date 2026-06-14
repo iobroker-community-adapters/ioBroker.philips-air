@@ -35,6 +35,8 @@ It can happen, that some devices have not all variables, and they will stay unfi
 - (tt-tom17) Air quality, filter and on/off values are now shown with the correct type and update reliably
 - (tt-tom17) Clearer log messages, including a hint to switch to CoAP when a device does not answer on HTTP
 - (tt-tom17) HTTP mode no longer needs the extra "philips-air" package and its outdated dependencies
+- (tt-tom17) The device address field now accepts an IP address or a hostname and warns about invalid input
+- (tt-tom17) Dependencies updated
 - (copilot) Adapter requires admin >= 7.7.22 now
 
 ### 1.2.0 (2025-02-10)

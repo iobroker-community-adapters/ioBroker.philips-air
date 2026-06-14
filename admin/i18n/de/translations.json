@@ -2,6 +2,8 @@
     "Alive timeout": "Lebenszeitüberschreitung",
     "Communication protocol": "Kommunikationsprotokoll",
     "Device IP": "Geräte-IP",
+    "Device IP or hostname": "Geräte-IP oder Hostname",
+    "Enter a valid IP address or hostname (no http://, no spaces)": "Gültige IP-Adresse oder Hostname eingeben (kein http://, keine Leerzeichen)",
     "Instance": "Instanz",
     "Reconnect interval": "Wiederverbindungs-Intervall",
     "extraAttr": "extraAttr",

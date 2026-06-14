@@ -2,6 +2,8 @@
     "Alive timeout": "Alive timeout",
     "Communication protocol": "Communication protocol",
     "Device IP": "Device IP",
+    "Device IP or hostname": "Device IP or hostname",
+    "Enter a valid IP address or hostname (no http://, no spaces)": "Enter a valid IP address or hostname (no http://, no spaces)",
     "Instance": "Instance",
     "Reconnect interval": "Reconnect interval",
     "extraAttr": "extraAttr",

@@ -30,12 +30,15 @@ Branches (each based on the previous):
 - Async `control()` rejection caught in [main.js](main.js) so a failed command can't crash the adapter.
 - JSDoc added; **lint is 0 errors / 0 warnings**; `test:package` 57 passing.
 
-## Still open (not started)
+### Error codes
+- Map AC2889 `err` 193 (0xC1) → "pre-filter must be cleaned" (confirmed against the Philips app). Unknown codes show as `unknown (<code>)` and do not raise a false `device.maintenance`. NOTE: 193 mapping is pending final confirmation via a pre-filter reset (the app message may instead be driven by `preFilterCleanInHours` reaching 0).
 
-Phase 2 leftovers:
-- Bump `coap` `^1.4.2` → `^1.5.0`.
-- Define `device.overTheAirUpdates` as `string` directly in `io-package.json` and drop the runtime type-patch in `main.js`.
-- Add IP/host validation in `admin/jsonConfig.json`.
+### Phase 2 (done)
+- Bumped `coap` `^1.4.2` → `^1.5.0`.
+- `device.overTheAirUpdates` is defined as `string` in `io-package.json`; the runtime type-patch was removed from `main.js`.
+- `admin/jsonConfig.json` host field validates an IP address or hostname (rejects empty/`http://`/spaces); new i18n keys added to en/de (others fall back / via Weblate).
+
+## Still open (not started)
 
 Phase 3 (feature):
 - Add `plain_coap` protocol (third option) for devices that speak unencrypted CoAP.

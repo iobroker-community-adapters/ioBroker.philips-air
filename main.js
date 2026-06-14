@@ -59,14 +59,23 @@ function startAdapter(options) {
                 adapter.log.debug(`State change: ${JSON.stringify(state)}`);
                 if (state && !state.ack && id.startsWith(`${adapter.namespace}.control.`)) {
                     const name = id.substring(`${adapter.namespace}.control.`.length);
-                    if (name === 'function') {
-                        airPurifier && airPurifier.control({ function: state.val ? 'humidification' : 'purification' });
-                    } else {
-                        try {
-                            airPurifier && airPurifier.control({ [name]: state.val });
-                        } catch (err) {
-                            adapter.log.warn(`Could not control ${name}: ${err.message}`);
+                    const settings =
+                        name === 'function'
+                            ? { function: state.val ? 'humidification' : 'purification' }
+                            : { [name]: state.val };
+                    try {
+                        const result = airPurifier && airPurifier.control(settings);
+                        // control() returns a promise - catch async failures too, otherwise a failed
+                        // command produces an unhandled rejection that crashes the adapter.
+                        if (result && typeof result.catch === 'function') {
+                            result.catch(err =>
+                                adapter.log.warn(
+                                    `Could not control ${name}: ${err && err.message ? err.message : err}`,
+                                ),
+                            );
                         }
+                    } catch (err) {
+                        adapter.log.warn(`Could not control ${name}: ${err.message}`);
                     }
                 }
             },

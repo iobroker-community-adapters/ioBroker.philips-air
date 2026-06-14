@@ -31,6 +31,7 @@ It can happen, that some devices have not all variables, and they will stay unfi
 -->
 
 ### **WORK IN PROGRESS**
+- (tt-tom17) Reimplemented the HTTP protocol on top of the built-in `fetch`/`node:crypto`, removing the `philips-air` dependency and its outdated axios 0.20 transitive dependency
 - (tt-tom17) Fixed crash on CoAP-only installations when the optional `philips-air` package is missing (protocol module is now loaded lazily)
 - (tt-tom17) Fixed CoAP requests hanging forever on send/receive errors and leaking pending requests
 - (tt-tom17) Fixed CoAP observer leak on every reconnect

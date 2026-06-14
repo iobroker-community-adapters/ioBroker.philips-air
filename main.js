@@ -130,16 +130,11 @@ async function main() {
     adapter.subscribeStates('control.*');
     adapter.log.debug(`start with ${adapter.config.host} ${JSON.stringify(adapter.config)}`);
 
-    // Load the protocol implementation lazily. The HTTP client pulls in the optional `philips-air`
-    // dependency, which may be absent on CoAP-only installations - requiring it unconditionally would
-    // crash those instances on startup.
+    // Load only the protocol implementation that is actually used.
     try {
         PurifierClass = adapter.config.protocol === 'http' ? require('./lib/http') : require('./lib/coap');
     } catch (err) {
-        return adapter.log.error(
-            `Cannot load protocol "${adapter.config.protocol}": ${err.message}. ` +
-                `For HTTP the optional "philips-air" package must be installed.`,
-        );
+        return adapter.log.error(`Cannot load protocol "${adapter.config.protocol}": ${err.message}`);
     }
 
     airPurifier = new PurifierClass(adapter.config.host, adapter.config, adapter);

@@ -137,6 +137,9 @@ async function main() {
         return adapter.log.error(`Cannot load protocol "${adapter.config.protocol}": ${err.message}`);
     }
 
+    adapter.log.info(
+        `Connecting to ${adapter.config.host} using ${adapter.config.protocol === 'http' ? 'HTTP' : 'CoAP'} protocol`,
+    );
     airPurifier = new PurifierClass(adapter.config.host, adapter.config, adapter);
     adapter.log.debug('started');
 

@@ -31,6 +31,11 @@ It can happen, that some devices have not all variables, and they will stay unfi
 -->
 
 ### **WORK IN PROGRESS**
+- (tt-tom17) Fixed crash on CoAP-only installations when the optional `philips-air` package is missing (protocol module is now loaded lazily)
+- (tt-tom17) Fixed CoAP requests hanging forever on send/receive errors and leaking pending requests
+- (tt-tom17) Fixed CoAP observer leak on every reconnect
+- (tt-tom17) Fixed `destroy()` cleanup for the HTTP protocol and prevented timers from being re-armed after shutdown
+- (tt-tom17) Replaced stray `console.log`/`console.error` output with adapter logging
 - (copilot) Adapter requires admin >= 7.7.22 now
 - (copilot) Adapter requires admin >= 7.6.17 now
 

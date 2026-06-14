@@ -114,7 +114,11 @@ async function updateStatus(status) {
                         const isKnownError = typeof status.error === 'string';
                         const errorText = isKnownError ? status.error : `unknown (${status.error})`;
                         await adapter.setStateAsync('device.error', errorText, true);
-                        await adapter.setStateAsync('device.maintenance', isKnownError && status.error !== 'none', true);
+                        await adapter.setStateAsync(
+                            'device.maintenance',
+                            isKnownError && status.error !== 'none',
+                            true,
+                        );
                     } else {
                         await adapter.setStateAsync(`device.${item.name}`, status[item.name], true);
                     }

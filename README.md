@@ -31,8 +31,8 @@ It can happen, that some devices have not all variables, and they will stay unfi
 -->
 
 ### **WORK IN PROGRESS**
+- (copilot) Adapter requires node.js >= 22 now
 - (copilot) Adapter requires admin >= 7.7.22 now
-- (copilot) Adapter requires admin >= 7.6.17 now
 
 ### 1.2.0 (2025-02-10)
 * (mcm1957) Adapter requires node.js >= 20, js-controller >= 6 and admin >= 6 now.

@@ -7,6 +7,9 @@ nbproject
 # npm package files
 iobroker.*.tgz
 
+# eslint cache (created by `npm run lint`)
+.eslintcache
+
 Thumbs.db
 
 # i18n intermediate files

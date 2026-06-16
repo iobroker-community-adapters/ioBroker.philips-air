@@ -51,7 +51,7 @@
     "test:integration": "mocha test/integration --exit",
     "test": "npm run test:js && npm run test:package",
     "check": "tsc --noEmit -p tsconfig.check.json",
-    "lint": "eslint -c eslint.config.mjs . --cache --cache-location .eslintcache --cache-strategy content",
+    "lint": "eslint -c eslint.config.mjs . ",
     "translate": "translate-adapter",
     "release": "release-script",
     "dev": "dev-server upload && dev-server watch"

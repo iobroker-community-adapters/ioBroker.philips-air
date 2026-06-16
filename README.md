@@ -37,7 +37,11 @@ It can happen, that some devices have not all variables, and they will stay unfi
 - (tt-tom17) HTTP mode no longer needs the extra "philips-air" package and its outdated dependencies
 - (tt-tom17) The device address field now accepts an IP address or a hostname and warns about invalid input
 - (tt-tom17) Dependencies updated
+
+### 1.3.0 (2026-06-15)
+- (copilot) Adapter requires node.js >= 22 now
 - (copilot) Adapter requires admin >= 7.7.22 now
+* (mcm1957) Dependencies have been updated
 
 ### 1.2.0 (2025-02-10)
 * (mcm1957) Adapter requires node.js >= 20, js-controller >= 6 and admin >= 6 now.
@@ -58,20 +62,6 @@ It can happen, that some devices have not all variables, and they will stay unfi
 * (bluefox) Small fixes done
 * (bluefox) Added HTTP communication protocol (untested!)
 * (mdax82) Added `gentle/GT` for AC2939
-
-### 0.1.7 (2022-05-19)
-* (Apollon77) Upgrade coap library
-
-### 0.1.4 (2022-03-23)
-* (Apollon77) Downgrade coap library to restore functionality for some devices
-* (Apollon77) Prevent crash case and make control more flexible
-* (Apollon77) correctly handle `control.function` state
-
-### 0.1.3 (2022-03-12)
-* (Apollon77) General updates and optimizations
-
-### 0.1.1 (2020-10-14)
-* (bluefox) initial release
 
 [Older changelogs can be found there](CHANGELOG_OLD.md)
 

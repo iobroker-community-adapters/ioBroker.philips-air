@@ -51,9 +51,10 @@
     "test:integration": "mocha test/integration --exit",
     "test": "npm run test:js && npm run test:package",
     "check": "tsc --noEmit -p tsconfig.check.json",
-    "lint": "eslint -c eslint.config.mjs .",
+    "lint": "eslint -c eslint.config.mjs . --cache --cache-location .eslintcache --cache-strategy content",
     "translate": "translate-adapter",
-    "release": "release-script"
+    "release": "release-script",
+    "dev": "dev-server upload && dev-server watch"
   },
   "bugs": {
     "url": "https://github.com/iobroker-community-adapters/ioBroker.philips-air/issues"

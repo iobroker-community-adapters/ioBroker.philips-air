@@ -4,8 +4,6 @@
     "Device IP or hostname": "IP del dispositivo o nombre de host",
     "Enter a valid IP address or hostname (no http://, no spaces)": "Ingrese una dirección IP o un nombre de host válido (sin http://, sin espacios)",
     "Reconnect interval": "Intervalo de reconexión",
-    "group_extraMyset": "extraMyset",
     "ms": "en milisegundos",
-    "myColor_tooltip": "Descripción de myColor",
     "option2": "Opción 2"
 }

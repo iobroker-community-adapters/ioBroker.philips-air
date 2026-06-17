@@ -29,6 +29,15 @@ It can happen, that some devices have not all variables, and they will stay unfi
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
+
+### **WORK IN PROGRESS**
+- (tt-tom17) Connection to CoAP and HTTP devices is much more reliable now: several cases that could crash the adapter, freeze the connection or stop it from reconnecting have been fixed
+- (tt-tom17) Air quality, filter and on/off values are now shown with the correct type and update reliably
+- (tt-tom17) Clearer log messages, including a hint to switch to CoAP when a device does not answer on HTTP
+- (tt-tom17) HTTP mode no longer needs the extra "philips-air" package and its outdated dependencies
+- (tt-tom17) The device address field now accepts an IP address or a hostname and warns about invalid input
+- (tt-tom17) Dependencies updated
+
 ### 1.3.0 (2026-06-15)
 - (copilot) Adapter requires node.js >= 22 now
 - (copilot) Adapter requires admin >= 7.7.22 now

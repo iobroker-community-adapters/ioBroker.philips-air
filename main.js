@@ -4,8 +4,6 @@
 // you need to create an adapter
 const utils = require('@iobroker/adapter-core');
 const adapterName = require('./package.json').name.split('.').pop();
-const AirPurifier = require('./lib/coap');
-const AirHttpPurifier = require('./lib/http');
 
 /**
  * The adapter instance
@@ -13,11 +11,14 @@ const AirHttpPurifier = require('./lib/http');
  */
 let adapter;
 let airPurifier;
+// The selected purifier class (CoAP or HTTP) is loaded lazily in main() depending on the
+// configured protocol, so a missing optional `philips-air` dependency cannot crash CoAP users.
+let PurifierClass;
 
 /**
  * Starts the adapter instance
  *
- * @param [options]
+ * @param [options] adapter options passed through to the ioBroker adapter
  */
 function startAdapter(options) {
     // Create the adapter and define its methods
@@ -58,14 +59,23 @@ function startAdapter(options) {
                 adapter.log.debug(`State change: ${JSON.stringify(state)}`);
                 if (state && !state.ack && id.startsWith(`${adapter.namespace}.control.`)) {
                     const name = id.substring(`${adapter.namespace}.control.`.length);
-                    if (name === 'function') {
-                        airPurifier && airPurifier.control({ function: state.val ? 'humidification' : 'purification' });
-                    } else {
-                        try {
-                            airPurifier && airPurifier.control({ [name]: state.val });
-                        } catch (err) {
-                            adapter.log.warn(`Could not control ${name}: ${err.message}`);
+                    const settings =
+                        name === 'function'
+                            ? { function: state.val ? 'humidification' : 'purification' }
+                            : { [name]: state.val };
+                    try {
+                        const result = airPurifier && airPurifier.control(settings);
+                        // control() returns a promise - catch async failures too, otherwise a failed
+                        // command produces an unhandled rejection that crashes the adapter.
+                        if (result && typeof result.catch === 'function') {
+                            result.catch(err =>
+                                adapter.log.warn(
+                                    `Could not control ${name}: ${err && err.message ? err.message : err}`,
+                                ),
+                            );
                         }
+                    } catch (err) {
+                        adapter.log.warn(`Could not control ${name}: ${err.message}`);
                     }
                 }
             },
@@ -74,7 +84,7 @@ function startAdapter(options) {
 }
 
 async function updateStatus(status) {
-    const MAPPING = adapter.config.protocol === 'http' ? AirHttpPurifier.getMapping() : AirPurifier.getMapping();
+    const MAPPING = PurifierClass.getMapping();
     const keys = Object.keys(MAPPING);
     for (let i = 0; i < keys.length; i++) {
         const item = MAPPING[keys[i]];
@@ -97,8 +107,18 @@ async function updateStatus(status) {
                     await adapter.setStateAsync('device.started', date.toISOString(), true);
                 } else {
                     if (item.name === 'error') {
-                        await adapter.setStateAsync(`device.error`, status.error.toString(), true);
-                        await adapter.setStateAsync('device.maintenance', status[item.name] !== 'none', true);
+                        // Known error codes are mapped to a text by renameAttributes; unknown codes stay
+                        // numeric. Only a known, non-'none' error means real maintenance is required -
+                        // some models (e.g. AC2889) constantly report an undocumented code (193) while
+                        // perfectly healthy, which must not raise a false maintenance flag.
+                        const isKnownError = typeof status.error === 'string';
+                        const errorText = isKnownError ? status.error : `unknown (${status.error})`;
+                        await adapter.setStateAsync('device.error', errorText, true);
+                        await adapter.setStateAsync(
+                            'device.maintenance',
+                            isKnownError && status.error !== 'none',
+                            true,
+                        );
                     } else {
                         await adapter.setStateAsync(`device.${item.name}`, status[item.name], true);
                     }
@@ -114,13 +134,6 @@ async function main() {
     // Reset the connection indicator during startup
     await adapter.setStateAsync('info.connection', false, true);
 
-    // fix type of overTheAirUpdates
-    const overTheAirUpdates = await adapter.getObjectAsync('device.overTheAirUpdates');
-    if (overTheAirUpdates.common.type !== 'string') {
-        overTheAirUpdates.common.type = 'string';
-        await adapter.setObjectAsync('device.overTheAirUpdates', overTheAirUpdates);
-    }
-
     if (!adapter.config.host) {
         return adapter.log.warn('No IP defined');
     }
@@ -128,11 +141,18 @@ async function main() {
     // In order to get state updates, you need to subscribe to them. The following line adds a subscription for our variable we have created above.
     adapter.subscribeStates('control.*');
     adapter.log.debug(`start with ${adapter.config.host} ${JSON.stringify(adapter.config)}`);
-    airPurifier = new (adapter.config.protocol === 'http' ? AirHttpPurifier : AirPurifier)(
-        adapter.config.host,
-        adapter.config,
-        adapter,
+
+    // Load only the protocol implementation that is actually used.
+    try {
+        PurifierClass = adapter.config.protocol === 'http' ? require('./lib/http') : require('./lib/coap');
+    } catch (err) {
+        return adapter.log.error(`Cannot load protocol "${adapter.config.protocol}": ${err.message}`);
+    }
+
+    adapter.log.info(
+        `Connecting to ${adapter.config.host} using ${adapter.config.protocol === 'http' ? 'HTTP' : 'CoAP'} protocol`,
     );
+    airPurifier = new PurifierClass(adapter.config.host, adapter.config, adapter);
     adapter.log.debug('started');
 
     airPurifier.on('connected', connected => {

@@ -1,16 +1,7 @@
 {
     "Alive timeout": "Délai d'attente en vie",
     "Communication protocol": "Protocole de communication",
-    "Device IP": "IP de l'appareil",
-    "Instance": "Instance",
-    "Reconnect interval": "Intervalle de reconnexion",
-    "extraAttr": "extraAttr",
-    "group_extraMyset": "extraMyset",
-    "htmlText": "htmlText",
-    "ms": "en millisecondes",
-    "myColor": "maCouleur",
-    "myColor_tooltip": "Description de myColor",
-    "option1": "Option 1",
-    "option2": "Option 2",
-    "philips-air adapter settings": "Paramètres d'adaptateur pour philips-air"
+    "Device IP or hostname": "IP de l'appareil ou nom d'hôte",
+    "Enter a valid IP address or hostname (no http://, no spaces)": "Entrez une adresse IP ou un nom d'hôte valide (pas de http://, pas d'espaces)",
+    "Reconnect interval": "Intervalle de reconnexion"
 }

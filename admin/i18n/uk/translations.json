@@ -1,16 +1,7 @@
 {
     "Alive timeout": "Живий тайм-аут",
     "Communication protocol": "Протокол зв'язку",
-    "Device IP": "IP пристрою",
-    "Instance": "",
-    "Reconnect interval": "Інтервал повторного підключення",
-    "extraAttr": "",
-    "group_extraMyset": "",
-    "htmlText": "",
-    "ms": "в мілісекундах",
-    "myColor": "",
-    "myColor_tooltip": "",
-    "option1": "",
-    "option2": "",
-    "philips-air adapter settings": ""
+    "Device IP or hostname": "IP-адреса пристрою або ім’я хоста",
+    "Enter a valid IP address or hostname (no http://, no spaces)": "Введіть дійсну IP-адресу або ім’я хоста (без http://, без пробілів)",
+    "Reconnect interval": "Інтервал повторного підключення"
 }

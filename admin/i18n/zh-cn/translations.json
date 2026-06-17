@@ -1,16 +1,7 @@
 {
-    "Alive timeout": "存活超时",
+    "Alive timeout": "活动超时",
     "Communication protocol": "通讯协议",
-    "Device IP": "设备IP",
-    "Instance": "例",
-    "Reconnect interval": "重连间隔",
-    "extraAttr": "extraAttr",
-    "group_extraMyset": "extraMyset",
-    "htmlText": "htmlText",
-    "ms": "以毫秒为单位",
-    "myColor": "我的颜色",
-    "myColor_tooltip": "myColor的描述",
-    "option1": "选项1",
-    "option2": "选项2",
-    "philips-air adapter settings": "philips-air的适配器设置"
+    "Device IP or hostname": "设备IP或主机名",
+    "Enter a valid IP address or hostname (no http://, no spaces)": "输入有效的 IP 地址或主机名（无 http://，无空格）",
+    "Reconnect interval": "重连间隔"
 }

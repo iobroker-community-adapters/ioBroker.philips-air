@@ -17,15 +17,12 @@
     "type": "git",
     "url": "https://github.com/iobroker-community-adapters/ioBroker.philips-air"
   },
-  "optionalDependencies": {
-    "philips-air": "^0.6.0"
-  },
   "engines": {
     "node": ">=22"
   },
   "dependencies": {
     "@iobroker/adapter-core": "^3.2.3",
-    "coap": "^1.4.2"
+    "coap": "^1.5.0"
   },
   "devDependencies": {
     "@alcalzone/release-script": "^5.2.1",
@@ -54,9 +51,10 @@
     "test:integration": "mocha test/integration --exit",
     "test": "npm run test:js && npm run test:package",
     "check": "tsc --noEmit -p tsconfig.check.json",
-    "lint": "eslint -c eslint.config.mjs .",
+    "lint": "eslint -c eslint.config.mjs . ",
     "translate": "translate-adapter",
-    "release": "release-script"
+    "release": "release-script",
+    "dev": "dev-server upload && dev-server watch"
   },
   "bugs": {
     "url": "https://github.com/iobroker-community-adapters/ioBroker.philips-air/issues"

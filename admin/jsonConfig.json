@@ -4,7 +4,10 @@
   "items": {
     "host": {
       "type": "text",
-      "label": "Device IP",
+      "label": "Device IP or hostname",
+      "validator": "!!data.host && /^[a-zA-Z0-9]([a-zA-Z0-9.\\-]*[a-zA-Z0-9])?$/.test(data.host)",
+      "validatorErrorText": "Enter a valid IP address or hostname (no http://, no spaces)",
+      "validatorNoSaveOnError": true,
       "xs": 12,
       "sm": 12,
       "md": 4,

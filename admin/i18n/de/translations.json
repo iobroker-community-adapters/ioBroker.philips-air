@@ -1,18 +1,7 @@
 {
-    "Alive timeout": "Lebenszeitüberschreitung",
+    "Alive timeout": "Verbindungs-Timeout",
     "Communication protocol": "Kommunikationsprotokoll",
-    "Device IP": "Geräte-IP",
     "Device IP or hostname": "Geräte-IP oder Hostname",
-    "Enter a valid IP address or hostname (no http://, no spaces)": "Gültige IP-Adresse oder Hostname eingeben (kein http://, keine Leerzeichen)",
-    "Instance": "Instanz",
-    "Reconnect interval": "Wiederverbindungs-Intervall",
-    "extraAttr": "extraAttr",
-    "group_extraMyset": "extraMyset",
-    "htmlText": "htmlText",
-    "ms": "in Millisekunden",
-    "myColor": "meineColor",
-    "myColor_tooltip": "Beschreibung von myColor",
-    "option1": "Option 1",
-    "option2": "Option 2",
-    "philips-air adapter settings": "Adaptereinstellungen für philips-air"
+    "Enter a valid IP address or hostname (no http://, no spaces)": "Geben Sie eine gültige IP-Adresse oder einen gültigen Hostnamen ein (kein http://, keine Leerzeichen).",
+    "Reconnect interval": "Wiederverbindungsintervall"
 }

@@ -1,16 +1,7 @@
 {
-    "Alive timeout": "Levende time-out",
-    "Communication protocol": "Communicatie protocol",
-    "Device IP": "Apparaat IP",
-    "Instance": "Instantie",
-    "Reconnect interval": "Interval opnieuw verbinden",
-    "extraAttr": "extraAttr",
-    "group_extraMyset": "extraMyset",
-    "htmlText": "htmlText",
-    "ms": "in milliseconden",
-    "myColor": "mijnKleur",
-    "myColor_tooltip": "Beschrijving van myColor",
-    "option1": "Optie 1",
-    "option2": "Optie 2",
-    "philips-air adapter settings": "Adapterinstellingen voor philips-air"
+    "Alive timeout": "Time-out bij leven",
+    "Communication protocol": "Communicatieprotocol",
+    "Device IP or hostname": "Apparaat-IP of hostnaam",
+    "Enter a valid IP address or hostname (no http://, no spaces)": "Voer een geldig IP-adres of hostnaam in (geen http://, geen spaties)",
+    "Reconnect interval": "Interval opnieuw verbinden"
 }

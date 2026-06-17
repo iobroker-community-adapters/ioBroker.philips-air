@@ -29,8 +29,7 @@ It can happen, that some devices have not all variables, and they will stay unfi
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
-
-### **WORK IN PROGRESS**
+### 1.4.0 (2026-06-17)
 - (tt-tom17) Connection to CoAP and HTTP devices is much more reliable now: several cases that could crash the adapter, freeze the connection or stop it from reconnecting have been fixed
 - (tt-tom17) Air quality, filter and on/off values are now shown with the correct type and update reliably
 - (tt-tom17) Clearer log messages, including a hint to switch to CoAP when a device does not answer on HTTP
@@ -57,11 +56,6 @@ It can happen, that some devices have not all variables, and they will stay unfi
 ### 1.0.3 (2022-12-23)
 * (Apollon77) Finalized and optimized HTTP communication protocol
 * (Apollon77) Fixed type issues with device.error
-
-### 1.0.2 (2022-11-16)
-* (bluefox) Small fixes done
-* (bluefox) Added HTTP communication protocol (untested!)
-* (mdax82) Added `gentle/GT` for AC2939
 
 [Older changelogs can be found there](CHANGELOG_OLD.md)
 

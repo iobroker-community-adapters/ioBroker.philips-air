@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "philips-air",
-    "version": "1.3.0",
+    "version": "1.4.0",
     "news": {
+      "1.4.0": {
+        "en": "Connection to CoAP and HTTP devices is much more reliable now: several cases that could crash the adapter, freeze the connection or stop it from reconnecting have been fixed\nAir quality, filter and on/off values are now shown with the correct type and update reliably\nClearer log messages, including a hint to switch to CoAP when a device does not answer on HTTP\nHTTP mode no longer needs the extra \"philips-air\" package and its outdated dependencies\nThe device address field now accepts an IP address or a hostname and warns about invalid input\nDependencies updated",
+        "de": "Die Verbindung zu CoAP- und HTTP-Geräten ist jetzt deutlich zuverlässiger: Mehrere Fehler, die zum Absturz des Adapters, zum Einfrieren der Verbindung oder zum Verhindern der Wiederverbindung führen konnten, wurden behoben.\nLuftqualitäts-, Filter- und Ein-/Aus-Werte werden nun mit dem korrekten Typ angezeigt und zuverlässig aktualisiert.\nAussagekräftigere Protokollmeldungen, einschließlich eines Hinweises zum Wechsel zu CoAP, wenn ein Gerät nicht auf HTTP antwortet.\nDer HTTP-Modus benötigt nicht mehr das zusätzliche Paket \"philips-air\" und seine veralteten Abhängigkeiten.\nDas Feld für die Geräteadresse akzeptiert nun eine IP-Adresse oder einen Hostnamen und warnt bei ungültiger Eingabe.\nAbhängigkeiten aktualisiert",
+        "ru": "Теперь подключение к устройствам CoAP и HTTP стало намного надежнее: исправлены несколько ошибок, которые могли привести к сбою адаптера, зависанию соединения или невозможности его повторного подключения.\nЗначения параметров качества воздуха, состояния фильтра и включения/выключения теперь отображаются с указанием правильного типа и обновляются корректно.\nБолее понятные сообщения в логах, включая подсказку о необходимости переключения на CoAP, если устройство не отвечает по HTTP-запросу.\nВ режиме HTTP больше не требуется дополнительный пакет \"philips-air\" и его устаревшие зависимости.\nВ поле адреса устройства теперь принимается IP-адрес или имя хоста, и выдается предупреждение о недопустимом вводе.\nЗависимости обновлены.",
+        "pt": "A conexão com dispositivos CoAP e HTTP agora é muito mais confiável: diversos problemas que podiam travar o adaptador, congelar a conexão ou impedir sua reconexão foram corrigidos.\nA qualidade do ar, o filtro e os valores de ligado/desligado agora são exibidos com o tipo correto e atualizam de forma confiável.\nMensagens de registro mais claras, incluindo uma dica para alternar para CoAP quando um dispositivo não responder em HTTP.\nO modo HTTP não precisa mais do pacote adicional \"philips-air\" e suas dependências obsoletas.\nO campo de endereço do dispositivo agora aceita um endereço IP ou um nome de host e exibe um aviso sobre entradas inválidas.\nDependências atualizadas",
+        "nl": "De verbinding met CoAP- en HTTP-apparaten is nu veel betrouwbaarder: diverse problemen die de adapter konden laten vastlopen, de verbinding konden blokkeren of herverbinding konden voorkomen, zijn verholpen.\nDe luchtkwaliteit, filter- en aan/uit-waarden worden nu correct weergegeven en betrouwbaar bijgewerkt.\nDuidelijkere logberichten, inclusief een aanwijzing om over te schakelen naar CoAP wanneer een apparaat niet reageert via HTTP.\nDe HTTP-modus heeft het extra \"philips-air\"-pakket en de bijbehorende verouderde afhankelijkheden niet langer nodig.\nHet veld voor het apparaatadres accepteert nu een IP-adres of een hostnaam en waarschuwt voor ongeldige invoer.\nAfhankelijkheden bijgewerkt",
+        "fr": "La connexion aux périphériques CoAP et HTTP est désormais beaucoup plus fiable : plusieurs problèmes susceptibles de provoquer le plantage de l’adaptateur, le blocage de la connexion ou l’impossibilité de se reconnecter ont été résolus.\nLes valeurs de qualité de l'air, de filtration et de mise en marche/arrêt sont désormais affichées avec le type correct et se mettent à jour de manière fiable.\nDes messages de journalisation plus clairs, incluant une indication de passer à CoAP lorsqu'un périphérique ne répond pas sur HTTP.\nLe mode HTTP ne nécessite plus le paquet supplémentaire « philips-air » et ses dépendances obsolètes.\nLe champ d'adresse du périphérique accepte désormais une adresse IP ou un nom d'hôte et signale les saisies invalides.\nDépendances mises à jour",
+        "it": "La connessione ai dispositivi CoAP e HTTP è ora molto più affidabile: sono stati risolti diversi casi che potevano causare il blocco dell'adattatore, il congelamento della connessione o l'impossibilità di riconnettersi.\nLa qualità dell'aria, il filtro e i valori di accensione/spegnimento vengono ora visualizzati con il tipo corretto e si aggiornano in modo affidabile\nMessaggi di log più chiari, incluso un suggerimento per passare a CoAP quando un dispositivo non risponde su HTTP\nLa modalità HTTP non necessita più del pacchetto aggiuntivo \"philips-air\" e delle sue dipendenze obsolete.\nIl campo dell'indirizzo del dispositivo ora accetta un indirizzo IP o un nome host e avvisa in caso di input non valido.\nDipendenze aggiornate",
+        "es": "La conexión a dispositivos CoAP y HTTP es ahora mucho más fiable: se han solucionado varios problemas que podían provocar el fallo del adaptador, congelar la conexión o impedir que se reconectara.\nLa calidad del aire, los filtros y los valores de encendido/apagado ahora se muestran con el tipo correcto y se actualizan de forma fiable.\nMensajes de registro más claros, incluyendo una sugerencia para cambiar a CoAP cuando un dispositivo no responde en HTTP.\nEl modo HTTP ya no necesita el paquete adicional \"philips-air\" ni sus dependencias obsoletas.\nEl campo de dirección del dispositivo ahora acepta una dirección IP o un nombre de host y advierte sobre entradas no válidas.\nDependencias actualizadas",
+        "pl": "Połączenie z urządzeniami CoAP i HTTP jest teraz znacznie bardziej niezawodne: naprawiono kilka przypadków, które mogły spowodować awarię adaptera, zamrożenie połączenia lub uniemożliwienie ponownego nawiązania połączenia\nJakość powietrza, filtr i wartości włączania/wyłączania są teraz wyświetlane z prawidłowym typem i aktualizowane niezawodnie\nBardziej przejrzyste komunikaty dziennika, w tym wskazówka dotycząca przejścia na protokół CoAP, gdy urządzenie nie odpowiada na protokół HTTP\nTryb HTTP nie wymaga już dodatkowego pakietu „philips-air” i jego przestarzałych zależności\nPole adresu urządzenia akceptuje teraz adres IP lub nazwę hosta i wyświetla ostrzeżenie o nieprawidłowym wprowadzeniu danych\nZaktualizowano zależności",
+        "uk": "Підключення до пристроїв CoAP та HTTP тепер набагато надійніше: виправлено кілька випадків, які могли призвести до збою адаптера, зависання з'єднання або перешкоджання його повторному підключенню.\nЗначення якості повітря, фільтра та ввімкнення/вимкнення тепер відображаються з правильним типом та надійно оновлюються.\nЗрозуміліші повідомлення журналу, включаючи підказку про перемикання на CoAP, коли пристрій не відповідає через HTTP\nРежим HTTP більше не потребує додаткового пакета \"philips-air\" та його застарілих залежностей\nПоле адреси пристрою тепер приймає IP-адресу або ім'я хоста та попереджає про недійсне введення\nЗалежності оновлено",
+        "zh-cn": "现在与 CoAP 和 HTTP 设备的连接更加可靠：已修复了几个可能导致适配器崩溃、连接冻结或无法重新连接的问题。\n空气质量、过滤器和开关状态现在以正确的类型显示，并能可靠地更新。\n更清晰的日志消息，包括当设备对 HTTP 请求无响应时切换到 CoAP 的提示。\nHTTP 模式不再需要额外的“philips-air”软件包及其过时的依赖项。\n设备地址字段现在接受 IP 地址或主机名，并对无效输入发出警告。\n依赖项已更新"
+      },
       "1.3.0": {
         "en": "Adapter requires node.js >= 22 now\nAdapter requires admin >= 7.7.22 now\nDependencies have been updated",
         "de": "Adapter benötigt node.js >= 22 jetzt\nAdapter benötigt Admin >= 7.7.22 jetzt\nAbhängigkeiten wurden aktualisiert",
@@ -80,19 +93,6 @@
         "pl": "Drobne poprawki",
         "uk": "Маленькі застібки",
         "zh-cn": "小额配件"
-      },
-      "0.1.7": {
-        "en": "Upgrade coap library",
-        "de": "Aktualisieren Sie die Coap-Bibliothek",
-        "ru": "Обновить библиотеку coap",
-        "pt": "Atualizar biblioteca coap",
-        "nl": "Upgrade coap-bibliotheek",
-        "fr": "Mettre à niveau la bibliothèque de coap",
-        "it": "Aggiorna la libreria di copioni",
-        "es": "Actualizar biblioteca cooperativa",
-        "pl": "Uaktualnij bibliotekę Coap",
-        "zh-cn": "升级 coap 库",
-        "uk": "Оновити бібліотеку Coap"
       }
     },
     "titleLang": {

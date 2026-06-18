@@ -30,7 +30,8 @@ It can happen, that some devices have not all variables, and they will stay unfi
     ### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
-- (tt-tom17) CoAP devices no longer drop in and out every few minutes: the connection stays online as long as the device keeps sending status, instead of falsely reporting "connection lost"
+- (tt-tom17) CoAP connection now stays stable instead of disconnecting every few minutes
+- (tt-tom17) Fixed adapter checker warnings
 
 ### 1.4.0 (2026-06-17)
 - (tt-tom17) Connection to CoAP and HTTP devices is much more reliable now: several cases that could crash the adapter, freeze the connection or stop it from reconnecting have been fixed

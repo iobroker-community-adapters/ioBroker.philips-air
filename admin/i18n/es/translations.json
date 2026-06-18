@@ -3,6 +3,5 @@
     "Communication protocol": "Protocolo de comunicación",
     "Device IP or hostname": "IP del dispositivo o nombre de host",
     "Enter a valid IP address or hostname (no http://, no spaces)": "Ingrese una dirección IP o un nombre de host válido (sin http://, sin espacios)",
-    "Reconnect interval": "Intervalo de reconexión",
-    "option2": "Opción 2"
+    "Reconnect interval": "Intervalo de reconexión"
 }

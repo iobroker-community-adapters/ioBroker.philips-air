@@ -29,6 +29,9 @@ It can happen, that some devices have not all variables, and they will stay unfi
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+- (tt-tom17) CoAP devices no longer drop in and out every few minutes: the connection stays online as long as the device keeps sending status, instead of falsely reporting "connection lost"
+
 ### 1.4.0 (2026-06-17)
 - (tt-tom17) Connection to CoAP and HTTP devices is much more reliable now: several cases that could crash the adapter, freeze the connection or stop it from reconnecting have been fixed
 - (tt-tom17) Air quality, filter and on/off values are now shown with the correct type and update reliably

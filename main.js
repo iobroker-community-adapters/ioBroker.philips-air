@@ -3,6 +3,7 @@
 // The adapter-core module gives you access to the core ioBroker functions
 // you need to create an adapter
 const utils = require('@iobroker/adapter-core');
+const { NAME_MAPPING, channelOf, stateCommon } = require('./lib/mapping');
 const adapterName = require('./package.json').name.split('.').pop();
 
 /**
@@ -83,50 +84,77 @@ function startAdapter(options) {
     ));
 }
 
+// Device states are created on demand from the mapping (io-package.json only defines the adapter's
+// own infrastructure). Ids already ensured this run are cached so we touch the object DB only once.
+const ensuredObjects = new Set();
+
+/**
+ * Create the state object once (from a mapping-derived common block) if it does not exist yet, then
+ * write the value.
+ *
+ * @param id the state id (e.g. "status.pm25")
+ * @param common the ioBroker object `common` block
+ * @param value the value to write (always acknowledged)
+ */
+async function setDeviceState(id, common, value) {
+    if (!ensuredObjects.has(id)) {
+        await adapter.setObjectNotExistsAsync(id, { type: 'state', common, native: {} });
+        ensuredObjects.add(id);
+    }
+    await adapter.setStateAsync(id, value, true);
+}
+
 async function updateStatus(status) {
-    const MAPPING = PurifierClass.getMapping();
-    const keys = Object.keys(MAPPING);
-    for (let i = 0; i < keys.length; i++) {
-        const item = MAPPING[keys[i]];
-        if (Object.prototype.hasOwnProperty.call(status, item.name)) {
-            if (item.control) {
-                if (item.name === 'function') {
-                    await adapter.setStateAsync('control.function', status[item.name] === 'humidification', true);
-                } else {
-                    await adapter.setStateAsync(`control.${item.name}`, status[item.name], true);
-                }
-            } else if (item.filter) {
-                await adapter.setStateAsync(`filter.${item.name}`, status[item.name], true);
-            } else if (item.device) {
-                if (item.name === 'function') {
-                    await adapter.setStateAsync('device.function', status[item.name] === 'humidification', true);
-                } else if (item.name === 'uptime') {
-                    await adapter.setStateAsync('device.uptime', status[item.name], true);
-                    const date = new Date();
-                    date.setMilliseconds(date.getMilliseconds() - status[item.name]);
-                    await adapter.setStateAsync('device.started', date.toISOString(), true);
-                } else {
-                    if (item.name === 'error') {
-                        // Known error codes are mapped to a text by renameAttributes; unknown codes stay
-                        // numeric. Only a known, non-'none' error means real maintenance is required -
-                        // some models (e.g. AC2889) constantly report an undocumented code (193) while
-                        // perfectly healthy, which must not raise a false maintenance flag.
-                        const isKnownError = typeof status.error === 'string';
-                        const errorText = isKnownError ? status.error : `unknown (${status.error})`;
-                        await adapter.setStateAsync('device.error', errorText, true);
-                        await adapter.setStateAsync(
-                            'device.maintenance',
-                            isKnownError && status.error !== 'none',
-                            true,
-                        );
-                    } else {
-                        await adapter.setStateAsync(`device.${item.name}`, status[item.name], true);
-                    }
-                }
-            } else {
-                await adapter.setStateAsync(`status.${item.name}`, status[item.name], true);
-            }
+    for (const attr of Object.keys(NAME_MAPPING)) {
+        const item = NAME_MAPPING[attr];
+        if (!Object.prototype.hasOwnProperty.call(status, item.name)) {
+            continue;
         }
+        const channel = channelOf(item);
+
+        // The 'function' state is presented as a humidification on/off switch, not the raw text.
+        if (item.name === 'function') {
+            await setDeviceState(
+                'control.function',
+                { name: 'function', type: 'boolean', role: 'switch', read: true, write: true },
+                status.function === 'humidification',
+            );
+            continue;
+        }
+
+        // Uptime additionally drives a derived "started" timestamp.
+        if (item.name === 'uptime') {
+            await setDeviceState('device.uptime', stateCommon(item), status.uptime);
+            const date = new Date();
+            date.setMilliseconds(date.getMilliseconds() - status.uptime);
+            await setDeviceState(
+                'device.started',
+                { name: 'started', type: 'string', role: 'value.time', read: true, write: false },
+                date.toISOString(),
+            );
+            continue;
+        }
+
+        // The error code drives a derived maintenance indicator. Known codes are mapped to a text by
+        // renameAttributes; unknown codes stay numeric. Only a known, non-'none' error means real
+        // maintenance is required - some models (e.g. AC2889) constantly report an undocumented code
+        // (193) while perfectly healthy, which must not raise a false maintenance flag.
+        if (item.name === 'error') {
+            const isKnownError = typeof status.error === 'string';
+            await setDeviceState(
+                'device.error',
+                stateCommon(item),
+                isKnownError ? status.error : `unknown (${status.error})`,
+            );
+            await setDeviceState(
+                'device.maintenance',
+                { name: 'maintenance', type: 'boolean', role: 'indicator.maintenance', read: true, write: false },
+                isKnownError && status.error !== 'none',
+            );
+            continue;
+        }
+
+        await setDeviceState(`${channel}.${item.name}`, stateCommon(item), status[item.name]);
     }
 }
 

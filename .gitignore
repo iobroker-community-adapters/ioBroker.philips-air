@@ -24,3 +24,4 @@ admin/i18n/*/flat.txt
 
 # Claude working files
 .claude/
+CLAUDE.local.md

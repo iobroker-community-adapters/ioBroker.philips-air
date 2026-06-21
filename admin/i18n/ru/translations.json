@@ -3,5 +3,8 @@
     "Communication protocol": "Протокол связи",
     "Device IP or hostname": "IP-адрес устройства или имя хоста",
     "Enter a valid IP address or hostname (no http://, no spaces)": "Введите действительный IP-адрес или имя хоста (без http:// и пробелов).",
-    "Reconnect interval": "Интервал повторного подключения"
+    "Reconnect interval": "Интервал повторного подключения",
+    "ms": "мс",
+    "ms - should be >= Alive timeout": "мс — должно быть >= тайм-аута активности",
+    "Reconnect interval should be at least the Alive timeout": "Интервал переподключения должен быть не меньше тайм-аута активности"
 }

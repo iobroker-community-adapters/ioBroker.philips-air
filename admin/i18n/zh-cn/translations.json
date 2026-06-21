@@ -3,5 +3,8 @@
     "Communication protocol": "通讯协议",
     "Device IP or hostname": "设备IP或主机名",
     "Enter a valid IP address or hostname (no http://, no spaces)": "输入有效的 IP 地址或主机名（无 http://，无空格）",
-    "Reconnect interval": "重连间隔"
+    "Reconnect interval": "重连间隔",
+    "ms": "毫秒",
+    "ms - should be >= Alive timeout": "毫秒 - 应 >= 活动超时",
+    "Reconnect interval should be at least the Alive timeout": "重连间隔应至少为活动超时时间"
 }

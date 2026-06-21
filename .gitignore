@@ -21,6 +21,7 @@ admin/i18n/*/flat.txt
 
 # ioBroker dev-server
 .dev-server/
+.user-data/
 
 # Claude working files
 .claude/

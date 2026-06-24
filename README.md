@@ -29,7 +29,7 @@ It can happen, that some devices have not all variables, and they will stay unfi
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 1.5.0 (2026-06-24)
 - (tt-tom17) CoAP connection now stays stable instead of disconnecting every few minutes
 - (tt-tom17) Fixed adapter checker warnings
 
@@ -56,10 +56,6 @@ It can happen, that some devices have not all variables, and they will stay unfi
 ### 1.1.0 (2024-04-25)
 * (mcm1957) Adapter requires node.js >= 18 and js-controller >= 5 now
 * (mcm1957) Dependencies have been updated
-
-### 1.0.3 (2022-12-23)
-* (Apollon77) Finalized and optimized HTTP communication protocol
-* (Apollon77) Fixed type issues with device.error
 
 [Older changelogs can be found there](CHANGELOG_OLD.md)
 

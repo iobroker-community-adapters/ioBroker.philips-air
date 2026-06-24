@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "philips-air",
-    "version": "1.4.0",
+    "version": "1.5.0",
     "news": {
+      "1.5.0": {
+        "en": "CoAP connection now stays stable instead of disconnecting every few minutes\nFixed adapter checker warnings",
+        "de": "Die CoAP-Verbindung bleibt nun stabil, anstatt alle paar Minuten abzubrechen.\nBehobene Warnungen des Adapterprüfers",
+        "ru": "Теперь соединение CoAP остается стабильным, а не обрывается каждые несколько минут.\nИсправлены предупреждения проверки адаптера.",
+        "pt": "A conexão CoAP agora permanece estável em vez de desconectar a cada poucos minutos.\nAvisos corrigidos do verificador de adaptadores",
+        "nl": "De CoAP-verbinding blijft nu stabiel in plaats van om de paar minuten weg te vallen.\nOpgeloste waarschuwingen van de adaptercontrole",
+        "fr": "La connexion CoAP reste désormais stable au lieu de se déconnecter toutes les quelques minutes.\nAvertissements du vérificateur d'adaptateur corrigés",
+        "it": "La connessione CoAP ora rimane stabile invece di disconnettersi ogni pochi minuti.\nAvvisi corretti del controllo dell'adattatore",
+        "es": "La conexión CoAP ahora se mantiene estable en lugar de desconectarse cada pocos minutos.\nSe corrigieron las advertencias del verificador de adaptadores.",
+        "pl": "Połączenie CoAP pozostaje teraz stabilne i nie rozłącza się co kilka minut\nNaprawiono ostrzeżenia modułu sprawdzającego adapter",
+        "uk": "З’єднання CoAP тепер залишається стабільним, а не розривається кожні кілька хвилин.\nВиправлені попередження перевірки адаптерів",
+        "zh-cn": "CoAP 连接现在保持稳定，不会像以前那样每隔几分钟就断开一次。\n修复了适配器检查器警告"
+      },
       "1.4.0": {
         "en": "Connection to CoAP and HTTP devices is much more reliable now: several cases that could crash the adapter, freeze the connection or stop it from reconnecting have been fixed\nAir quality, filter and on/off values are now shown with the correct type and update reliably\nClearer log messages, including a hint to switch to CoAP when a device does not answer on HTTP\nHTTP mode no longer needs the extra \"philips-air\" package and its outdated dependencies\nThe device address field now accepts an IP address or a hostname and warns about invalid input\nDependencies updated",
         "de": "Die Verbindung zu CoAP- und HTTP-Geräten ist jetzt deutlich zuverlässiger: Mehrere Fehler, die zum Absturz des Adapters, zum Einfrieren der Verbindung oder zum Verhindern der Wiederverbindung führen konnten, wurden behoben.\nLuftqualitäts-, Filter- und Ein-/Aus-Werte werden nun mit dem korrekten Typ angezeigt und zuverlässig aktualisiert.\nAussagekräftigere Protokollmeldungen, einschließlich eines Hinweises zum Wechsel zu CoAP, wenn ein Gerät nicht auf HTTP antwortet.\nDer HTTP-Modus benötigt nicht mehr das zusätzliche Paket \"philips-air\" und seine veralteten Abhängigkeiten.\nDas Feld für die Geräteadresse akzeptiert nun eine IP-Adresse oder einen Hostnamen und warnt bei ungültiger Eingabe.\nAbhängigkeiten aktualisiert",
@@ -80,19 +93,6 @@
         "pl": "Drobne poprawki\nAdded HTTP Communication Protocol (ang.)\nAdddition for AC293939 (ang.)",
         "uk": "Маленькі застібки\nДодано протокол зв'язку HTTP (докладений)\nДодано ніжний / GT для AC2939",
         "zh-cn": "小额配件\n添加了HTTP通信议定书(无证)\n增加AC2939的智囊团"
-      },
-      "1.0.0": {
-        "en": "Small fixes done",
-        "de": "Kleine Reparaturen erledigt",
-        "ru": "Небольшие исправления сделаны",
-        "pt": "Pequenas correções feitas",
-        "nl": "Kleine reparaties gedaan",
-        "fr": "Petites corrections faites",
-        "it": "Piccoli corredi fatti",
-        "es": "Pequeños arreglos realizados",
-        "pl": "Drobne poprawki",
-        "uk": "Маленькі застібки",
-        "zh-cn": "小额配件"
       }
     },
     "titleLang": {

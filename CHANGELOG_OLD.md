@@ -1,9 +1,13 @@
 # Older changes
+## 1.0.3 (2022-12-23)
+* (Apollon77) Finalized and optimized HTTP communication protocol
+* (Apollon77) Fixed type issues with device.error
+
+
 ## 1.0.2 (2022-11-16)
 * (bluefox) Small fixes done
 * (bluefox) Added HTTP communication protocol (untested!)
 * (mdax82) Added `gentle/GT` for AC2939
-
 
 ## 0.1.7 (2022-05-19)
 * (Apollon77) Upgrade coap library

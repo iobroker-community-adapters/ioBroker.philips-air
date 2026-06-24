@@ -3,5 +3,8 @@
     "Communication protocol": "Communicatieprotocol",
     "Device IP or hostname": "Apparaat-IP of hostnaam",
     "Enter a valid IP address or hostname (no http://, no spaces)": "Voer een geldig IP-adres of hostnaam in (geen http://, geen spaties)",
-    "Reconnect interval": "Interval opnieuw verbinden"
+    "Reconnect interval": "Interval opnieuw verbinden",
+    "ms": "ms",
+    "ms - should be >= Alive timeout": "ms - moet >= Alive-timeout zijn",
+    "Reconnect interval should be at least the Alive timeout": "Het herverbindingsinterval moet minstens gelijk zijn aan de Alive-timeout"
 }

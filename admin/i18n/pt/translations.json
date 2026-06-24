@@ -3,5 +3,8 @@
     "Communication protocol": "Protocolo de comunicação",
     "Device IP or hostname": "IP do dispositivo ou nome do host",
     "Enter a valid IP address or hostname (no http://, no spaces)": "Insira um endereço IP ou nome de host válido (sem http://, sem espaços)",
-    "Reconnect interval": "Intervalo de reconexão"
+    "Reconnect interval": "Intervalo de reconexão",
+    "ms": "ms",
+    "ms - should be >= Alive timeout": "ms - deve ser >= tempo limite de atividade",
+    "Reconnect interval should be at least the Alive timeout": "O intervalo de reconexão deve ser pelo menos o tempo limite de atividade"
 }

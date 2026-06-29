@@ -30,6 +30,46 @@ describe('mapping - renameReported', () => {
         expect(r).to.deep.equal({ somethingUnknown: 5 });
         expect(() => renameReported(undefined)).to.not.throw();
     });
+
+    it('maps CX3550 reported values and keeps timer read-only', () => {
+        const reported = {
+            D01S05: 'CX3550/01',
+            D03102: 1,
+            D0310C: -126,
+            D0310D: 3,
+            D0320F: 23040,
+            D03110: '2h',
+            D03211: 120,
+            D03130: 100,
+        };
+        renameReported(reported);
+        expect(reported).to.deep.equal({
+            cxModelId: 'CX3550/01',
+            cxPower: true,
+            cxFanMode: 'naturalBreeze',
+            cxFanSpeedReported: 'speed3',
+            cxOscillation: true,
+            cxTimerCode: '2h',
+            cxTimerMinutes: 120,
+            cxBeep: true,
+        });
+    });
+
+    it('does not map CX3550-specific D0 values for other devices', () => {
+        const reported = {
+            D01S05: 'Other model',
+            D03102: 1,
+            D0310C: 17,
+            D0320F: 23040,
+        };
+        renameReported(reported);
+        expect(reported).to.deep.equal({
+            D01S05: 'Other model',
+            D03102: 1,
+            D0310C: 17,
+            D0320F: 23040,
+        });
+    });
 });
 
 describe('mapping - buildControlPayload', () => {
@@ -50,6 +90,24 @@ describe('mapping - buildControlPayload', () => {
 
     it('throws for an invalid option value', () => {
         expect(() => buildControlPayload({ fanSpeed: 'hurricane' })).to.throw(/Invalid option for fanSpeed/);
+    });
+
+    it('builds numeric CX3550 control payloads without timer controls', () => {
+        expect(
+            buildControlPayload({
+                cxPower: true,
+                cxFanMode: 'sleep',
+                cxOscillation: true,
+                cxBeep: false,
+                cxTimerCode: '2h',
+                cxTimerMinutes: 120,
+            }),
+        ).to.deep.equal({
+            D03102: 1,
+            D0310C: 17,
+            D0320F: 90,
+            D03130: 0,
+        });
     });
 });
 

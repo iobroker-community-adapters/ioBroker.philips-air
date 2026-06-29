@@ -39,7 +39,6 @@
   "main": "main.js",
   "files": [
     "admin/",
-    "docs/",
     "img/",
     "lib/",
     "main.js",

@@ -1,5 +1,5 @@
 const { expect } = require('chai');
-const { NAME_MAPPING, renameReported, buildControlPayload } = require('../lib/mapping');
+const { NAME_MAPPING, channelOf, renameReported, buildControlPayload } = require('../lib/mapping');
 
 describe('mapping - renameReported', () => {
     it('renames attributes, maps options and keeps native types', () => {
@@ -55,19 +55,21 @@ describe('mapping - renameReported', () => {
         });
     });
 
-    it('does not map CX3550-specific D0 values for other devices', () => {
+    it('maps CX3550 control/status values as soon as they are reported', () => {
         const reported = {
-            D01S05: 'Other model',
             D03102: 1,
             D0310C: 17,
+            D0310D: 2,
             D0320F: 23040,
+            D03130: 100,
         };
         renameReported(reported);
         expect(reported).to.deep.equal({
-            D01S05: 'Other model',
-            D03102: 1,
-            D0310C: 17,
-            D0320F: 23040,
+            cxPower: true,
+            cxFanMode: 'sleep',
+            cxFanSpeedReported: 'speed2',
+            cxOscillation: true,
+            cxBeep: true,
         });
     });
 });
@@ -116,5 +118,20 @@ describe('mapping - NAME_MAPPING', () => {
         expect(NAME_MAPPING).to.be.an('object');
         expect(Object.keys(NAME_MAPPING).length).to.be.greaterThan(30);
         expect(NAME_MAPPING.err.name).to.equal('error');
+    });
+
+    it('places CX3550 writable states under control and reported speed under status', () => {
+        const expectedPaths = {
+            D03102: 'control.cxPower',
+            D0310C: 'control.cxFanMode',
+            D0320F: 'control.cxOscillation',
+            D03130: 'control.cxBeep',
+            D0310D: 'status.cxFanSpeedReported',
+        };
+
+        Object.entries(expectedPaths).forEach(([attr, path]) => {
+            const item = NAME_MAPPING[attr];
+            expect(`${channelOf(item)}.${item.name}`).to.equal(path);
+        });
     });
 });

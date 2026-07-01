@@ -33,8 +33,10 @@ describe('mapping - renameReported', () => {
 
     it('maps CX3550 reported values and keeps timer read-only', () => {
         const reported = {
+            D01S03: 'Ventilator',
             D01S05: 'CX3550/01',
             D03102: 1,
+            D03105: 100,
             D0310C: -126,
             D0310D: 3,
             D0320F: 23040,
@@ -44,7 +46,9 @@ describe('mapping - renameReported', () => {
         };
         renameReported(reported);
         expect(reported).to.deep.equal({
-            cxModelId: 'CX3550/01',
+            name: 'Ventilator',
+            modelId: 'CX3550/01',
+            D03105: 100,
             cxPower: true,
             cxFanMode: 'naturalBreeze',
             cxFanSpeedReported: 'speed3',
@@ -127,11 +131,17 @@ describe('mapping - NAME_MAPPING', () => {
             D0320F: 'control.cxOscillation',
             D03130: 'control.cxBeep',
             D0310D: 'status.cxFanSpeedReported',
+            D03110: 'status.cxTimerCode',
+            D03211: 'status.cxTimerMinutes',
         };
 
         Object.entries(expectedPaths).forEach(([attr, path]) => {
             const item = NAME_MAPPING[attr];
             expect(`${channelOf(item)}.${item.name}`).to.equal(path);
         });
+    });
+
+    it('does not expose D03105 as CX fan percent or a control state', () => {
+        expect(NAME_MAPPING).to.not.have.property('D03105');
     });
 });

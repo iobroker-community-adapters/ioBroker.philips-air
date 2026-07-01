@@ -12,8 +12,8 @@
 **This adapter uses Sentry libraries to automatically report exceptions and code errors to the developers.** For more details and for information how to disable the error reporting see [Sentry-Plugin Documentation](https://github.com/ioBroker/plugin-sentry#plugin-sentry)! Sentry reporting is used starting with js-controller 3.0.
 
 ## Philips air purifier adapter for ioBroker
-Connects Philips air purifier with ioBroker.
-**Tested only with AC2729**, but should work with new purifier that communicate via COAP with encryption.
+Connects Philips air purifiers and selected Philips/Versuni fans with ioBroker.
+**Tested with AC2729 and Philips/Versuni CX3550/01**, but should work with newer purifiers that communicate via local CoAP with encryption.
 ![AC2729](img/device.png)
 
 [Link to philips website](https://www.philips.de/c-m-ho/luftreiniger-und-luftbefeuchter/kombi)
@@ -24,11 +24,34 @@ It can happen, that some devices have not all variables, and they will stay unfi
 
 ![Objects](img/objects.png)
 
+## Philips/Versuni CX3550/01 fan
+The CX3550/01 is supported through the local encrypted CoAP connection. No Philips, Versuni or HomeID cloud API is used.
+
+Tested CX3550/01 functions:
+
+- Power on/off
+- Fan speed 1, 2 and 3
+- Sleep mode
+- Natural breeze
+- Oscillation on/off
+- Beep on/off
+- Status reading via local CoAP
+- Timer status reading
+
+Timer control is intentionally not supported for the CX3550/01. Local timer write payloads can make the firmware set `D03102` to `0`, which switches the fan off. The adapter therefore exposes CX3550/01 timer information only as read-only status.
+
+More details are documented in [docs/CX3550.md](docs/CX3550.md).
+
 ## Changelog
 <!--
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+- (Holly86) Added support for Philips/Versuni CX3550/01 pedestal fan.
+- (Holly86) Added CX fan modes, oscillation, beep and read-only timer state.
+- (Holly86) Timer control is intentionally not exposed because local timer writes can switch the fan off.
+
 ### 1.5.0 (2026-06-24)
 - (tt-tom17) CoAP connection now stays stable instead of disconnecting every few minutes
 - (tt-tom17) Fixed adapter checker warnings

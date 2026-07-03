@@ -3,7 +3,7 @@
 // The adapter-core module gives you access to the core ioBroker functions
 // you need to create an adapter
 const utils = require('@iobroker/adapter-core');
-const { NAME_MAPPING, channelOf, stateCommon } = require('./lib/mapping');
+const { createMapping, channelOf, stateCommon } = require('./lib/mapping');
 const adapterName = require('./package.json').name.split('.').pop();
 
 /**
@@ -15,6 +15,9 @@ let airPurifier;
 // The selected purifier class (CoAP or HTTP) is loaded lazily in main() depending on the
 // configured protocol, so a missing optional `philips-air` dependency cannot crash CoAP users.
 let PurifierClass;
+// The active (STANDARD + model) mapping, built once in main() from adapter.config.model. Set before
+// any 'status' event can fire, so updateStatus() always sees a valid mapping.
+let activeMapping;
 
 /**
  * Starts the adapter instance
@@ -127,8 +130,8 @@ function coerceToType(value, type) {
 }
 
 async function updateStatus(status) {
-    for (const attr of Object.keys(NAME_MAPPING)) {
-        const item = NAME_MAPPING[attr];
+    for (const attr of Object.keys(activeMapping)) {
+        const item = activeMapping[attr];
         if (!Object.prototype.hasOwnProperty.call(status, item.name)) {
             continue;
         }
@@ -188,6 +191,9 @@ async function main() {
     if (!adapter.config.host) {
         return adapter.log.warn('No IP defined');
     }
+
+    // Build the active (STANDARD + model) mapping before anything can trigger a 'status' event.
+    activeMapping = createMapping(adapter.config.model).mapping;
 
     // In order to get state updates, you need to subscribe to them. The following line adds a subscription for our variable we have created above.
     adapter.subscribeStates('control.*');

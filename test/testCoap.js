@@ -1,6 +1,7 @@
 const { expect } = require('chai');
 const coap = require('coap');
 const AirPurifier = require('../lib/coap');
+const { createMapping } = require('../lib/mapping');
 
 // Build an instance without running the constructor (which would start networking).
 function makeInstance(clientKey = 'AABBCCDD') {
@@ -8,6 +9,11 @@ function makeInstance(clientKey = 'AABBCCDD') {
     inst.clientKey = clientKey;
     inst.deviceIp = '127.0.0.1';
     inst.emit = () => {};
+    // The constructor normally builds these from createMapping(this.adapter.config.model); tests that
+    // bypass the constructor need them set explicitly (default to the classic AC2889 mapping).
+    const m = createMapping('AC2889');
+    inst.renameReported = m.renameReported;
+    inst.buildControlPayload = m.buildControlPayload;
     return inst;
 }
 

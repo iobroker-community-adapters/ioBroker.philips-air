@@ -241,4 +241,61 @@ describe('mapping - STANDARD_MAPPING', () => {
         const { mapping } = createMapping('AC2889');
         expect(mapping).to.not.have.property('D03105');
     });
+
+    it('maps diagnostic/telemetry keys as read-only device.* states (Umbau-Schritt 4, Part A)', () => {
+        const diagnosticKeys = ['rssi', 'free_memory', 'otacheck', 'wifilog', 'blelog'];
+        diagnosticKeys.forEach(attr => {
+            expect(STANDARD_MAPPING).to.have.property(attr);
+            const item = STANDARD_MAPPING[attr];
+            expect(item.device).to.be.true;
+            expect(item.control).to.be.undefined;
+            expect(channelOf(item)).to.equal('device');
+        });
+        expect(STANDARD_MAPPING.rssi.type).to.equal('number');
+        expect(STANDARD_MAPPING.free_memory.type).to.equal('number');
+        expect(STANDARD_MAPPING.otacheck.type).to.equal('boolean');
+        expect(STANDARD_MAPPING.wifilog.type).to.equal('boolean');
+        // blelog is typed string, not number: coerceToType cannot coerce TO number, so a numeric type
+        // would risk a rejected-state crash if firmware ever sends log text; string is always safe.
+        expect(STANDARD_MAPPING.blelog.type).to.equal('string');
+    });
+
+    it('maps the lowercase new-gen device-info aliases to the same friendly names as the classic keys', () => {
+        expect(STANDARD_MAPPING.uptime.name).to.equal('uptime');
+        expect(STANDARD_MAPPING.uptime.name).to.equal(STANDARD_MAPPING.Runtime.name);
+        expect(STANDARD_MAPPING.productId.name).to.equal(STANDARD_MAPPING.ProductId.name);
+        expect(STANDARD_MAPPING.deviceId.name).to.equal(STANDARD_MAPPING.DeviceId.name);
+        expect(STANDARD_MAPPING.wifiVersion.name).to.equal(STANDARD_MAPPING.WifiVersion.name);
+        expect(STANDARD_MAPPING.statusType.name).to.equal(STANDARD_MAPPING.StatusType.name);
+        expect(STANDARD_MAPPING.connectType.name).to.equal(STANDARD_MAPPING.ConnectType.name);
+        // 'key' is intentionally not mapped (potentially sensitive).
+        expect(STANDARD_MAPPING).to.not.have.property('key');
+    });
+
+    it('renames a lowercase uptime frame the same way as the classic Runtime key', () => {
+        const { renameReported } = createMapping('AC3221');
+        const reported = { uptime: 12345 };
+        renameReported(reported);
+        expect(reported).to.deep.equal({ uptime: 12345 });
+    });
+});
+
+describe('mapping - unknownStates classification (Umbau-Schritt 4, Part B)', () => {
+    // main.js builds `knownNames = new Set(Object.values(activeMapping).map(m => m.name))` once and
+    // routes any status key NOT in that set (and not 'key') to unknownStates. Exercise the same
+    // classification here at the mapping level, since a full adapter run is out of scope for this
+    // unit test file.
+    it('excludes an invented/unmapped raw attribute from the known friendly names', () => {
+        const { mapping } = createMapping('AC3221');
+        const knownNames = new Set(Object.values(mapping).map(item => item.name));
+        expect(knownNames.has('someTotallyInventedRawDCode')).to.be.false;
+    });
+
+    it('includes the new diagnostic/device-info friendly names in the known set (so they do NOT route to unknownStates)', () => {
+        const { mapping } = createMapping('AC3221');
+        const knownNames = new Set(Object.values(mapping).map(item => item.name));
+        ['rssi', 'freeMemory', 'otaCheck', 'wifiLog', 'bleLog', 'uptime', 'productId', 'deviceId'].forEach(name => {
+            expect(knownNames.has(name)).to.be.true;
+        });
+    });
 });

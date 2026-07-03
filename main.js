@@ -18,6 +18,13 @@ let PurifierClass;
 // The active (STANDARD + model) mapping, built once in main() from adapter.config.model. Set before
 // any 'status' event can fire, so updateStatus() always sees a valid mapping.
 let activeMapping;
+// All friendly state names the active mapping can produce, built alongside activeMapping. Used by
+// updateStatus() to tell genuinely unknown raw device attributes (-> unknownStates.*) apart from
+// attributes renameReported() already renamed to a friendly name (-> known, handled above).
+let knownNames;
+// Raw attribute keys we already logged once as "unknown" this adapter run, so a device that keeps
+// reporting the same unmapped D-code does not spam the log on every status frame.
+const loggedUnknownKeys = new Set();
 
 /**
  * Starts the adapter instance
@@ -182,6 +189,64 @@ async function updateStatus(status) {
         const common = stateCommon(item);
         await setDeviceState(`${channel}.${item.name}`, common, coerceToType(status[item.name], common.type));
     }
+
+    await updateUnknownStates(status);
+}
+
+/**
+ * Infer an ioBroker state type from a raw JS value for a genuinely unmapped device attribute.
+ *
+ * @param value the raw value reported by the device
+ * @returns `{ type, value }` - the inferred type and the value coerced to match it
+ */
+function inferUnknownType(value) {
+    if (typeof value === 'number') {
+        return { type: 'number', value };
+    }
+    if (typeof value === 'boolean') {
+        return { type: 'boolean', value };
+    }
+    if (value !== null && typeof value === 'object') {
+        // Arrays/objects have no native ioBroker state type - stringify so the value is not lost.
+        return { type: 'string', value: JSON.stringify(value) };
+    }
+    return { type: 'string', value: value === null || value === undefined ? '' : String(value) };
+}
+
+/**
+ * Catch raw device attributes that renameReported() left untouched because no mapping entry claims
+ * them (renameReported only renames/deletes keys it recognizes, so unmapped raw keys survive into
+ * updateStatus unchanged). These are genuinely unknown attributes - write them read-only under
+ * `unknownStates.<rawKey>` and log each new raw key once so a user can report it for onboarding.
+ *
+ * @param status the (partially renamed) status object as received by updateStatus
+ */
+async function updateUnknownStates(status) {
+    for (const rawKey of Object.keys(status)) {
+        // 'key' is a potential HTTP client secret, never renamed on purpose - never surface it either.
+        if (rawKey === 'key' || knownNames.has(rawKey)) {
+            continue;
+        }
+        if (!loggedUnknownKeys.has(rawKey)) {
+            loggedUnknownKeys.add(rawKey);
+            adapter.log.info(
+                `Unknown raw device attribute "${rawKey}" (value: ${JSON.stringify(status[rawKey])}) - ` +
+                    `exposed read-only as unknownStates.${rawKey}. Please report this to the adapter developer.`,
+            );
+        }
+        const { type, value } = inferUnknownType(status[rawKey]);
+        await setDeviceState(
+            `unknownStates.${rawKey}`,
+            {
+                name: rawKey,
+                type,
+                role: type === 'boolean' ? 'indicator' : type === 'number' ? 'value' : 'text',
+                read: true,
+                write: false,
+            },
+            value,
+        );
+    }
 }
 
 async function main() {
@@ -194,6 +259,7 @@ async function main() {
 
     // Build the active (STANDARD + model) mapping before anything can trigger a 'status' event.
     activeMapping = createMapping(adapter.config.model).mapping;
+    knownNames = new Set(Object.values(activeMapping).map(item => item.name));
 
     // In order to get state updates, you need to subscribe to them. The following line adds a subscription for our variable we have created above.
     adapter.subscribeStates('control.*');

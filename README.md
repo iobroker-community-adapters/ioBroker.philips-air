@@ -47,6 +47,13 @@ More details are documented in [docs/CX3550.md](docs/CX3550.md).
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+- (tt-tom17) New "Device model" setting: pick your model (AC2889, AC3221, CX3550 or Generic) so the adapter shows the correct controls for your device
+- (tt-tom17) Added support for the AC3221 next-generation purifier (power, fan speed/mode, display brightness, child lock, beep and more)
+- (tt-tom17) The adapter now warns in the log when the selected model does not seem to match the connected device
+- (tt-tom17) Device diagnostics such as Wi-Fi signal and free memory are now shown; unrecognised values are collected under "unknownStates"
+- (tt-tom17) BREAKING for CX3550: all state IDs starting with "cx" were renamed to generic names (for example "fanMode" instead of "cxFanMode"). Please select your model once in the settings; the old "cx*" objects can be deleted manually
+
 ### 1.6.1 (2026-07-03)
 - (Holly86) Added support for Philips/Versuni CX3550/01 pedestal fan.
 - (Holly86) Added CX fan modes, oscillation, beep and read-only timer state.

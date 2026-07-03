@@ -104,6 +104,28 @@ async function setDeviceState(id, common, value) {
     await adapter.setStateAsync(id, value, true);
 }
 
+/**
+ * Coerce a value to the state's declared type so js-controller never rejects a typed state when a
+ * device reports a value outside our known option set (e.g. an unmapped numeric fan/purifier mode
+ * for a string-typed control). Only string and boolean are forced; numbers pass through unchanged.
+ *
+ * @param value the value about to be written
+ * @param type the ioBroker `common.type` of the target state
+ * @returns the value coerced to match `type`
+ */
+function coerceToType(value, type) {
+    if (value === null || value === undefined) {
+        return value;
+    }
+    if (type === 'string' && typeof value !== 'string') {
+        return String(value);
+    }
+    if (type === 'boolean' && typeof value !== 'boolean') {
+        return Boolean(value);
+    }
+    return value;
+}
+
 async function updateStatus(status) {
     for (const attr of Object.keys(NAME_MAPPING)) {
         const item = NAME_MAPPING[attr];
@@ -154,7 +176,8 @@ async function updateStatus(status) {
             continue;
         }
 
-        await setDeviceState(`${channel}.${item.name}`, stateCommon(item), status[item.name]);
+        const common = stateCommon(item);
+        await setDeviceState(`${channel}.${item.name}`, common, coerceToType(status[item.name], common.type));
     }
 }
 

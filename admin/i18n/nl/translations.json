@@ -6,5 +6,7 @@
     "Reconnect interval": "Interval opnieuw verbinden",
     "ms": "ms",
     "ms - should be >= Alive timeout": "ms - moet >= Alive-timeout zijn",
-    "Reconnect interval should be at least the Alive timeout": "Het herverbindingsinterval moet minstens gelijk zijn aan de Alive-timeout"
+    "Reconnect interval should be at least the Alive timeout": "Het herverbindingsinterval moet minstens gelijk zijn aan de Alive-timeout",
+    "Device model": "Apparaatmodel",
+    "Selects which controls are created for your device. Choose \"Generic\" if your model is not listed (read-only, no controls).": "Bepaalt welke bedieningselementen voor uw apparaat worden aangemaakt. Kies \"Generic\" als uw model niet vermeld staat (alleen-lezen, geen bedieningselementen)."
 }

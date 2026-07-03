@@ -6,5 +6,7 @@
     "Reconnect interval": "Interwał ponownego połączenia",
     "ms": "ms",
     "ms - should be >= Alive timeout": "ms - powinno być >= limit czasu aktywności",
-    "Reconnect interval should be at least the Alive timeout": "Interwał ponownego połączenia powinien wynosić co najmniej limit czasu aktywności"
+    "Reconnect interval should be at least the Alive timeout": "Interwał ponownego połączenia powinien wynosić co najmniej limit czasu aktywności",
+    "Device model": "Model urządzenia",
+    "Selects which controls are created for your device. Choose \"Generic\" if your model is not listed (read-only, no controls).": "Określa, które elementy sterujące zostaną utworzone dla Twojego urządzenia. Wybierz \"Generic\", jeśli Twój model nie jest wymieniony na liście (tylko do odczytu, bez elementów sterujących)."
 }

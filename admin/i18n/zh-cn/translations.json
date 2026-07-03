@@ -6,5 +6,7 @@
     "Reconnect interval": "重连间隔",
     "ms": "毫秒",
     "ms - should be >= Alive timeout": "毫秒 - 应 >= 活动超时",
-    "Reconnect interval should be at least the Alive timeout": "重连间隔应至少为活动超时时间"
+    "Reconnect interval should be at least the Alive timeout": "重连间隔应至少为活动超时时间",
+    "Device model": "设备型号",
+    "Selects which controls are created for your device. Choose \"Generic\" if your model is not listed (read-only, no controls).": "决定为您的设备创建哪些控制项。如果列表中没有您的型号，请选择 \"Generic\"（只读，无控制项）。"
 }

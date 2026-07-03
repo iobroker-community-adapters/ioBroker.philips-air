@@ -6,5 +6,7 @@
     "Enter a valid IP address or hostname (no http://, no spaces)": "Enter a valid IP address or hostname (no http://, no spaces)",
     "ms": "ms",
     "ms - should be >= Alive timeout": "ms - should be >= Alive timeout",
-    "Reconnect interval should be at least the Alive timeout": "Reconnect interval should be at least the Alive timeout"
+    "Reconnect interval should be at least the Alive timeout": "Reconnect interval should be at least the Alive timeout",
+    "Device model": "Device model",
+    "Selects which controls are created for your device. Choose \"Generic\" if your model is not listed (read-only, no controls).": "Selects which controls are created for your device. Choose \"Generic\" if your model is not listed (read-only, no controls)."
 }

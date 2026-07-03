@@ -1,5 +1,5 @@
 const { expect } = require('chai');
-const { createMapping, channelOf, STANDARD_MAPPING, MODEL_MAPPING } = require('../lib/mapping');
+const { createMapping, channelOf, STANDARD_MAPPING, MODEL_MAPPING, modelsOwningRawKey } = require('../lib/mapping');
 
 describe('mapping - renameReported (AC2889)', () => {
     const { renameReported } = createMapping('AC2889');
@@ -297,5 +297,27 @@ describe('mapping - unknownStates classification (Umbau-Schritt 4, Part B)', () 
         ['rssi', 'freeMemory', 'otaCheck', 'wifiLog', 'bleLog', 'uptime', 'productId', 'deviceId'].forEach(name => {
             expect(knownNames.has(name)).to.be.true;
         });
+    });
+});
+
+describe('mapping - modelsOwningRawKey (wrong-model hint)', () => {
+    it('names the model that owns a classic control key', () => {
+        expect(modelsOwningRawKey('pwr')).to.deep.equal(['AC2889']);
+    });
+
+    it('names every model that owns a shared new-gen control key', () => {
+        // D03102 (power) is a control of both new-gen tables - a Generic/AC2889 user seeing it should
+        // be pointed at both candidates.
+        expect(modelsOwningRawKey('D03102')).to.have.members(['CX3550', 'AC3221']);
+    });
+
+    it('returns no owner for a genuinely unknown raw attribute', () => {
+        expect(modelsOwningRawKey('D09999')).to.deep.equal([]);
+    });
+
+    it('does not treat read-only STANDARD keys as owned by a model', () => {
+        // Shared read-only attributes (e.g. the D0310D reported speed) live in STANDARD, not in any
+        // model table, so they must never trigger a wrong-model hint.
+        expect(modelsOwningRawKey('D0310D')).to.deep.equal([]);
     });
 });

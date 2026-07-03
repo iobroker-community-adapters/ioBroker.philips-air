@@ -3,7 +3,7 @@
 // The adapter-core module gives you access to the core ioBroker functions
 // you need to create an adapter
 const utils = require('@iobroker/adapter-core');
-const { createMapping, channelOf, stateCommon } = require('./lib/mapping');
+const { createMapping, channelOf, stateCommon, modelsOwningRawKey } = require('./lib/mapping');
 const adapterName = require('./package.json').name.split('.').pop();
 
 /**
@@ -229,10 +229,22 @@ async function updateUnknownStates(status) {
         }
         if (!loggedUnknownKeys.has(rawKey)) {
             loggedUnknownKeys.add(rawKey);
-            adapter.log.info(
-                `Unknown raw device attribute "${rawKey}" (value: ${JSON.stringify(status[rawKey])}) - ` +
-                    `exposed read-only as unknownStates.${rawKey}. Please report this to the adapter developer.`,
-            );
+            // If the unmapped attribute is a known control of a DIFFERENT model, the user most likely
+            // selected the wrong device model - point them straight at the fix instead of the generic
+            // "please report" line (which is only right for a genuinely unknown attribute).
+            const owners = modelsOwningRawKey(rawKey);
+            if (owners.length) {
+                adapter.log.warn(
+                    `Device attribute "${rawKey}" is a control of model ${owners.join('/')}, but the ` +
+                        `selected model is "${adapter.config.model || 'AC2889'}". If controls are missing, ` +
+                        `select the correct device model in the adapter settings.`,
+                );
+            } else {
+                adapter.log.info(
+                    `Unknown raw device attribute "${rawKey}" (value: ${JSON.stringify(status[rawKey])}) - ` +
+                        `exposed read-only as unknownStates.${rawKey}. Please report this to the adapter developer.`,
+                );
+            }
         }
         const { type, value } = inferUnknownType(status[rawKey]);
         await setDeviceState(

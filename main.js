@@ -137,11 +137,17 @@ function coerceToType(value, type) {
 }
 
 async function updateStatus(status) {
+    // Several raw keys legitimately share one friendly name (e.g. the classic `Runtime` and the
+    // new-gen lowercase `uptime` alias both map to `uptime`, `dtrs`/`D03211` both to `timerMinutes`).
+    // A device only ever sends one of each pair, but both entries match `status[item.name]`, so guard
+    // against writing the same derived state twice per frame.
+    const writtenNames = new Set();
     for (const attr of Object.keys(activeMapping)) {
         const item = activeMapping[attr];
-        if (!Object.prototype.hasOwnProperty.call(status, item.name)) {
+        if (!Object.prototype.hasOwnProperty.call(status, item.name) || writtenNames.has(item.name)) {
             continue;
         }
+        writtenNames.add(item.name);
         const channel = channelOf(item);
 
         // The 'function' state is presented as a humidification on/off switch, not the raw text.

@@ -45,6 +45,14 @@ describe('coap - encryption', () => {
         expect(JSON.parse(decrypted)).to.deep.equal({ a: 1 });
     });
 
+    it('decryptPayload rejects a non-hex / too-short payload with a clear error', () => {
+        const inst = makeInstance();
+        // Garbage that is not hex, and a hex string shorter than counter+body+digest (72 chars): both
+        // must be rejected up front with a clear error instead of being fed into the cipher.
+        expect(() => inst.decryptPayload(Buffer.from('not-hex-garbage'))).to.throw(/Unexpected encrypted payload/i);
+        expect(() => inst.decryptPayload(Buffer.from('AABB'))).to.throw(/Unexpected encrypted payload/i);
+    });
+
     it('updateClientKey increments the key as an 8-char uppercase hex counter', () => {
         const inst = makeInstance('0000000F');
         inst.updateClientKey();

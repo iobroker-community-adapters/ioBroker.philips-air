@@ -162,6 +162,21 @@ describe('mapping - CX3550', () => {
         expect(mapping.D03110.type).to.equal('string');
         expect(mapping.D03110.control).to.be.undefined;
     });
+
+    it('exposes the fan-only registers D0310A/D03105 read-only under device.* (no invented heater/light semantics)', () => {
+        // The CX3550 fan reports D0310A (=1) and D03105 (=100) but has neither a heater nor a display,
+        // so they are exposed read-only under their raw code - never mislabelled as circulation/backlight.
+        ['D0310A', 'D03105'].forEach(attr => {
+            expect(mapping[attr]).to.include({ device: true, type: 'number' });
+            expect(mapping[attr].control).to.be.undefined;
+            expect(channelOf(mapping[attr])).to.equal('device');
+        });
+        const reported = { D0310A: 1, D03105: 100 };
+        renameReported(reported);
+        // Renamed to themselves (raw code = friendly name), native number kept - so they land in a
+        // known device.* state instead of unknownStates.
+        expect(reported).to.deep.equal({ D0310A: 1, D03105: 100 });
+    });
 });
 
 describe('mapping - AC3221', () => {
@@ -238,8 +253,12 @@ describe('mapping - STANDARD_MAPPING', () => {
     });
 
     it('does not expose D03105 as a control state for AC2889/CX3550', () => {
-        const { mapping } = createMapping('AC2889');
-        expect(mapping).to.not.have.property('D03105');
+        // AC2889 has no D03105 at all; CX3550 exposes it read-only (device.*), never as a control.
+        expect(createMapping('AC2889').mapping).to.not.have.property('D03105');
+        const cx = createMapping('CX3550').mapping;
+        expect(cx).to.have.property('D03105');
+        expect(cx.D03105.control).to.be.undefined;
+        expect(cx.D03105.device).to.be.true;
     });
 
     it('maps diagnostic/telemetry keys as read-only device.* states (Umbau-Schritt 4, Part A)', () => {
@@ -319,5 +338,13 @@ describe('mapping - modelsOwningRawKey (wrong-model hint)', () => {
         // Shared read-only attributes (e.g. the D0310D reported speed) live in STANDARD, not in any
         // model table, so they must never trigger a wrong-model hint.
         expect(modelsOwningRawKey('D0310D')).to.deep.equal([]);
+    });
+
+    it('does not treat a model read-only register as owned (control-only)', () => {
+        // D0310A/D03105 are exposed read-only in the CX3550 table, not as controls, so a correctly
+        // configured fan reporting them must never be nagged with a wrong-model hint. D03105 is still
+        // owned by AC3221 (there it IS a control), but no longer by CX3550.
+        expect(modelsOwningRawKey('D0310A')).to.deep.equal([]);
+        expect(modelsOwningRawKey('D03105')).to.deep.equal(['AC3221']);
     });
 });

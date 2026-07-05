@@ -22,6 +22,10 @@ let activeMapping;
 // updateStatus() to tell genuinely unknown raw device attributes (-> unknownStates.*) apart from
 // attributes renameReported() already renamed to a friendly name (-> known, handled above).
 let knownNames;
+// Set once the device reports any of the selected model's own controls: proof that the configured
+// model matches the device dialect. Used to suppress a false "wrong model?" hint when a single
+// shared/overlapping raw register (e.g. AC3221's D03105 seen on a CX3550) is left unmapped.
+let activeModelControlSeen = false;
 // Raw attribute keys we already logged once as "unknown" this adapter run, so a device that keeps
 // reporting the same unmapped D-code does not spam the log on every status frame.
 const loggedUnknownKeys = new Set();
@@ -148,6 +152,11 @@ async function updateStatus(status) {
             continue;
         }
         writtenNames.add(item.name);
+        if (item.control) {
+            // A resolved per-model control proves the selected model matches the device: see
+            // activeModelControlSeen (gates the "wrong model?" hint in updateUnknownStates below).
+            activeModelControlSeen = true;
+        }
         const channel = channelOf(item);
 
         // The 'function' state is presented as a humidification on/off switch, not the raw text.
@@ -235,15 +244,24 @@ async function updateUnknownStates(status) {
         }
         if (!loggedUnknownKeys.has(rawKey)) {
             loggedUnknownKeys.add(rawKey);
-            // If the unmapped attribute is a known control of a DIFFERENT model, the user most likely
-            // selected the wrong device model - point them straight at the fix instead of the generic
-            // "please report" line (which is only right for a genuinely unknown attribute).
+            // If the unmapped attribute is a known control of a DIFFERENT model, the user may have
+            // selected the wrong device model - but only warn when NONE of the selected model's own
+            // controls have resolved yet. New-gen models share the D-code namespace (e.g. AC3221 and
+            // CX3550 both use D031xx), so a lone overlapping register on an otherwise-working model is
+            // just an attribute this model does not map - not a wrong-model signal - and must not
+            // nag a correctly-configured user.
             const owners = modelsOwningRawKey(rawKey);
-            if (owners.length) {
+            if (owners.length && !activeModelControlSeen) {
                 adapter.log.warn(
                     `Device attribute "${rawKey}" is a control of model ${owners.join('/')}, but the ` +
                         `selected model is "${adapter.config.model || 'AC2889'}". If controls are missing, ` +
                         `select the correct device model in the adapter settings.`,
+                );
+            } else if (owners.length) {
+                adapter.log.debug(
+                    `Raw attribute "${rawKey}" (a control of ${owners.join('/')}) is not mapped for the ` +
+                        `selected model "${adapter.config.model || 'AC2889'}"; exposed read-only as ` +
+                        `unknownStates.${rawKey}.`,
                 );
             } else {
                 adapter.log.info(

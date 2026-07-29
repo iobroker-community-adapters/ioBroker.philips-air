@@ -82,6 +82,10 @@
           "value": "CX3550"
         },
         {
+          "label": "CX7550",
+          "value": "CX7550"
+        },
+        {
           "label": "Generic",
           "value": "Generic"
         }

@@ -179,6 +179,210 @@ describe('mapping - CX3550', () => {
     });
 });
 
+describe('mapping - CX7550', () => {
+    const { renameReported, buildControlPayload, mapping } = createMapping('CX7550');
+
+    it('maps the full live status frame of a CX7550/01 (GitHub #372)', () => {
+        const reported = {
+            D01S03: 'Turmventilator',
+            D01S04: 'Babel',
+            D01S05: 'CX7550/01',
+            D01S12: '0.2.9',
+            D03102: 1,
+            D03104: 100,
+            D03105: 123,
+            D0310C: 82,
+            D0310D: 82,
+            D0320F: 0,
+            D03110: 0,
+            D03211: 0,
+            D03224: 240,
+            D0312A: 7,
+            D0312B: 7,
+            D03130: 100,
+        };
+        renameReported(reported);
+        expect(reported).to.deep.equal({
+            name: 'Turmventilator',
+            platform: 'Babel',
+            modelId: 'CX7550/01',
+            softwareVersion: '0.2.9',
+            power: true,
+            temperatureColorDisplay: true,
+            displayBrightness: 'high',
+            mode: 'speed12',
+            fanSpeedReported: 'speed12',
+            oscillation: false,
+            timerCode: 'off',
+            timerMinutes: 0,
+            temperature: 24,
+            persistentDisplay: 'fanSpeed',
+            persistentDisplayReported: 'fanSpeed',
+            beep: true,
+        });
+    });
+
+    it('covers all twelve speeds plus AutoAdapt, sleep and natural breeze', () => {
+        const rawToFriendly = {
+            0: 'auto',
+            1: 'speed1',
+            2: 'speed2',
+            3: 'speed3',
+            4: 'speed4',
+            5: 'speed5',
+            6: 'speed6',
+            7: 'speed7',
+            8: 'speed8',
+            9: 'speed9',
+            10: 'speed10',
+            17: 'sleep',
+            81: 'speed11',
+            82: 'speed12',
+            '-126': 'naturalBreeze',
+        };
+        Object.entries(rawToFriendly).forEach(([raw, friendly]) => {
+            const reported = { D0310C: Number(raw) };
+            renameReported(reported);
+            expect(reported.mode).to.equal(friendly);
+            // Round trip: the friendly value must resolve back to the very same raw code.
+            expect(buildControlPayload({ mode: friendly })).to.deep.equal({ D0310C: Number(raw) });
+        });
+    });
+
+    it('overrides the shared reported-speed entry so speeds 5-12 do not stay raw numbers', () => {
+        [5, 6, 7, 8, 9, 10].forEach(raw => {
+            const reported = { D0310D: raw };
+            renameReported(reported);
+            expect(reported.fanSpeedReported).to.equal(`speed${raw}`);
+        });
+        const high = { D0310D: 81 };
+        renameReported(high);
+        expect(high.fanSpeedReported).to.equal('speed11');
+        expect(mapping.D0310D.control).to.be.undefined;
+    });
+
+    it('uses raw 80 for oscillation on both read and write (not the CX3550 23040/90 pair)', () => {
+        const reported = { D0320F: 80 };
+        renameReported(reported);
+        expect(reported.oscillation).to.be.true;
+        expect(mapping.D0320F.writeOptions).to.be.undefined;
+        expect(buildControlPayload({ oscillation: true })).to.deep.equal({ D0320F: 80 });
+        expect(buildControlPayload({ oscillation: false })).to.deep.equal({ D0320F: 0 });
+    });
+
+    it('exposes the timer as a writable control with friendly durations', () => {
+        expect(channelOf(mapping.D03110)).to.equal('control');
+        const rawToFriendly = {
+            0: 'off',
+            2: '1h',
+            3: '2h',
+            4: '3h',
+            5: '4h',
+            6: '5h',
+            7: '6h',
+            8: '7h',
+            9: '8h',
+            10: '9h',
+            11: '10h',
+            12: '11h',
+            13: '12h',
+        };
+        Object.entries(rawToFriendly).forEach(([raw, friendly]) => {
+            const reported = { D03110: Number(raw) };
+            renameReported(reported);
+            expect(reported.timerCode).to.equal(friendly);
+            expect(buildControlPayload({ timerCode: friendly })).to.deep.equal({ D03110: Number(raw) });
+        });
+    });
+
+    it('scales the room temperature register from tenths of a degree', () => {
+        [
+            [240, 24],
+            [255, 25.5],
+            [0, 0],
+        ].forEach(([raw, expected]) => {
+            const reported = { D03224: raw };
+            renameReported(reported);
+            expect(reported.temperature).to.equal(expected);
+        });
+        // Reuses the friendly name of the classic `temp` key - a device sends only one of the two.
+        expect(mapping.D03224.name).to.equal(STANDARD_MAPPING.temp.name);
+        expect(mapping.D03224.control).to.be.undefined;
+    });
+
+    it('maps the display group this model adds on top of the CX3550 controls', () => {
+        expect(buildControlPayload({ displayBrightness: 'low' })).to.deep.equal({ D03105: 115 });
+        expect(buildControlPayload({ temperatureColorDisplay: false })).to.deep.equal({ D03104: 0 });
+        expect(buildControlPayload({ persistentDisplay: 'temperature' })).to.deep.equal({ D0312A: 5 });
+        // The echoed setting is status only, never writable.
+        expect(channelOf(mapping.D0312B)).to.equal('status');
+        expect(buildControlPayload({ persistentDisplayReported: 'temperature' })).to.deep.equal({});
+    });
+
+    it('leaves the still-undecoded registers unmapped so they surface as unknownStates', () => {
+        ['D0310A', 'D03133', 'D03240', 'D0313B'].forEach(attr => {
+            expect(mapping).to.not.have.property(attr);
+        });
+        const reported = { D03133: 1, D0313B: 20 };
+        renameReported(reported);
+        expect(reported).to.deep.equal({ D03133: 1, D0313B: 20 });
+    });
+
+    it('places the writable states under control and the reported ones under status', () => {
+        const expectedPaths = {
+            D03102: 'control.power',
+            D0310C: 'control.mode',
+            D0320F: 'control.oscillation',
+            D03110: 'control.timerCode',
+            D03130: 'control.beep',
+            D03105: 'control.displayBrightness',
+            D03104: 'control.temperatureColorDisplay',
+            D0312A: 'control.persistentDisplay',
+            D0310D: 'status.fanSpeedReported',
+            D0312B: 'status.persistentDisplayReported',
+            D03211: 'status.timerMinutes',
+            D03224: 'status.temperature',
+        };
+
+        Object.entries(expectedPaths).forEach(([attr, path]) => {
+            const item = mapping[attr];
+            expect(`${channelOf(item)}.${item.name}`).to.equal(path);
+        });
+    });
+
+    it('does not leak its raw values into the CX3550 table', () => {
+        // Both fans share the D-code namespace with different values - the whole point of the
+        // per-model table. Guard the pairs that actually differ.
+        const cx3550 = createMapping('CX3550');
+        expect(cx3550.buildControlPayload({ oscillation: true })).to.deep.equal({ D0320F: 90 });
+        expect(cx3550.mapping.D0310C.options[82]).to.be.undefined;
+        expect(cx3550.mapping.D03110.control).to.be.undefined;
+        expect(cx3550.mapping.D03105.control).to.be.undefined;
+    });
+});
+
+describe('mapping - boolean controls written as text', () => {
+    // ioBroker states can be written as the string "true"/"false" (script, VIS widget, REST call).
+    // Loose equality does not save us here - `false == 'false'` is false - so without normalization
+    // the write was rejected with "Invalid option" and the command never reached the device.
+    it('accepts "true"/"false" for boolean controls of every model', () => {
+        expect(createMapping('CX7550').buildControlPayload({ power: 'false' })).to.deep.equal({ D03102: 0 });
+        expect(createMapping('CX7550').buildControlPayload({ power: 'true' })).to.deep.equal({ D03102: 1 });
+        expect(createMapping('CX3550').buildControlPayload({ oscillation: 'false' })).to.deep.equal({ D0320F: 0 });
+        expect(createMapping('AC2889').buildControlPayload({ childLock: 'true' })).to.deep.equal({ cl: '1' });
+    });
+
+    it('still rejects a value that is not a valid option', () => {
+        expect(() => createMapping('CX7550').buildControlPayload({ power: 'yes' })).to.throw(
+            /Invalid option for power/,
+        );
+    });
+
+    it('does not touch non-boolean option values that happen to be strings', () => {
+        expect(createMapping('CX7550').buildControlPayload({ mode: 'sleep' })).to.deep.equal({ D0310C: 17 });
+    });
+});
+
 describe('mapping - AC3221', () => {
     const { renameReported, mapping } = createMapping('AC3221');
 
@@ -325,9 +529,9 @@ describe('mapping - modelsOwningRawKey (wrong-model hint)', () => {
     });
 
     it('names every model that owns a shared new-gen control key', () => {
-        // D03102 (power) is a control of both new-gen tables - a Generic/AC2889 user seeing it should
-        // be pointed at both candidates.
-        expect(modelsOwningRawKey('D03102')).to.have.members(['CX3550', 'AC3221']);
+        // D03102 (power) is a control of every new-gen table - a Generic/AC2889 user seeing it should
+        // be pointed at all candidates.
+        expect(modelsOwningRawKey('D03102')).to.have.members(['CX3550', 'CX7550', 'AC3221']);
     });
 
     it('returns no owner for a genuinely unknown raw attribute', () => {
@@ -343,8 +547,8 @@ describe('mapping - modelsOwningRawKey (wrong-model hint)', () => {
     it('does not treat a model read-only register as owned (control-only)', () => {
         // D0310A/D03105 are exposed read-only in the CX3550 table, not as controls, so a correctly
         // configured fan reporting them must never be nagged with a wrong-model hint. D03105 is still
-        // owned by AC3221 (there it IS a control), but no longer by CX3550.
+        // owned by AC3221 and CX7550 (there it IS a control), but no longer by CX3550.
         expect(modelsOwningRawKey('D0310A')).to.deep.equal([]);
-        expect(modelsOwningRawKey('D03105')).to.deep.equal(['AC3221']);
+        expect(modelsOwningRawKey('D03105')).to.have.members(['CX7550', 'AC3221']);
     });
 });

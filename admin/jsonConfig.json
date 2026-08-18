@@ -64,6 +64,41 @@
       "md": 4,
       "lg": 4,
       "xl": 4
+    },
+    "model": {
+      "newLine": true,
+      "type": "select",
+      "options": [
+        {
+          "label": "AC2889",
+          "value": "AC2889"
+        },
+        {
+          "label": "AC3221",
+          "value": "AC3221"
+        },
+        {
+          "label": "CX3550",
+          "value": "CX3550"
+        },
+        {
+          "label": "CX7550",
+          "value": "CX7550"
+        },
+        {
+          "label": "Generic",
+          "value": "Generic"
+        }
+      ],
+      "noTranslation": true,
+      "label": "Device model",
+      "help": "Selects which controls are created for your device. Choose \"Generic\" if your model is not listed (read-only, no controls).",
+      "default": "AC2889",
+      "xs": 12,
+      "sm": 12,
+      "md": 4,
+      "lg": 4,
+      "xl": 4
     }
   }
 }

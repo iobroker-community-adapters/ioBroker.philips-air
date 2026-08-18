@@ -3,7 +3,7 @@
 // The adapter-core module gives you access to the core ioBroker functions
 // you need to create an adapter
 const utils = require('@iobroker/adapter-core');
-const { NAME_MAPPING, channelOf, stateCommon } = require('./lib/mapping');
+const { createMapping, channelOf, stateCommon, modelsOwningRawKey } = require('./lib/mapping');
 const adapterName = require('./package.json').name.split('.').pop();
 
 /**
@@ -15,6 +15,20 @@ let airPurifier;
 // The selected purifier class (CoAP or HTTP) is loaded lazily in main() depending on the
 // configured protocol, so a missing optional `philips-air` dependency cannot crash CoAP users.
 let PurifierClass;
+// The active (STANDARD + model) mapping, built once in main() from adapter.config.model. Set before
+// any 'status' event can fire, so updateStatus() always sees a valid mapping.
+let activeMapping;
+// All friendly state names the active mapping can produce, built alongside activeMapping. Used by
+// updateStatus() to tell genuinely unknown raw device attributes (-> unknownStates.*) apart from
+// attributes renameReported() already renamed to a friendly name (-> known, handled above).
+let knownNames;
+// Set once the device reports any of the selected model's own controls: proof that the configured
+// model matches the device dialect. Used to suppress a false "wrong model?" hint when a single
+// shared/overlapping raw register (e.g. AC3221's D03105 seen on a CX3550) is left unmapped.
+let activeModelControlSeen = false;
+// Raw attribute keys we already logged once as "unknown" this adapter run, so a device that keeps
+// reporting the same unmapped D-code does not spam the log on every status frame.
+const loggedUnknownKeys = new Set();
 
 /**
  * Starts the adapter instance
@@ -104,11 +118,44 @@ async function setDeviceState(id, common, value) {
     await adapter.setStateAsync(id, value, true);
 }
 
+/**
+ * Coerce a value to the state's declared type so js-controller never rejects a typed state when a
+ * device reports a value outside our known option set (e.g. an unmapped numeric fan/purifier mode
+ * for a string-typed control). Only string and boolean are forced; numbers pass through unchanged.
+ *
+ * @param value the value about to be written
+ * @param type the ioBroker `common.type` of the target state
+ * @returns the value coerced to match `type`
+ */
+function coerceToType(value, type) {
+    if (value === null || value === undefined) {
+        return value;
+    }
+    if (type === 'string' && typeof value !== 'string') {
+        return String(value);
+    }
+    if (type === 'boolean' && typeof value !== 'boolean') {
+        return Boolean(value);
+    }
+    return value;
+}
+
 async function updateStatus(status) {
-    for (const attr of Object.keys(NAME_MAPPING)) {
-        const item = NAME_MAPPING[attr];
-        if (!Object.prototype.hasOwnProperty.call(status, item.name)) {
+    // Several raw keys legitimately share one friendly name (e.g. the classic `Runtime` and the
+    // new-gen lowercase `uptime` alias both map to `uptime`, `dtrs`/`D03211` both to `timerMinutes`).
+    // A device only ever sends one of each pair, but both entries match `status[item.name]`, so guard
+    // against writing the same derived state twice per frame.
+    const writtenNames = new Set();
+    for (const attr of Object.keys(activeMapping)) {
+        const item = activeMapping[attr];
+        if (!Object.prototype.hasOwnProperty.call(status, item.name) || writtenNames.has(item.name)) {
             continue;
+        }
+        writtenNames.add(item.name);
+        if (item.control) {
+            // A resolved per-model control proves the selected model matches the device: see
+            // activeModelControlSeen (gates the "wrong model?" hint in updateUnknownStates below).
+            activeModelControlSeen = true;
         }
         const channel = channelOf(item);
 
@@ -154,7 +201,87 @@ async function updateStatus(status) {
             continue;
         }
 
-        await setDeviceState(`${channel}.${item.name}`, stateCommon(item), status[item.name]);
+        const common = stateCommon(item);
+        await setDeviceState(`${channel}.${item.name}`, common, coerceToType(status[item.name], common.type));
+    }
+
+    await updateUnknownStates(status);
+}
+
+/**
+ * Infer an ioBroker state type from a raw JS value for a genuinely unmapped device attribute.
+ *
+ * @param value the raw value reported by the device
+ * @returns `{ type, value }` - the inferred type and the value coerced to match it
+ */
+function inferUnknownType(value) {
+    if (typeof value === 'number') {
+        return { type: 'number', value };
+    }
+    if (typeof value === 'boolean') {
+        return { type: 'boolean', value };
+    }
+    if (value !== null && typeof value === 'object') {
+        // Arrays/objects have no native ioBroker state type - stringify so the value is not lost.
+        return { type: 'string', value: JSON.stringify(value) };
+    }
+    return { type: 'string', value: value === null || value === undefined ? '' : String(value) };
+}
+
+/**
+ * Catch raw device attributes that renameReported() left untouched because no mapping entry claims
+ * them (renameReported only renames/deletes keys it recognizes, so unmapped raw keys survive into
+ * updateStatus unchanged). These are genuinely unknown attributes - write them read-only under
+ * `unknownStates.<rawKey>` and log each new raw key once so a user can report it for onboarding.
+ *
+ * @param status the (partially renamed) status object as received by updateStatus
+ */
+async function updateUnknownStates(status) {
+    for (const rawKey of Object.keys(status)) {
+        // 'key' is a potential HTTP client secret, never renamed on purpose - never surface it either.
+        if (rawKey === 'key' || knownNames.has(rawKey)) {
+            continue;
+        }
+        if (!loggedUnknownKeys.has(rawKey)) {
+            loggedUnknownKeys.add(rawKey);
+            // If the unmapped attribute is a known control of a DIFFERENT model, the user may have
+            // selected the wrong device model - but only warn when NONE of the selected model's own
+            // controls have resolved yet. New-gen models share the D-code namespace (e.g. AC3221 and
+            // CX3550 both use D031xx), so a lone overlapping register on an otherwise-working model is
+            // just an attribute this model does not map - not a wrong-model signal - and must not
+            // nag a correctly-configured user.
+            const owners = modelsOwningRawKey(rawKey);
+            if (owners.length && !activeModelControlSeen) {
+                adapter.log.warn(
+                    `Device attribute "${rawKey}" is a control of model ${owners.join('/')}, but the ` +
+                        `selected model is "${adapter.config.model || 'AC2889'}". If controls are missing, ` +
+                        `select the correct device model in the adapter settings.`,
+                );
+            } else if (owners.length) {
+                adapter.log.debug(
+                    `Raw attribute "${rawKey}" (a control of ${owners.join('/')}) is not mapped for the ` +
+                        `selected model "${adapter.config.model || 'AC2889'}"; exposed read-only as ` +
+                        `unknownStates.${rawKey}.`,
+                );
+            } else {
+                adapter.log.info(
+                    `Unknown raw device attribute "${rawKey}" (value: ${JSON.stringify(status[rawKey])}) - ` +
+                        `exposed read-only as unknownStates.${rawKey}. Please report this to the adapter developer.`,
+                );
+            }
+        }
+        const { type, value } = inferUnknownType(status[rawKey]);
+        await setDeviceState(
+            `unknownStates.${rawKey}`,
+            {
+                name: rawKey,
+                type,
+                role: type === 'boolean' ? 'indicator' : type === 'number' ? 'value' : 'text',
+                read: true,
+                write: false,
+            },
+            value,
+        );
     }
 }
 
@@ -165,6 +292,10 @@ async function main() {
     if (!adapter.config.host) {
         return adapter.log.warn('No IP defined');
     }
+
+    // Build the active (STANDARD + model) mapping before anything can trigger a 'status' event.
+    activeMapping = createMapping(adapter.config.model).mapping;
+    knownNames = new Set(Object.values(activeMapping).map(item => item.name));
 
     // In order to get state updates, you need to subscribe to them. The following line adds a subscription for our variable we have created above.
     adapter.subscribeStates('control.*');

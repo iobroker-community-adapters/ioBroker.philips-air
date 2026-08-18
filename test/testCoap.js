@@ -1,6 +1,7 @@
 const { expect } = require('chai');
 const coap = require('coap');
 const AirPurifier = require('../lib/coap');
+const { createMapping } = require('../lib/mapping');
 
 // Build an instance without running the constructor (which would start networking).
 function makeInstance(clientKey = 'AABBCCDD') {
@@ -8,6 +9,11 @@ function makeInstance(clientKey = 'AABBCCDD') {
     inst.clientKey = clientKey;
     inst.deviceIp = '127.0.0.1';
     inst.emit = () => {};
+    // The constructor normally builds these from createMapping(this.adapter.config.model); tests that
+    // bypass the constructor need them set explicitly (default to the classic AC2889 mapping).
+    const m = createMapping('AC2889');
+    inst.renameReported = m.renameReported;
+    inst.buildControlPayload = m.buildControlPayload;
     return inst;
 }
 
@@ -37,6 +43,14 @@ describe('coap - encryption', () => {
 
         const decrypted = await inst.decryptPayload(Buffer.from(`${encrypted}\0\0`, 'utf8'));
         expect(JSON.parse(decrypted)).to.deep.equal({ a: 1 });
+    });
+
+    it('decryptPayload rejects a non-hex / too-short payload with a clear error', () => {
+        const inst = makeInstance();
+        // Garbage that is not hex, and a hex string shorter than counter+body+digest (72 chars): both
+        // must be rejected up front with a clear error instead of being fed into the cipher.
+        expect(() => inst.decryptPayload(Buffer.from('not-hex-garbage'))).to.throw(/Unexpected encrypted payload/i);
+        expect(() => inst.decryptPayload(Buffer.from('AABB'))).to.throw(/Unexpected encrypted payload/i);
     });
 
     it('updateClientKey increments the key as an 8-char uppercase hex counter', () => {

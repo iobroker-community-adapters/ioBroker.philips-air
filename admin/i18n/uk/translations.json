@@ -6,5 +6,7 @@
     "Reconnect interval": "Інтервал повторного підключення",
     "ms": "мс",
     "ms - should be >= Alive timeout": "мс — має бути >= тайм-аут активності",
-    "Reconnect interval should be at least the Alive timeout": "Інтервал перепідключення має бути не меншим за тайм-аут активності"
+    "Reconnect interval should be at least the Alive timeout": "Інтервал перепідключення має бути не меншим за тайм-аут активності",
+    "Device model": "Модель пристрою",
+    "Selects which controls are created for your device. Choose \"Generic\" if your model is not listed (read-only, no controls).": "Визначає, які елементи керування створюються для вашого пристрою. Виберіть \"Generic\", якщо вашої моделі немає в списку (лише читання, без елементів керування)."
 }

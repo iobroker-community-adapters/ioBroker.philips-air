@@ -6,5 +6,7 @@
     "Reconnect interval": "Intervalo de reconexión",
     "ms": "ms",
     "ms - should be >= Alive timeout": "ms - debe ser >= tiempo de espera de actividad",
-    "Reconnect interval should be at least the Alive timeout": "El intervalo de reconexión debe ser al menos el tiempo de espera de actividad"
+    "Reconnect interval should be at least the Alive timeout": "El intervalo de reconexión debe ser al menos el tiempo de espera de actividad",
+    "Device model": "Modelo del dispositivo",
+    "Selects which controls are created for your device. Choose \"Generic\" if your model is not listed (read-only, no controls).": "Determina qué controles se crean para su dispositivo. Elija \"Generic\" si su modelo no aparece en la lista (solo lectura, sin controles)."
 }

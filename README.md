@@ -13,7 +13,7 @@
 
 ## Philips air purifier adapter for ioBroker
 Connects Philips air purifiers and selected Philips/Versuni fans with ioBroker.
-**Tested with AC2729 and Philips/Versuni CX3550/01**, but should work with newer purifiers that communicate via local CoAP with encryption.
+**Tested with AC2729 and the Philips/Versuni fans CX3550/01 and CX7550/01**, but should work with newer purifiers that communicate via local CoAP with encryption.
 ![AC2729](img/device.png)
 
 [Link to philips website](https://www.philips.de/c-m-ho/luftreiniger-und-luftbefeuchter/kombi)
@@ -42,11 +42,37 @@ Timer control is intentionally not supported for the CX3550/01. Local timer writ
 
 More details are documented in [docs/CX3550.md](docs/CX3550.md).
 
+## Philips/Versuni CX7550/01 tower fan
+The CX7550/01 ("Smart Tower Fan 7000 series") uses the same local encrypted CoAP connection, but different raw values than the CX3550/01 - select `CX7550` as the device model.
+
+Tested CX7550/01 functions:
+
+- Power on/off
+- Fan speeds 1 to 12 and AutoAdapt
+- Sleep mode
+- Natural breeze
+- Oscillation on/off
+- Timer (off, 1 to 12 hours) - writable on this model
+- Beep on/off
+- Display brightness, temperature colour display and what the display shows permanently
+- Room temperature
+
+More details are documented in [docs/CX7550.md](docs/CX7550.md).
+
 ## Changelog
 <!--
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+- (tt-tom17) New "Device model" setting: pick your model (AC2889, AC3221, CX3550, CX7550 or Generic) so the adapter shows the correct controls for your device
+- (tt-tom17) Added support for the AC3221 next-generation purifier (power, fan speed/mode, display brightness, child lock, beep and more)
+- (DrBakterius) Added support for the CX7550/01 tower fan (all 12 speeds, AutoAdapt, sleep, natural breeze, oscillation, writable timer, display settings and room temperature)
+- (tt-tom17) Fixed switches that did nothing when a script or visualisation wrote them as the text "true"/"false" instead of a real on/off value
+- (tt-tom17) The adapter now warns in the log when the selected model does not seem to match the connected device
+- (tt-tom17) Device diagnostics such as Wi-Fi signal and free memory are now shown; unrecognised values are collected under "unknownStates"
+- (tt-tom17) BREAKING for CX3550: all state IDs starting with "cx" were renamed to generic names (for example "fanMode" instead of "cxFanMode"). Please select your model once in the settings; the old "cx*" objects can be deleted manually
+
 ### 1.6.1 (2026-07-03)
 - (Holly86) Added support for Philips/Versuni CX3550/01 pedestal fan.
 - (Holly86) Added CX fan modes, oscillation, beep and read-only timer state.

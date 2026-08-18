@@ -168,7 +168,8 @@
     "host": "",
     "aliveTimeout": 30000,
     "reconnectInterval": 30000,
-    "protocol": "coap"
+    "protocol": "coap",
+    "model": "AC2889"
   },
   "objects": [],
   "instanceObjects": [
@@ -235,6 +236,14 @@
       "type": "channel",
       "common": {
         "name": "Device information"
+      },
+      "native": {}
+    },
+    {
+      "_id": "unknownStates",
+      "type": "channel",
+      "common": {
+        "name": "Unmapped raw device attributes"
       },
       "native": {}
     }

@@ -2,11 +2,11 @@
     "Alive timeout": "Délai d'attente en vie",
     "Communication protocol": "Protocole de communication",
     "Device IP or hostname": "IP de l'appareil ou nom d'hôte",
+    "Device model": "Modèle de l'appareil",
     "Enter a valid IP address or hostname (no http://, no spaces)": "Entrez une adresse IP ou un nom d'hôte valide (pas de http://, pas d'espaces)",
     "Reconnect interval": "Intervalle de reconnexion",
-    "ms": "ms",
-    "ms - should be >= Alive timeout": "ms - doit être >= délai d'activité (Alive timeout)",
     "Reconnect interval should be at least the Alive timeout": "L'intervalle de reconnexion doit être au moins égal au délai d'activité (Alive timeout)",
-    "Device model": "Modèle de l'appareil",
-    "Selects which controls are created for your device. Choose \"Generic\" if your model is not listed (read-only, no controls).": "Détermine quels contrôles sont créés pour votre appareil. Choisissez \"Generic\" si votre modèle n'est pas répertorié (lecture seule, sans contrôles)."
+    "Selects which controls are created for your device. Choose \"Generic\" if your model is not listed (read-only, no controls).": "Détermine quels contrôles sont créés pour votre appareil. Choisissez \"Generic\" si votre modèle n'est pas répertorié (lecture seule, sans contrôles).",
+    "ms": "ms",
+    "ms - should be >= Alive timeout": "ms - doit être >= délai d'activité (Alive timeout)"
 }

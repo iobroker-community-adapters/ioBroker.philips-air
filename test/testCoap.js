@@ -134,12 +134,13 @@ describe('coap - connection handling', () => {
             },
         };
         inst.emit = (event, payload) => emitted.push([event, payload]);
-        coap.request = () => fakeRequest;
+        // The stub only implements what _subscribeOnStatus() uses, not the full coap OutgoingMessage.
+        coap.request = /** @type {any} */ (() => fakeRequest);
 
         try {
             const subscribe = inst._subscribeOnStatus();
             expect(requestEnded).to.equal(true);
-            subscribeTimerCallback();
+            /** @type {any} */ (subscribeTimerCallback)();
             await subscribe;
         } finally {
             coap.request = originalRequest;

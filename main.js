@@ -341,7 +341,9 @@ async function main() {
     });
 }
 
-if (module.parent) {
+// `module.parent` is deprecated (and untyped) - `require.main` is the current template's way of
+// telling "loaded by the js-controller in compact mode" from "started as its own process".
+if (require.main !== module) {
     // Export startAdapter in compact mode
     module.exports = startAdapter;
 } else {

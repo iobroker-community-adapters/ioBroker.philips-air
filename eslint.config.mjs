@@ -27,6 +27,11 @@ export default [
         // as this improves maintainability. jsdoc warnings will not block buiuld process.
         rules: {
             // 'jsdoc/require-jsdoc': 'off',
+
+            // This adapter is plain JavaScript that is type-checked with 'npm run check'
+            // (tsc --checkJs). There '@type' is the only way to declare a field type or a cast,
+            // so it must not be reported as "redundant when using a type system".
+            'jsdoc/check-tag-names': ['warn', { typed: false }],
         },
     },
     

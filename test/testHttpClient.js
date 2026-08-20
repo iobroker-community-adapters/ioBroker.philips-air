@@ -42,9 +42,12 @@ describe('httpClient - protocol (mocked device)', () => {
         const dh = crypto.createDiffieHellman(P, 'hex', G, 'hex');
         dh.generateKeys();
         const sessionKey = crypto.randomBytes(16);
-        device = { dh, sessionKey, lastControl: null };
+        device = { dh, sessionKey, lastControl: null, controlResponse: '' };
 
-        global.fetch = async (url, init = {}) => {
+        // Minimal device stub: only the handful of Response members the client actually touches,
+        // hence `any` instead of the full fetch/Response types.
+        /** @type {any} */
+        const fakeFetch = async (url, init = {}) => {
             if (url.endsWith('/di/v1/products/0/security')) {
                 const body = JSON.parse(init.body);
                 const secret = dh.computeSecret(body.diffie, 'hex', 'hex');
@@ -54,13 +57,14 @@ describe('httpClient - protocol (mocked device)', () => {
             }
             if (url.endsWith('/di/v1/products/1/air') && init.method === 'PUT') {
                 device.lastControl = init.body;
-                return { ok: true, status: 200, statusText: 'OK', text: async () => '' };
+                return { ok: true, status: 200, statusText: 'OK', text: async () => device.controlResponse };
             }
             if (url.endsWith('/di/v1/products/1/air')) {
                 return { ok: true, status: 200, statusText: 'OK', text: async () => encrypt(JSON.stringify({ om: 'a', pwr: '1' }), sessionKey) };
             }
             throw new Error(`unexpected url ${url}`);
         };
+        global.fetch = fakeFetch;
     });
 
     afterEach(() => {
@@ -71,12 +75,24 @@ describe('httpClient - protocol (mocked device)', () => {
         const client = new HttpClient('127.0.0.1', 5000);
         const status = await client.getStatus();
         expect(status).to.deep.equal({ om: 'a', pwr: '1' });
-        expect(Buffer.compare(client.key, device.sessionKey)).to.equal(0);
+        expect(Buffer.compare(/** @type {Buffer} */ (client.key), device.sessionKey)).to.equal(0);
     });
 
     it('encrypts control values the device can decrypt', async () => {
         const client = new HttpClient('127.0.0.1', 5000);
         await client.setValues({ om: 't' });
         expect(decrypt(device.lastControl, device.sessionKey)).to.equal(JSON.stringify({ om: 't' }));
+    });
+
+    it('returns the decrypted answer of a control command', async () => {
+        const client = new HttpClient('127.0.0.1', 5000);
+        await client.getStatus(); // negotiate the session key first
+        device.controlResponse = encrypt(JSON.stringify({ om: 't', pwr: '1' }), device.sessionKey);
+        expect(await client.setValues({ om: 't' })).to.equal(JSON.stringify({ om: 't', pwr: '1' }));
+    });
+
+    it('returns an empty string when the device answers a control command with an empty body', async () => {
+        const client = new HttpClient('127.0.0.1', 5000);
+        expect(await client.setValues({ om: 't' })).to.equal('');
     });
 });

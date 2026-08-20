@@ -1,0 +1,17 @@
+// Specialized tsconfig for type-checking js files
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        // mocha globals (describe/it/before...) are used by the tests in test/
+        "types": ["node", "mocha"]
+    },
+    "include": [
+        "**/*.js",
+        "**/*.d.ts"
+    ],
+    "exclude": [
+        "**/build",
+        "node_modules/",
+        "widgets/"
+    ]
+}

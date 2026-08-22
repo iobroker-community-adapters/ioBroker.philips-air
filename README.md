@@ -73,6 +73,7 @@ More details are documented in [docs/CX7550.md](docs/CX7550.md).
 - (tt-tom17) Device diagnostics such as Wi-Fi signal and free memory are now shown; unrecognised values are collected under "unknownStates"
 - (tt-tom17) BREAKING for CX3550: all state IDs starting with "cx" were renamed to generic names (for example "fanMode" instead of "cxFanMode"). Please select your model once in the settings; the old "cx*" objects can be deleted manually
 - (tt-tom17) Fixed devices connected via HTTP logging "Cannot parse: undefined" every time a command was sent; the device answer is now read correctly
+- (tt-tom17) Fixed devices using the HTTP protocol (for example the AC3829 and AC2729) that stopped connecting in version 1.4.0 and only logged "fetch failed (UND_ERR_SOCKET)"; requests are sent the way these devices expect again
 
 ### 1.6.1 (2026-07-03)
 - (Holly86) Added support for Philips/Versuni CX3550/01 pedestal fan.

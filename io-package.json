@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "philips-air",
-    "version": "1.6.1",
+    "version": "2.0.0",
     "news": {
       "2.0.0": {
         "en": "New \"Device model\" setting, because the models use different states.\nImportant: state IDs starting with \"cx\" were renamed (for example fanMode instead of cxFanMode). Please select your device model once in the settings.\nFix for the HTTP protocol; broken since 1.4.0.",

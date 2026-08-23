@@ -80,7 +80,7 @@ More details are documented in [docs/CX7550.md](docs/CX7550.md).
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 2.0.0 (2026-08-23)
 
 - (tt-tom17) New "Device model" setting: pick your model so the adapter shows the correct controls for your device
 - (tt-tom17) Added support for the AC3221 next-generation purifier (MatthiasBosch)
@@ -113,14 +113,6 @@ More details are documented in [docs/CX7550.md](docs/CX7550.md).
 - (copilot) Adapter requires node.js >= 22 now
 - (copilot) Adapter requires admin >= 7.7.22 now
 * (mcm1957) Dependencies have been updated
-
-### 1.2.0 (2025-02-10)
-* (mcm1957) Adapter requires node.js >= 20, js-controller >= 6 and admin >= 6 now.
-* (mcm1957) Adapter migrated to eslint 9 / @iobroker/eslint-config
-* (mcm1957) Materialize UI support has been removed
-* (mcm1957) jsonConfig responsive design size attributes have been added
-* (mcm1957) Dependencies have been updated
-
 
 [Older changelogs can be found there](CHANGELOG_OLD.md)
 

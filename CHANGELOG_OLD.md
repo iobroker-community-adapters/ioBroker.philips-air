@@ -1,4 +1,11 @@
 # Older changes
+## 1.2.0 (2025-02-10)
+* (mcm1957) Adapter requires node.js >= 20, js-controller >= 6 and admin >= 6 now.
+* (mcm1957) Adapter migrated to eslint 9 / @iobroker/eslint-config
+* (mcm1957) Materialize UI support has been removed
+* (mcm1957) jsonConfig responsive design size attributes have been added
+* (mcm1957) Dependencies have been updated
+
 ## 1.1.0 (2024-04-25)
 * (mcm1957) Adapter requires node.js >= 18 and js-controller >= 5 now
 * (mcm1957) Dependencies have been updated

@@ -3,6 +3,19 @@
     "name": "philips-air",
     "version": "1.6.1",
     "news": {
+      "2.0.0": {
+        "en": "New \"Device model\" setting, because the models use different states.\nImportant: state IDs starting with \"cx\" were renamed (for example fanMode instead of cxFanMode). Please select your device model once in the settings.\nFix for the HTTP protocol; broken since 1.4.0.",
+        "de": "Neue Einstellung \"Gerätemodell\" wegen unterschiedlicher States der Modelle.\nWichtig: Die State-IDs mit \"cx\" wurden umbenannt (zum Beispiel fanMode statt cxFanMode). Bitte einmal das Gerätemodell in den Einstellungen auswählen.\nFix am HTTP-Protokoll; Fehler seit 1.4.0.",
+        "ru": "Новая настройка \"Модель устройства\", так как у моделей разные состояния.\nВажно: идентификаторы состояний, начинающиеся с \"cx\", переименованы (например, fanMode вместо cxFanMode). Выберите модель устройства один раз в настройках.\nИсправлен протокол HTTP; ошибка с версии 1.4.0.",
+        "pt": "Nova definição \"Modelo do dispositivo\", porque os modelos utilizam estados diferentes.\nImportante: os IDs de estado que começam por \"cx\" foram renomeados (por exemplo, fanMode em vez de cxFanMode). Selecione o modelo do dispositivo uma vez nas definições.\nCorreção no protocolo HTTP; erro desde a versão 1.4.0.",
+        "nl": "Nieuwe instelling \"Apparaatmodel\", omdat de modellen verschillende states gebruiken.\nBelangrijk: state-IDs die met \"cx\" beginnen zijn hernoemd (bijvoorbeeld fanMode in plaats van cxFanMode). Selecteer uw apparaatmodel eenmalig in de instellingen.\nOplossing voor het HTTP-protocol; fout sinds 1.4.0.",
+        "fr": "Nouveau paramètre \"Modèle d'appareil\", car les modèles utilisent des états différents.\nImportant : les ID d'état commençant par \"cx\" ont été renommés (par exemple fanMode au lieu de cxFanMode). Sélectionnez une fois le modèle de votre appareil dans les paramètres.\nCorrection du protocole HTTP ; erreur depuis la version 1.4.0.",
+        "it": "Nuova impostazione \"Modello del dispositivo\", poiché i modelli utilizzano stati diversi.\nImportante: gli ID di stato che iniziano con \"cx\" sono stati rinominati (per esempio fanMode invece di cxFanMode). Selezionare una volta il modello del dispositivo nelle impostazioni.\nCorrezione del protocollo HTTP; errore dalla versione 1.4.0.",
+        "es": "Nuevo ajuste \"Modelo de dispositivo\", porque los modelos utilizan estados diferentes.\nImportante: los ID de estado que empiezan por \"cx\" se han renombrado (por ejemplo, fanMode en lugar de cxFanMode). Seleccione una vez el modelo de su dispositivo en los ajustes.\nCorrección del protocolo HTTP; error desde la versión 1.4.0.",
+        "pl": "Nowe ustawienie \"Model urządzenia\", ponieważ modele używają różnych stanów.\nWażne: identyfikatory stanów zaczynające się od \"cx\" zostały zmienione (na przykład fanMode zamiast cxFanMode). Wybierz raz model urządzenia w ustawieniach.\nPoprawka protokołu HTTP; błąd od wersji 1.4.0.",
+        "uk": "Нове налаштування \"Модель пристрою\", оскільки моделі використовують різні стани.\nВажливо: ідентифікатори станів, що починаються з \"cx\", перейменовано (наприклад, fanMode замість cxFanMode). Виберіть модель пристрою один раз у налаштуваннях.\nВиправлено протокол HTTP; помилка з версії 1.4.0.",
+        "zh-cn": "新增“设备型号”设置，因为不同型号使用不同的状态。\n重要提示：以“cx”开头的状态 ID 已重命名（例如 fanMode 代替 cxFanMode）。请在设置中选择一次设备型号。\n修复 HTTP 协议；该问题自 1.4.0 起存在。"
+      },
       "1.6.1": {
         "en": "Added support for Philips/Versuni CX3550/01 pedestal fan.\nAdded CX fan modes, oscillation, beep and read-only timer state.\nTimer control is intentionally not exposed because local timer writes can switch the fan off.",
         "de": "Unterstützung für den Philips/Versuni CX3550/01 Standventilator hinzugefügt.\nCX-Lüftermodi, Oszillation, Signalton und schreibgeschützter Timer-Status hinzugefügt.\nDie Timersteuerung wird absichtlich nicht offengelegt, da lokale Timer-Schreibvorgänge den Lüfter ausschalten können.",
@@ -80,19 +93,6 @@
         "pl": "Adapter wymaga node.js > = 18 i kontroler js- > = 5 teraz\nZaktualizowano zależności",
         "uk": "Адаптер вимагає node.js >= 18 і js-controller >= 5 тепер\nЗалежність було оновлено",
         "zh-cn": "适配器需要节点.js QQ18和js控制器 QQ 现在5号\n依赖关系已更新"
-      },
-      "1.0.3": {
-        "en": "Finalized and optimized HTTP communication protocol\nFixed type issues with device.error",
-        "de": "Endgültiges und optimiertes HTTP-Kommunikationsprotokoll\nBehobene Typprobleme mit Gerät. Fehler",
-        "ru": "Заключенный и оптимизированный протокол связи HTTP\nИсправлены проблемы типа с устройством. ошибка",
-        "pt": "Protocolo de comunicação HTTP finalizado e otimizado\nProblemas de tipo fixo com dispositivo. erro",
-        "nl": "Eindig en optimaal HTP communicatie protocol\nGerepareerde type kwesties met apparaat. Error",
-        "fr": "Protocole de communication HTTP finalisé et optimisé\nProblèmes de type fixe avec l'appareil. erreur",
-        "it": "Protocollo di comunicazione HTTP finalizzato e ottimizzato\nProblemi di tipo fisso con dispositivo. errore",
-        "es": "Protocolo de comunicación HTTP finalizado y optimizado\nProblemas de tipo fijo con dispositivo. error",
-        "pl": "Ostateczny i zoptymalizowany protokół komunikacyjny HTTP\nZagadnienia typów z urządzeniem. błąd",
-        "uk": "Закінчений і оптимізований протокол зв'язку HTTP\nФіксовані питання типу з пристроєм. Про нас",
-        "zh-cn": "四. 最后和最佳的技术转让议定书\n有装置的混合类型问题。 错误"
       }
     },
     "titleLang": {
@@ -162,7 +162,63 @@
       "sentry": {
         "dsn": "https://69439afbafc848aeb6680c294ea14093@sentry.iobroker.net/178"
       }
-    }
+    },
+    "messages": [
+      {
+        "condition": {
+          "operand": "and",
+          "rules": [
+            "oldVersion<2.0.0",
+            "newVersion>=2.0.0"
+          ]
+        },
+        "title": {
+          "en": "Please select your device model after the update",
+          "de": "Bitte nach dem Update das Gerätemodell auswählen",
+          "ru": "После обновления выберите модель устройства",
+          "pt": "Selecione o modelo do dispositivo após a atualização",
+          "nl": "Selecteer na de update uw apparaatmodel",
+          "fr": "Veuillez sélectionner le modèle de votre appareil après la mise à jour",
+          "it": "Selezionare il modello del dispositivo dopo l'aggiornamento",
+          "es": "Seleccione el modelo de su dispositivo después de la actualización",
+          "pl": "Po aktualizacji wybierz model urządzenia",
+          "uk": "Після оновлення виберіть модель пристрою",
+          "zh-cn": "更新后请选择设备型号"
+        },
+        "text": {
+          "en": "As of version 2.0.0 the adapter follows a new \"Device model\" setting. After the update it is set to AC2889 - if you run a different device you have to change the model once in the instance settings, otherwise the adapter shows the controls of a foreign model and the values of your own device end up under \"unknownStates\". In addition: all data points whose ID started with \"cx\" now have generic names, for example fanMode instead of cxFanMode. Scripts, visualisations and charts that point to the old IDs have to be adjusted; the old cx* objects stay in place and can be deleted manually. The README lists which model to select for which device.",
+          "de": "Ab Version 2.0.0 richtet sich der Adapter nach einer neuen Einstellung \"Gerätemodell\". Sie steht nach dem Update auf AC2889 - wer ein anderes Gerät betreibt, muss das Modell einmal in den Instanzeinstellungen umstellen, sonst zeigt der Adapter die Bedienelemente eines fremden Modells, und die Werte des eigenen Geräts landen unter \"unknownStates\". Außerdem: Alle Datenpunkte, deren ID mit \"cx\" begann, heißen jetzt allgemein, zum Beispiel fanMode statt cxFanMode. Skripte, Visualisierungen und Diagramme, die auf die alten IDs zeigen, müssen angepasst werden; die alten cx*-Objekte bleiben stehen und können von Hand gelöscht werden. Welches Modell zu welchem Gerät gehört, steht als Liste in der README.",
+          "ru": "Начиная с версии 2.0.0 адаптер использует новую настройку \"Модель устройства\". После обновления она имеет значение AC2889 - если у вас другое устройство, необходимо один раз изменить модель в настройках экземпляра, иначе адаптер покажет элементы управления чужой модели, а значения вашего устройства попадут в \"unknownStates\". Кроме того: все точки данных, идентификатор которых начинался с \"cx\", теперь имеют общие имена, например fanMode вместо cxFanMode. Скрипты, визуализации и графики, ссылающиеся на старые идентификаторы, необходимо исправить; старые объекты cx* остаются и могут быть удалены вручную. В файле README приведён список, какую модель выбрать для какого устройства.",
+          "pt": "A partir da versão 2.0.0 o adaptador segue uma nova definição \"Modelo do dispositivo\". Após a atualização está definida como AC2889 - quem utiliza outro dispositivo tem de alterar o modelo uma vez nas definições da instância, caso contrário o adaptador mostra os controlos de um modelo diferente e os valores do seu dispositivo acabam em \"unknownStates\". Além disso: todos os pontos de dados cujo ID começava por \"cx\" têm agora nomes genéricos, por exemplo fanMode em vez de cxFanMode. Scripts, visualizações e gráficos que apontam para os IDs antigos têm de ser ajustados; os objetos cx* antigos permanecem e podem ser eliminados manualmente. O README indica numa lista que modelo selecionar para cada dispositivo.",
+          "nl": "Vanaf versie 2.0.0 volgt de adapter een nieuwe instelling \"Apparaatmodel\". Na de update staat deze op AC2889 - wie een ander apparaat gebruikt, moet het model eenmalig in de instantie-instellingen wijzigen, anders toont de adapter de bedieningselementen van een ander model en komen de waarden van uw eigen apparaat onder \"unknownStates\" terecht. Bovendien: alle datapunten waarvan de ID met \"cx\" begon, hebben nu algemene namen, bijvoorbeeld fanMode in plaats van cxFanMode. Scripts, visualisaties en grafieken die naar de oude IDs verwijzen, moeten worden aangepast; de oude cx*-objecten blijven staan en kunnen handmatig worden verwijderd. In de README staat een lijst welk model u voor welk apparaat kiest.",
+          "fr": "À partir de la version 2.0.0, l'adaptateur suit un nouveau paramètre \"Modèle d'appareil\". Après la mise à jour, il est réglé sur AC2889 : si vous utilisez un autre appareil, vous devez changer le modèle une fois dans les paramètres de l'instance, sinon l'adaptateur affiche les commandes d'un autre modèle et les valeurs de votre appareil se retrouvent sous \"unknownStates\". De plus : tous les points de données dont l'ID commençait par \"cx\" portent désormais des noms génériques, par exemple fanMode au lieu de cxFanMode. Les scripts, visualisations et graphiques qui pointent vers les anciens ID doivent être adaptés ; les anciens objets cx* restent en place et peuvent être supprimés manuellement. Le README contient une liste indiquant quel modèle choisir pour quel appareil.",
+          "it": "A partire dalla versione 2.0.0 l'adattatore segue una nuova impostazione \"Modello del dispositivo\". Dopo l'aggiornamento è impostata su AC2889: chi utilizza un altro dispositivo deve cambiare il modello una volta nelle impostazioni dell'istanza, altrimenti l'adattatore mostra i controlli di un altro modello e i valori del proprio dispositivo finiscono in \"unknownStates\". Inoltre: tutti i punti dati il cui ID iniziava con \"cx\" hanno ora nomi generici, per esempio fanMode invece di cxFanMode. Script, visualizzazioni e grafici che puntano ai vecchi ID devono essere adattati; i vecchi oggetti cx* restano e possono essere eliminati manualmente. Il README contiene un elenco che indica quale modello scegliere per quale dispositivo.",
+          "es": "A partir de la versión 2.0.0 el adaptador sigue un nuevo ajuste \"Modelo de dispositivo\". Tras la actualización está en AC2889: quien utilice otro dispositivo debe cambiar el modelo una vez en los ajustes de la instancia, de lo contrario el adaptador muestra los controles de otro modelo y los valores del propio dispositivo acaban en \"unknownStates\". Además: todos los puntos de datos cuyo ID empezaba por \"cx\" tienen ahora nombres genéricos, por ejemplo fanMode en lugar de cxFanMode. Los scripts, visualizaciones y gráficos que apuntan a los ID antiguos deben adaptarse; los objetos cx* antiguos permanecen y se pueden eliminar manualmente. El README incluye una lista de qué modelo seleccionar para cada dispositivo.",
+          "pl": "Od wersji 2.0.0 adapter kieruje się nowym ustawieniem \"Model urządzenia\". Po aktualizacji jest ono ustawione na AC2889 - kto używa innego urządzenia, musi raz zmienić model w ustawieniach instancji, w przeciwnym razie adapter pokaże elementy sterowania obcego modelu, a wartości własnego urządzenia trafią do \"unknownStates\". Ponadto: wszystkie punkty danych, których ID zaczynało się od \"cx\", mają teraz ogólne nazwy, na przykład fanMode zamiast cxFanMode. Skrypty, wizualizacje i wykresy wskazujące na stare ID trzeba dostosować; stare obiekty cx* pozostają i można je usunąć ręcznie. W pliku README znajduje się lista, który model wybrać dla którego urządzenia.",
+          "uk": "Починаючи з версії 2.0.0 адаптер керується новим налаштуванням \"Модель пристрою\". Після оновлення воно має значення AC2889 - якщо у вас інший пристрій, потрібно один раз змінити модель у налаштуваннях екземпляра, інакше адаптер покаже елементи керування чужої моделі, а значення вашого пристрою потраплять до \"unknownStates\". Крім того: усі точки даних, ідентифікатор яких починався з \"cx\", тепер мають загальні назви, наприклад fanMode замість cxFanMode. Скрипти, візуалізації та графіки, що посилаються на старі ідентифікатори, потрібно змінити; старі об'єкти cx* залишаються і можуть бути видалені вручну. У файлі README наведено список, яку модель вибрати для якого пристрою.",
+          "zh-cn": "从 2.0.0 版本起，适配器依据新的“设备型号”设置运行。更新后该设置为 AC2889 —— 如果您使用的是其他设备，必须在实例设置中修改一次型号，否则适配器会显示其他型号的控制项，而您设备的数值会落入“unknownStates”。此外：所有以“cx”开头的数据点 ID 现在改为通用名称，例如 fanMode 代替 cxFanMode。指向旧 ID 的脚本、可视化和图表需要相应调整；旧的 cx* 对象仍会保留，可以手动删除。 README 中列有各设备应选择哪个型号的对照表。"
+        },
+        "link": "https://github.com/iobroker-community-adapters/ioBroker.philips-air#which-device-model-should-i-select",
+        "linkText": {
+          "en": "Which device model should I select?",
+          "de": "Welches Gerätemodell soll ich auswählen?",
+          "ru": "Какую модель устройства выбрать?",
+          "pt": "Que modelo de dispositivo devo selecionar?",
+          "nl": "Welk apparaatmodel moet ik selecteren?",
+          "fr": "Quel modèle d'appareil dois-je sélectionner ?",
+          "it": "Quale modello di dispositivo devo selezionare?",
+          "es": "¿Qué modelo de dispositivo debo seleccionar?",
+          "pl": "Który model urządzenia wybrać?",
+          "uk": "Яку модель пристрою вибрати?",
+          "zh-cn": "我应该选择哪个设备型号？"
+        },
+        "level": "warn",
+        "buttons": [
+          "agree",
+          "cancel"
+        ]
+      }
+    ]
   },
   "native": {
     "host": "",

@@ -19,8 +19,24 @@ Connects Philips air purifiers and selected Philips/Versuni fans with ioBroker.
 [Link to philips website](https://www.philips.de/c-m-ho/luftreiniger-und-luftbefeuchter/kombi)
 
 ## Usage
-Only IP address of device is required. Find it in your router (e.g. `MiCO`).
-It can happen, that some devices have not all variables, and they will stay unfilled in object tree.
+Enter the IP address or the hostname of your device. You can find it in your router, where the device often shows up as `MiCO`.
+Most devices are reached over CoAP, which is the default. Some older ones, such as the AC2729 and the AC3829, only answer over HTTP - if the connection does not come up, switch the protocol in the instance settings.
+Then pick your device model, so that the adapter creates the controls that match your device. If your model is not in the list, choose `Generic`: you still get every read-only value, just no model-specific controls.
+It can happen that a device does not report all variables; those stay unfilled in the object tree. Raw values the adapter does not recognise are collected under `unknownStates`.
+
+### Which device model should I select?
+
+| Your device | Model to select |
+| --- | --- |
+| AC2889 and the other classic purifiers, for example AC1214, AC2729, AC2939, AC3059 or AC3829 | `AC2889` |
+| AC3221 | `AC3221` |
+| CX3550/01 pedestal fan | `CX3550` |
+| CX7550/01 tower fan | `CX7550` |
+| Anything else, or if you are unsure | `Generic` |
+
+The classic purifiers all report the same plain keys (`pwr`, `om`, `mode` and so on), which is why one entry covers the whole family. Confirmed on real hardware so far: AC2729, AC2889, AC3221, AC3829, CX3550/01 and CX7550/01.
+
+If you are unsure, connect with `Generic` first and look at the raw keys under `unknownStates`: plain names such as `pwr` or `pm25` mean a classic device, keys such as `D03102` mean a next-generation device. If your device turns out to be a next-generation model that is not in the list, please open an issue with a debug log - that is how the CX7550/01 and the AC3221 were added.
 
 ![Objects](img/objects.png)
 
@@ -65,14 +81,14 @@ More details are documented in [docs/CX7550.md](docs/CX7550.md).
     ### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
-- (tt-tom17) New "Device model" setting: pick your model (AC2889, AC3221, CX3550, CX7550 or Generic) so the adapter shows the correct controls for your device
-- (tt-tom17) Added support for the AC3221 next-generation purifier (power, fan speed/mode, display brightness, child lock, beep and more)
-- (tt-tom17) The AC3221 now also reports its measurements and filter life: fine dust (PM2.5), allergen index, temperature, humidity and the remaining hours for both the pre-filter and the NanoProtect filter
-- (DrBakterius) Added support for the CX7550/01 tower fan (all 12 speeds, AutoAdapt, sleep, natural breeze, oscillation, writable timer, display settings and room temperature)
-- (tt-tom17) Fixed switches that did nothing when a script or visualisation wrote them as the text "true"/"false" instead of a real on/off value
+
+- (tt-tom17) New "Device model" setting: pick your model so the adapter shows the correct controls for your device
+- (tt-tom17) Added support for the AC3221 next-generation purifier (MatthiasBosch)
+- (tt-tom17) Added support for the CX7550/01 tower fan (DrBakterius)
 - (tt-tom17) The adapter now warns in the log when the selected model does not seem to match the connected device
-- (tt-tom17) Device diagnostics such as Wi-Fi signal and free memory are now shown; unrecognised values are collected under "unknownStates"
-- (tt-tom17) BREAKING for CX3550: all state IDs starting with "cx" were renamed to generic names (for example "fanMode" instead of "cxFanMode"). Please select your model once in the settings; the old "cx*" objects can be deleted manually
+- (tt-tom17) Values the adapter does not recognise are collected under "unknownStates"
+- (tt-tom17) IMPORTANT: all state IDs starting with "cx" were renamed to generic names (for example "fanMode" instead of "cxFanMode"). Please select your device model once in the settings; the old "cx*" objects can be deleted manually
+- (tt-tom17) Fixed switches that did nothing when a script or visualisation wrote them as the text "true"/"false" instead of a real on/off value
 - (tt-tom17) Fixed devices connected via HTTP logging "Cannot parse: undefined" every time a command was sent; the device answer is now read correctly
 - (tt-tom17) Fixed devices using the HTTP protocol (for example the AC3829 and AC2729) that stopped connecting in version 1.4.0 and only logged "fetch failed (UND_ERR_SOCKET)"; requests are sent the way these devices expect again
 

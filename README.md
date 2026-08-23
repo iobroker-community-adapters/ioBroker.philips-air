@@ -67,6 +67,7 @@ More details are documented in [docs/CX7550.md](docs/CX7550.md).
 ### **WORK IN PROGRESS**
 - (tt-tom17) New "Device model" setting: pick your model (AC2889, AC3221, CX3550, CX7550 or Generic) so the adapter shows the correct controls for your device
 - (tt-tom17) Added support for the AC3221 next-generation purifier (power, fan speed/mode, display brightness, child lock, beep and more)
+- (tt-tom17) The AC3221 now also reports its measurements and filter life: fine dust (PM2.5), allergen index, temperature, humidity and the remaining hours for both the pre-filter and the NanoProtect filter
 - (DrBakterius) Added support for the CX7550/01 tower fan (all 12 speeds, AutoAdapt, sleep, natural breeze, oscillation, writable timer, display settings and room temperature)
 - (tt-tom17) Fixed switches that did nothing when a script or visualisation wrote them as the text "true"/"false" instead of a real on/off value
 - (tt-tom17) The adapter now warns in the log when the selected model does not seem to match the connected device

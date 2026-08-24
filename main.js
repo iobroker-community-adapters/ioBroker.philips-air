@@ -48,10 +48,17 @@ function startAdapter(options) {
             // is called when adapter shuts down - callback has to be called under any circumstances!
             unload: callback => {
                 try {
-                    adapter.setState('info.connection', false, true);
+                    // Tear the transport down FIRST: a status packet arriving after this point would
+                    // re-arm timers ("setTimeout called, but adapter is shutting down") and write states
+                    // into a database the controller is already closing.
                     airPurifier && airPurifier.destroy();
                     airPurifier = null;
-                    callback();
+                    // Await the final write before signalling "done". Reporting completion while the
+                    // write is still in flight makes the controller close the database underneath it,
+                    // which surfaced as "unhandled promise rejection: DB closed" on every stop.
+                    Promise.resolve(adapter.setState('info.connection', false, true))
+                        .catch(() => {})
+                        .then(() => callback());
                 } catch {
                     callback();
                 }
@@ -314,12 +321,20 @@ async function main() {
     airPurifier = new PurifierClass(adapter.config.host, adapter.config, adapter);
     adapter.log.debug('started');
 
+    // unload() clears airPurifier, so a late event from an already torn-down transport is
+    // recognisable here and must not reach the database any more.
     airPurifier.on('connected', connected => {
+        if (!airPurifier) {
+            return;
+        }
         adapter.log.debug(connected ? 'connected' : 'disconnected');
         adapter.setState('info.connection', connected, true);
     });
 
     airPurifier.on('status', async status => {
+        if (!airPurifier) {
+            return;
+        }
         adapter.log.debug(`STATUS: ${JSON.stringify(status)}`);
         await updateStatus(status);
     });

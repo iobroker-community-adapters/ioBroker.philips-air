@@ -68,3 +68,21 @@ describe('http - control', () => {
         expect(message).to.contain('not connected yet');
     });
 });
+
+describe('http - shutdown', () => {
+    it('a control answer arriving after destroy does not re-arm the poll timer', async () => {
+        const { inst } = makeInstance({
+            setValues: async () => JSON.stringify({ pwr: '1' }),
+            key: null,
+        });
+        inst.destroyed = true;
+        inst.adapter.setTimeout = () => {
+            throw new Error('must not arm a poll timer after destroy');
+        };
+
+        const answer = await inst.control({ pwr: '1' });
+
+        expect(answer).to.deep.equal({ pwr: '1' });
+        expect(inst.pingTimeout).to.equal(undefined);
+    });
+});

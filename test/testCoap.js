@@ -193,10 +193,14 @@ describe('coap - quiet observe stream (#377)', () => {
         inst._reconnect = () => {
             inst.reconnected = true;
         };
+        inst.subscribes = 0;
+        inst._subscribeOnStatus = async () => {
+            inst.subscribes++;
+        };
         return inst;
     }
 
-    it('keeps the session and re-arms the watchdog when the device answers the probe', async () => {
+    it('keeps the session and renews the subscription when the device answers the probe', async () => {
         const inst = makeWatchdogInstance();
         let probes = 0;
         inst.sync = async () => {
@@ -209,8 +213,23 @@ describe('coap - quiet observe stream (#377)', () => {
         expect(inst.reconnected).to.equal(undefined);
         expect(inst.connected).to.equal(true);
         expect(inst.pingTimeout).to.equal('watchdog-timer');
+        // The observe registration must be renewed - a silently expired one would otherwise never
+        // deliver data again, which a full reconnect used to fix as a side effect.
+        expect(inst.subscribes).to.equal(1);
         // A quiet but healthy device must not produce a single info line.
         expect(inst.emitted.filter(([event]) => event !== 'debug')).to.deep.equal([]);
+    });
+
+    it('reconnects when the subscription cannot be renewed', async () => {
+        const inst = makeWatchdogInstance();
+        inst.sync = async () => {};
+        inst._subscribeOnStatus = async () => {
+            throw new Error('no response');
+        };
+
+        await inst._checkAlive();
+
+        expect(inst.reconnected).to.equal(true);
     });
 
     it('reconnects when the device does not answer the probe', async () => {
@@ -269,7 +288,7 @@ describe('coap - reconnect backoff (#377)', () => {
     it('doubles the retry delay per failed attempt and caps it', async () => {
         const { retries } = await failingReconnects(6);
 
-        expect(retries).to.deep.equal([30000, 60000, 120000, 240000, 300000, 300000]);
+        expect(retries).to.deep.equal([30000, 60000, 120000, 120000, 120000, 120000]);
     });
 
     it('reports the first attempts as errors and keeps the endless repetitions in debug', async () => {

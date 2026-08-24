@@ -267,6 +267,7 @@ describe('coap - reconnect backoff (#377)', () => {
         inst.connected = false;
         inst.reconnectInterval = 30000;
         inst.aliveTimeout = 30000;
+        inst.subscribeTimeout = 30000;
         inst.emit = (event, payload) => emitted.push([event, payload]);
         inst.adapter = {
             clearTimeout: () => {},
@@ -296,6 +297,85 @@ describe('coap - reconnect backoff (#377)', () => {
         const levels = emitted.filter(([, text]) => /failed \(attempt/.test(text)).map(([event]) => event);
 
         expect(levels).to.deep.equal(['error', 'error', 'error', 'debug', 'debug', 'debug']);
+    });
+
+    // The delays above are only what the code computes. What reaches the device is decided by which
+    // timer fires first, and the pre-attempt safety net used to win that race: it was armed before the
+    // request timeout, both expired in the same tick, and the net started the next attempt before the
+    // catch could install its backoff. Measured on an AC2889 (24.08.2026): attempts 1 -> 2 followed
+    // after 50s although the log said "retry in 100s". So drive a virtual clock and assert the
+    // attempts themselves, not the numbers the code passes to setTimeout.
+    async function attemptGaps(attempts) {
+        const inst = makeInstance();
+        inst.connected = false;
+        inst.aliveTimeout = 30000;
+        inst.subscribeTimeout = 30000;
+        inst.reconnectInterval = 30000;
+        inst.emit = () => {};
+
+        let now = 0;
+        let nextId = 0;
+        const timers = new Map();
+        inst.adapter = {
+            // Insertion order decides ties, exactly like the node timer wheel does for equal delays.
+            setTimeout: (callback, delay) => {
+                const id = ++nextId;
+                timers.set(id, { at: now + delay, callback });
+                return id;
+            },
+            clearTimeout: id => timers.delete(id),
+        };
+
+        const starts = [];
+        inst.sync = () => {
+            starts.push(now);
+            // A dead device does not refuse the POST, it stays silent: _post() rejects on its own
+            // aliveTimeout timer, so register that timer here instead of rejecting right away.
+            return new Promise((resolve, reject) => {
+                inst.adapter.setTimeout(() => reject(new Error('EHOSTUNREACH')), inst.aliveTimeout);
+            });
+        };
+
+        // Not awaited: the attempt only settles once the virtual clock reaches its request timeout.
+        inst._reconnect();
+        await new Promise(resolve => setImmediate(resolve));
+        while (starts.length < attempts) {
+            const [id, timer] = [...timers.entries()].sort((a, b) => a[1].at - b[1].at || a[0] - b[0])[0];
+            timers.delete(id);
+            now = Math.max(now, timer.at);
+            timer.callback();
+            // Let the promise chain of the fired timer settle before looking at the clock again.
+            await new Promise(resolve => setImmediate(resolve));
+        }
+        return starts.slice(1).map((start, i) => start - starts[i]);
+    }
+
+    it('lets the backoff decide when the next attempt runs, not the pre-attempt safety net', async () => {
+        // Each gap is the backoff plus the aliveTimeout the failing request itself burns:
+        // 30s + 30s, 60s + 30s, 120s + 30s. Without the fix every gap collapses to a flat 30s.
+        expect(await attemptGaps(4)).to.deep.equal([60000, 90000, 150000]);
+    });
+
+    it('keeps a safety net for an attempt that never settles', async () => {
+        const inst = makeInstance();
+        const delays = [];
+        inst.connected = false;
+        inst.aliveTimeout = 30000;
+        inst.subscribeTimeout = 45000;
+        inst.reconnectInterval = 30000;
+        inst.emit = () => {};
+        inst.adapter = { clearTimeout: () => {}, setTimeout: (callback, delay) => delays.push(delay) };
+        // An attempt that hangs forever: without the net nothing would ever retry.
+        inst.sync = () => new Promise(() => {});
+
+        // Not awaited: a hanging attempt never resolves - that is the point of the net.
+        inst._reconnect();
+        await new Promise(resolve => setImmediate(resolve));
+
+        expect(delays).to.have.lengthOf(1);
+        // Must outlast sync (aliveTimeout) plus subscribe (subscribeTimeout), otherwise it fires into
+        // a still-running attempt and takes the race described above.
+        expect(delays[0]).to.be.above(inst.aliveTimeout + inst.subscribeTimeout);
     });
 });
 

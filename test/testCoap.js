@@ -175,6 +175,111 @@ describe('coap - connection handling', () => {
     });
 });
 
+describe('coap - quiet observe stream (#377)', () => {
+    // A CX7550/01 sent a single status frame in 4.6 hours while answering every /sys/dev/sync probe:
+    // silence alone must not tear the session down.
+    function makeWatchdogInstance() {
+        const inst = makeInstance();
+        inst.connected = true;
+        inst.staleTimeout = 600000;
+        inst.pingTimeout = 'old-ping-timer';
+        inst.reconnectTimeout = null;
+        inst.emitted = [];
+        inst.emit = (event, payload) => inst.emitted.push([event, payload]);
+        inst.adapter = {
+            clearTimeout: () => {},
+            setTimeout: () => 'watchdog-timer',
+        };
+        inst._reconnect = () => {
+            inst.reconnected = true;
+        };
+        return inst;
+    }
+
+    it('keeps the session and re-arms the watchdog when the device answers the probe', async () => {
+        const inst = makeWatchdogInstance();
+        let probes = 0;
+        inst.sync = async () => {
+            probes++;
+        };
+
+        await inst._checkAlive();
+
+        expect(probes).to.equal(1);
+        expect(inst.reconnected).to.equal(undefined);
+        expect(inst.connected).to.equal(true);
+        expect(inst.pingTimeout).to.equal('watchdog-timer');
+        // A quiet but healthy device must not produce a single info line.
+        expect(inst.emitted.filter(([event]) => event !== 'debug')).to.deep.equal([]);
+    });
+
+    it('reconnects when the device does not answer the probe', async () => {
+        const inst = makeWatchdogInstance();
+        inst.sync = async () => {
+            throw new Error('timeout');
+        };
+
+        await inst._checkAlive();
+
+        expect(inst.reconnected).to.equal(true);
+    });
+
+    it('does not probe or reconnect after destroy', async () => {
+        const inst = makeWatchdogInstance();
+        inst.destroyed = true;
+        let probes = 0;
+        inst.sync = async () => {
+            probes++;
+        };
+
+        await inst._checkAlive();
+
+        expect(probes).to.equal(0);
+        expect(inst.reconnected).to.equal(undefined);
+    });
+});
+
+describe('coap - reconnect backoff (#377)', () => {
+    // A switched-off device used to log one error line per reconnectInterval, forever.
+    async function failingReconnects(attempts) {
+        const inst = makeInstance();
+        const delays = [];
+        const emitted = [];
+        inst.connected = false;
+        inst.reconnectInterval = 30000;
+        inst.aliveTimeout = 30000;
+        inst.emit = (event, payload) => emitted.push([event, payload]);
+        inst.adapter = {
+            clearTimeout: () => {},
+            setTimeout: (callback, delay) => {
+                delays.push(delay);
+                return 'retry-timer';
+            },
+        };
+        inst.sync = async () => {
+            throw new Error('EHOSTUNREACH');
+        };
+        for (let i = 0; i < attempts; i++) {
+            await inst._reconnect();
+        }
+        // Every attempt schedules twice: the fixed pre-attempt timer and the backed-off retry.
+        return { retries: delays.filter((_, i) => i % 2 === 1), emitted };
+    }
+
+    it('doubles the retry delay per failed attempt and caps it', async () => {
+        const { retries } = await failingReconnects(6);
+
+        expect(retries).to.deep.equal([30000, 60000, 120000, 240000, 300000, 300000]);
+    });
+
+    it('reports the first attempts as errors and keeps the endless repetitions in debug', async () => {
+        const { emitted } = await failingReconnects(6);
+        const levels = emitted.filter(([, text]) => /failed \(attempt/.test(text)).map(([event]) => event);
+
+        expect(levels).to.deep.equal(['error', 'error', 'error', 'debug', 'debug', 'debug']);
+    });
+});
+
 describe('coap - renameAttributes', () => {
     function rename(reported) {
         const inst = makeInstance();

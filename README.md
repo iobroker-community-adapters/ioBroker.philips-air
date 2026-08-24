@@ -24,6 +24,17 @@ Most devices are reached over CoAP, which is the default. Some older ones, such 
 Then pick your device model, so that the adapter creates the controls that match your device. If your model is not in the list, choose `Generic`: you still get every read-only value, just no model-specific controls.
 It can happen that a device does not report all variables; those stay unfilled in the object tree. Raw values the adapter does not recognise are collected under `unknownStates`.
 
+### The two timing settings
+
+Both are in milliseconds and rarely need changing.
+
+| Setting | Default | What it does |
+| --- | --- | --- |
+| Alive timeout | 30000 | How long a single request to the device may take before it is given up. Over HTTP it is also the polling interval. |
+| Reconnect interval | 30000 | How long to wait before the first retry after a failed connection. Further failures double the wait, up to five minutes, so an unreachable device is not hammered. It must not be shorter than the alive timeout. |
+
+Over CoAP the device pushes its status on its own, so there is no polling. Some devices - the CX7550/01 for example - can stay silent for hours; the adapter then checks the connection by asking the device directly instead of rebuilding it.
+
 ### Which device model should I select?
 
 | Your device | Model to select |
@@ -84,6 +95,9 @@ More details are documented in [docs/CX7550.md](docs/CX7550.md).
 
 - (tt-tom17) Fixed error messages ("DB closed", "setTimeout called, but adapter is shutting down") that appeared in the log every time the adapter was stopped or restarted (MatthiasBosch)
 - (tt-tom17) New setting "Log unknown device attributes as debug": moves the "Unknown raw device attribute" messages from the info log to the debug log (off by default)
+- (tt-tom17) Fixed devices connected via CoAP reconnecting every few minutes, and the log filling with "connection lost / connected" pairs, although the connection was fine - this affected quiet devices such as the CX7550/01 (DrBakterius)
+- (tt-tom17) A device that stays unreachable is now retried at growing intervals instead of every 30 seconds, and stops repeating the same error line in the log
+- (tt-tom17) The two timing settings are now explained in the readme
 
 ### 2.0.0 (2026-08-23)
 

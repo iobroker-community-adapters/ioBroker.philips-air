@@ -4,9 +4,11 @@
     "Device IP or hostname": "设备IP或主机名",
     "Device model": "设备型号",
     "Enter a valid IP address or hostname (no http://, no spaces)": "输入有效的 IP 地址或主机名（无 http://，无空格）",
+    "Log unknown device attributes as debug": "将未知设备属性记录为调试信息",
     "Reconnect interval": "重连间隔",
     "Reconnect interval should be at least the Alive timeout": "重连间隔应至少为活动超时时间",
     "Selects which controls are created for your device. Choose \"Generic\" if your model is not listed (read-only, no controls).": "决定为您的设备创建哪些控制项。如果列表中没有您的型号，请选择 \"Generic\"（只读，无控制项）。",
+    "Values the adapter does not recognise are reported once per attribute at info level so they can be reported and added. Enable this to move those messages to the debug log.": "适配器无法识别的值会按属性各上报一次（info 级别），以便反馈并加入支持。启用此选项可将这些消息移至调试日志。",
     "ms": "毫秒",
     "ms - should be >= Alive timeout": "毫秒 - 应 >= 活动超时"
 }

@@ -99,6 +99,18 @@
       "md": 4,
       "lg": 4,
       "xl": 4
+    },
+    "logUnknownStatesAsDebug": {
+      "newLine": true,
+      "type": "checkbox",
+      "label": "Log unknown device attributes as debug",
+      "help": "Values the adapter does not recognise are reported once per attribute at info level so they can be reported and added. Enable this to move those messages to the debug log.",
+      "default": false,
+      "xs": 12,
+      "sm": 12,
+      "md": 8,
+      "lg": 8,
+      "xl": 8
     }
   }
 }

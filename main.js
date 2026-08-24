@@ -271,7 +271,9 @@ async function updateUnknownStates(status) {
                         `unknownStates.${rawKey}.`,
                 );
             } else {
-                adapter.log.info(
+                // Reported at info level by default so users notice values worth adding to the adapter.
+                // Anyone who does not want that in their info log can move it to debug in the settings.
+                adapter.log[adapter.config.logUnknownStatesAsDebug ? 'debug' : 'info'](
                     `Unknown raw device attribute "${rawKey}" (value: ${JSON.stringify(status[rawKey])}) - ` +
                         `exposed read-only as unknownStates.${rawKey}. Please report this to the adapter developer.`,
                 );

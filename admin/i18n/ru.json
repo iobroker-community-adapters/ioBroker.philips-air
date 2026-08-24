@@ -4,9 +4,11 @@
     "Device IP or hostname": "IP-адрес устройства или имя хоста",
     "Device model": "Модель устройства",
     "Enter a valid IP address or hostname (no http://, no spaces)": "Введите действительный IP-адрес или имя хоста (без http:// и пробелов).",
+    "Log unknown device attributes as debug": "Записывать неизвестные атрибуты устройства как debug",
     "Reconnect interval": "Интервал повторного подключения",
     "Reconnect interval should be at least the Alive timeout": "Интервал переподключения должен быть не меньше тайм-аута активности",
     "Selects which controls are created for your device. Choose \"Generic\" if your model is not listed (read-only, no controls).": "Определяет, какие элементы управления создаются для вашего устройства. Выберите \"Generic\", если ваша модель не указана в списке (только чтение, без элементов управления).",
+    "Values the adapter does not recognise are reported once per attribute at info level so they can be reported and added. Enable this to move those messages to the debug log.": "Значения, которые адаптер не распознаёт, сообщаются один раз для каждого атрибута на уровне info, чтобы о них можно было сообщить и добавить их. Включите эту опцию, чтобы перенести эти сообщения в журнал отладки.",
     "ms": "мс",
     "ms - should be >= Alive timeout": "мс — должно быть >= тайм-аута активности"
 }

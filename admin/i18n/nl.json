@@ -4,9 +4,11 @@
     "Device IP or hostname": "Apparaat-IP of hostnaam",
     "Device model": "Apparaatmodel",
     "Enter a valid IP address or hostname (no http://, no spaces)": "Voer een geldig IP-adres of hostnaam in (geen http://, geen spaties)",
+    "Log unknown device attributes as debug": "Onbekende apparaatattributen als debug loggen",
     "Reconnect interval": "Interval opnieuw verbinden",
     "Reconnect interval should be at least the Alive timeout": "Het herverbindingsinterval moet minstens gelijk zijn aan de Alive-timeout",
     "Selects which controls are created for your device. Choose \"Generic\" if your model is not listed (read-only, no controls).": "Bepaalt welke bedieningselementen voor uw apparaat worden aangemaakt. Kies \"Generic\" als uw model niet vermeld staat (alleen-lezen, geen bedieningselementen).",
+    "Values the adapter does not recognise are reported once per attribute at info level so they can be reported and added. Enable this to move those messages to the debug log.": "Waarden die de adapter niet herkent worden eenmaal per attribuut op info-niveau gemeld, zodat ze gemeld en toegevoegd kunnen worden. Schakel dit in om die meldingen naar het debug-log te verplaatsen.",
     "ms": "ms",
     "ms - should be >= Alive timeout": "ms - moet >= Alive-timeout zijn"
 }

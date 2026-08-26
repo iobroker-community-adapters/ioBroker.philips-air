@@ -97,7 +97,6 @@ More details are documented in [docs/CX7550.md](docs/CX7550.md).
 - (tt-tom17) New setting "Log unknown device attributes as debug": moves the "Unknown raw device attribute" messages from the info log to the debug log (off by default)
 - (tt-tom17) Fixed devices connected via CoAP reconnecting every few minutes, and the log filling with "connection lost / connected" pairs, although the connection was fine - this affected quiet devices such as the CX7550/01 (DrBakterius)
 - (tt-tom17) A device that stays unreachable is now retried at growing intervals instead of every 30 seconds, and stops repeating the same error line in the log
-- (tt-tom17) The two timing settings are now explained in the readme
 
 ### 2.0.0 (2026-08-23)
 

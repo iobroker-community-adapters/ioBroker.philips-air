@@ -1,4 +1,5 @@
 const { expect } = require('chai');
+/** @type {{ items: Record<string, Record<string, any>> }} */
 const jsonConfig = require('../admin/jsonConfig.json');
 const ioPackage = require('../io-package.json');
 const en = require('../admin/i18n/en.json');

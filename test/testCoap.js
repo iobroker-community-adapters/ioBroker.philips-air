@@ -105,6 +105,28 @@ describe('coap - connection handling', () => {
         ]);
     });
 
+    it('markConnected stays silent and arms no timer once the instance was destroyed', () => {
+        const inst = makeInstance();
+        const emitted = [];
+        inst.connected = false;
+        inst.destroyed = true;
+        inst.staleTimeout = 120000;
+        inst.pingTimeout = null;
+        inst.adapter = {
+            clearTimeout: () => {},
+            setTimeout: () => {
+                throw new Error('must not arm a watchdog timer after destroy');
+            },
+        };
+        inst.emit = (event, payload) => emitted.push([event, payload]);
+
+        inst._markConnected('Connected');
+
+        expect(inst.connected).to.equal(false);
+        expect(inst.pingTimeout).to.equal(null);
+        expect(emitted).to.deep.equal([]);
+    });
+
     it('keeps a quiet observe subscription open instead of rejecting on subscribe timeout', async () => {
         const inst = makeInstance();
         const originalRequest = coap.request;

@@ -225,7 +225,8 @@
     "aliveTimeout": 30000,
     "reconnectInterval": 30000,
     "protocol": "coap",
-    "model": "AC2889"
+    "model": "AC2889",
+    "logUnknownStatesAsDebug": false
   },
   "objects": [],
   "instanceObjects": [

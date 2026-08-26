@@ -4,9 +4,11 @@
     "Device IP or hostname": "Device IP or hostname",
     "Device model": "Device model",
     "Enter a valid IP address or hostname (no http://, no spaces)": "Enter a valid IP address or hostname (no http://, no spaces)",
+    "Log unknown device attributes as debug": "Log unknown device attributes as debug",
     "Reconnect interval": "Reconnect interval",
     "Reconnect interval should be at least the Alive timeout": "Reconnect interval should be at least the Alive timeout",
     "Selects which controls are created for your device. Choose \"Generic\" if your model is not listed (read-only, no controls).": "Selects which controls are created for your device. Choose \"Generic\" if your model is not listed (read-only, no controls).",
+    "Values the adapter does not recognise are reported once per attribute at info level so they can be reported and added. Enable this to move those messages to the debug log.": "Values the adapter does not recognise are reported once per attribute at info level so they can be reported and added. Enable this to move those messages to the debug log.",
     "ms": "ms",
     "ms - should be >= Alive timeout": "ms - should be >= Alive timeout"
 }

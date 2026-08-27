@@ -175,6 +175,210 @@ describe('coap - connection handling', () => {
     });
 });
 
+describe('coap - quiet observe stream (#377)', () => {
+    // A CX7550/01 sent a single status frame in 4.6 hours while answering every /sys/dev/sync probe:
+    // silence alone must not tear the session down.
+    function makeWatchdogInstance() {
+        const inst = makeInstance();
+        inst.connected = true;
+        inst.staleTimeout = 600000;
+        inst.pingTimeout = 'old-ping-timer';
+        inst.reconnectTimeout = null;
+        inst.emitted = [];
+        inst.emit = (event, payload) => inst.emitted.push([event, payload]);
+        inst.adapter = {
+            clearTimeout: () => {},
+            setTimeout: () => 'watchdog-timer',
+        };
+        inst._reconnect = () => {
+            inst.reconnected = true;
+        };
+        inst.subscribes = 0;
+        inst._subscribeOnStatus = async () => {
+            inst.subscribes++;
+        };
+        return inst;
+    }
+
+    it('keeps the session and renews the subscription when the device answers the probe', async () => {
+        const inst = makeWatchdogInstance();
+        let probes = 0;
+        inst.sync = async () => {
+            probes++;
+        };
+
+        await inst._checkAlive();
+
+        expect(probes).to.equal(1);
+        expect(inst.reconnected).to.equal(undefined);
+        expect(inst.connected).to.equal(true);
+        expect(inst.pingTimeout).to.equal('watchdog-timer');
+        // The observe registration must be renewed - a silently expired one would otherwise never
+        // deliver data again, which a full reconnect used to fix as a side effect.
+        expect(inst.subscribes).to.equal(1);
+        // A quiet but healthy device must not produce a single info line.
+        expect(inst.emitted.filter(([event]) => event !== 'debug')).to.deep.equal([]);
+    });
+
+    it('reconnects when the subscription cannot be renewed', async () => {
+        const inst = makeWatchdogInstance();
+        inst.sync = async () => {};
+        inst._subscribeOnStatus = async () => {
+            throw new Error('no response');
+        };
+
+        await inst._checkAlive();
+
+        expect(inst.reconnected).to.equal(true);
+    });
+
+    it('reconnects when the device does not answer the probe', async () => {
+        const inst = makeWatchdogInstance();
+        inst.sync = async () => {
+            throw new Error('timeout');
+        };
+
+        await inst._checkAlive();
+
+        expect(inst.reconnected).to.equal(true);
+    });
+
+    it('does not probe or reconnect after destroy', async () => {
+        const inst = makeWatchdogInstance();
+        inst.destroyed = true;
+        let probes = 0;
+        inst.sync = async () => {
+            probes++;
+        };
+
+        await inst._checkAlive();
+
+        expect(probes).to.equal(0);
+        expect(inst.reconnected).to.equal(undefined);
+    });
+});
+
+describe('coap - reconnect backoff (#377)', () => {
+    // A switched-off device used to log one error line per reconnectInterval, forever.
+    async function failingReconnects(attempts) {
+        const inst = makeInstance();
+        const delays = [];
+        const emitted = [];
+        inst.connected = false;
+        inst.reconnectInterval = 30000;
+        inst.aliveTimeout = 30000;
+        inst.subscribeTimeout = 30000;
+        inst.emit = (event, payload) => emitted.push([event, payload]);
+        inst.adapter = {
+            clearTimeout: () => {},
+            setTimeout: (callback, delay) => {
+                delays.push(delay);
+                return 'retry-timer';
+            },
+        };
+        inst.sync = async () => {
+            throw new Error('EHOSTUNREACH');
+        };
+        for (let i = 0; i < attempts; i++) {
+            await inst._reconnect();
+        }
+        // Every attempt schedules twice: the fixed pre-attempt timer and the backed-off retry.
+        return { retries: delays.filter((_, i) => i % 2 === 1), emitted };
+    }
+
+    it('doubles the retry delay per failed attempt and caps it', async () => {
+        const { retries } = await failingReconnects(6);
+
+        expect(retries).to.deep.equal([30000, 60000, 120000, 120000, 120000, 120000]);
+    });
+
+    it('reports the first attempts as errors and keeps the endless repetitions in debug', async () => {
+        const { emitted } = await failingReconnects(6);
+        const levels = emitted.filter(([, text]) => /failed \(attempt/.test(text)).map(([event]) => event);
+
+        expect(levels).to.deep.equal(['error', 'error', 'error', 'debug', 'debug', 'debug']);
+    });
+
+    // The delays above are only what the code computes. What reaches the device is decided by which
+    // timer fires first, and the pre-attempt safety net used to win that race: it was armed before the
+    // request timeout, both expired in the same tick, and the net started the next attempt before the
+    // catch could install its backoff. Measured on an AC2889 (24.08.2026): attempts 1 -> 2 followed
+    // after 50s although the log said "retry in 100s". So drive a virtual clock and assert the
+    // attempts themselves, not the numbers the code passes to setTimeout.
+    async function attemptGaps(attempts) {
+        const inst = makeInstance();
+        inst.connected = false;
+        inst.aliveTimeout = 30000;
+        inst.subscribeTimeout = 30000;
+        inst.reconnectInterval = 30000;
+        inst.emit = () => {};
+
+        let now = 0;
+        let nextId = 0;
+        const timers = new Map();
+        inst.adapter = {
+            // Insertion order decides ties, exactly like the node timer wheel does for equal delays.
+            setTimeout: (callback, delay) => {
+                const id = ++nextId;
+                timers.set(id, { at: now + delay, callback });
+                return id;
+            },
+            clearTimeout: id => timers.delete(id),
+        };
+
+        const starts = [];
+        inst.sync = () => {
+            starts.push(now);
+            // A dead device does not refuse the POST, it stays silent: _post() rejects on its own
+            // aliveTimeout timer, so register that timer here instead of rejecting right away.
+            return new Promise((resolve, reject) => {
+                inst.adapter.setTimeout(() => reject(new Error('EHOSTUNREACH')), inst.aliveTimeout);
+            });
+        };
+
+        // Not awaited: the attempt only settles once the virtual clock reaches its request timeout.
+        inst._reconnect();
+        await new Promise(resolve => setImmediate(resolve));
+        while (starts.length < attempts) {
+            const [id, timer] = [...timers.entries()].sort((a, b) => a[1].at - b[1].at || a[0] - b[0])[0];
+            timers.delete(id);
+            now = Math.max(now, timer.at);
+            timer.callback();
+            // Let the promise chain of the fired timer settle before looking at the clock again.
+            await new Promise(resolve => setImmediate(resolve));
+        }
+        return starts.slice(1).map((start, i) => start - starts[i]);
+    }
+
+    it('lets the backoff decide when the next attempt runs, not the pre-attempt safety net', async () => {
+        // Each gap is the backoff plus the aliveTimeout the failing request itself burns:
+        // 30s + 30s, 60s + 30s, 120s + 30s. Without the fix every gap collapses to a flat 30s.
+        expect(await attemptGaps(4)).to.deep.equal([60000, 90000, 150000]);
+    });
+
+    it('keeps a safety net for an attempt that never settles', async () => {
+        const inst = makeInstance();
+        const delays = [];
+        inst.connected = false;
+        inst.aliveTimeout = 30000;
+        inst.subscribeTimeout = 45000;
+        inst.reconnectInterval = 30000;
+        inst.emit = () => {};
+        inst.adapter = { clearTimeout: () => {}, setTimeout: (callback, delay) => delays.push(delay) };
+        // An attempt that hangs forever: without the net nothing would ever retry.
+        inst.sync = () => new Promise(() => {});
+
+        // Not awaited: a hanging attempt never resolves - that is the point of the net.
+        inst._reconnect();
+        await new Promise(resolve => setImmediate(resolve));
+
+        expect(delays).to.have.lengthOf(1);
+        // Must outlast sync (aliveTimeout) plus subscribe (subscribeTimeout), otherwise it fires into
+        // a still-running attempt and takes the race described above.
+        expect(delays[0]).to.be.above(inst.aliveTimeout + inst.subscribeTimeout);
+    });
+});
+
 describe('coap - renameAttributes', () => {
     function rename(reported) {
         const inst = makeInstance();

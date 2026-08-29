@@ -131,8 +131,9 @@ More details are documented in [docs/CX7550.md](docs/CX7550.md).
 ### 1.3.0 (2026-06-15)
 - (copilot) Adapter requires node.js >= 22 now
 - (copilot) Adapter requires admin >= 7.7.22 now
-* (mcm1957) Dependencies have been updated
+- (mcm1957) Dependencies have been updated
 
+  
 [Older changelogs can be found there](CHANGELOG_OLD.md)
 
 ## License

@@ -50,6 +50,7 @@
     "test:package": "mocha test/package --exit",
     "test:integration": "mocha test/integration --exit",
     "test": "npm run test:js && npm run test:package",
+    "test:all": "npm run test:js && npm run test:package && npm run test:integration",
     "check": "tsc --noEmit -p tsconfig.check.json",
     "lint": "eslint -c eslint.config.mjs . ",
     "translate": "translate-adapter",

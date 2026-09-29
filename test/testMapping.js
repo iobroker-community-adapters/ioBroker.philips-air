@@ -5,6 +5,7 @@ const {
     STANDARD_MAPPING,
     MODEL_MAPPING,
     modelsOwningRawKey,
+    bestMatchingModels,
     resolveModel,
     DEFAULT_MODEL,
 } = require('../lib/mapping');
@@ -552,6 +553,47 @@ describe('mapping - unknownStates classification (Umbau-Schritt 4, Part B)', () 
         ['rssi', 'freeMemory', 'otaCheck', 'wifiLog', 'bleLog', 'uptime', 'productId', 'deviceId'].forEach(name => {
             expect(knownNames.has(name)).to.be.true;
         });
+    });
+});
+
+describe('mapping - bestMatchingModels (model hint for Generic)', () => {
+    // Same counting as updateUnknownStates() in main.js: with 'Generic' no control is mapped, so
+    // every raw key of the frame is counted for each model that owns it as a control.
+    const count = frame => {
+        const counts = new Map();
+        for (const rawKey of Object.keys(frame)) {
+            for (const owner of modelsOwningRawKey(rawKey)) {
+                counts.set(owner, (counts.get(owner) || 0) + 1);
+            }
+        }
+        return counts;
+    };
+
+    it('names AC2889 for a classic status frame', () => {
+        const result = bestMatchingModels(count({ pwr: '1', om: 'a', mode: 'M', cl: false, pm25: 7 }));
+        expect(result.models).to.deep.equal(['AC2889']);
+        expect(result.count).to.be.at.least(4);
+    });
+
+    it('names every model that ties, in a stable order', () => {
+        const result = bestMatchingModels(count({ D03102: 1 }));
+        expect(result).to.deep.equal({ models: ['AC3221', 'CX3550', 'CX7550'], count: 1 });
+    });
+
+    it('prefers the model that claims more controls', () => {
+        const result = bestMatchingModels(
+            new Map([
+                ['AC3221', 3],
+                ['CX7550', 5],
+                ['AC2889', 1],
+            ]),
+        );
+        expect(result).to.deep.equal({ models: ['CX7550'], count: 5 });
+    });
+
+    it('names nothing when no model claims a control', () => {
+        expect(bestMatchingModels(new Map())).to.deep.equal({ models: [], count: 0 });
+        expect(bestMatchingModels(count({ pm25: 7, D09999: 1 }))).to.deep.equal({ models: [], count: 0 });
     });
 });
 

@@ -96,6 +96,7 @@ More details are documented in [docs/CX7550.md](docs/CX7550.md).
 ### **WORK IN PROGRESS**
 
 - (tt-tom17) A new instance now starts with the device model "Generic" (read-only values, no controls) instead of silently using the AC2889 controls; instances that already have a model keep it
+- (tt-tom17) With the device model "Generic" the log now names the model your device looks like, so you know which one to select
 
 ### 2.2.0 (2026-09-08)
 

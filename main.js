@@ -3,7 +3,14 @@
 // The adapter-core module gives you access to the core ioBroker functions
 // you need to create an adapter
 const utils = require('@iobroker/adapter-core');
-const { createMapping, channelOf, stateCommon, modelsOwningRawKey, resolveModel } = require('./lib/mapping');
+const {
+    createMapping,
+    channelOf,
+    stateCommon,
+    modelsOwningRawKey,
+    resolveModel,
+    bestMatchingModels,
+} = require('./lib/mapping');
 const adapterName = require('./package.json').name.split('.').pop();
 
 /**
@@ -27,6 +34,9 @@ let knownNames;
 // shared/overlapping raw register (e.g. AC3221's D03105 seen on a CX3550) must not raise the hint,
 // but a device that answers eight controls of another model and only one of the selected one must.
 const activeModelControlsSeen = new Set();
+// With model 'Generic' the hint names the model the device looks like. It takes at least this many
+// matching controls: a single register can be shared with a model the device does not belong to.
+const MIN_CONTROLS_FOR_MODEL_HINT = 2;
 // Raised once the "wrong model?" hint has been logged, so it stays a one-off per adapter run.
 let wrongModelWarned = false;
 // Raw attribute keys we already logged once as "unknown" this adapter run, so a device that keeps
@@ -322,9 +332,21 @@ function maybeWarnWrongModel(foreignControlCount) {
         return;
     }
     const selectedModel = resolveModel(adapter.config.model);
-    // 'Generic' has no controls at all - it is the deliberate read-only choice, so every device
-    // would trip the comparison. Someone who picked it does not need to be told about controls.
+    // 'Generic' has no controls at all, and it is what a new instance starts with. Name the model
+    // the device looks like, so the user knows what to select - at info level, because 'Generic' can
+    // also be a deliberate read-only choice. A single register is no evidence (see above).
     if (selectedModel === 'Generic') {
+        const { models, count } = bestMatchingModels(foreignControlCount);
+        if (count < MIN_CONTROLS_FOR_MODEL_HINT) {
+            return;
+        }
+        wrongModelWarned = true;
+        const names = models.map(model => `"${model}"`).join(' or ');
+        adapter.log.info(
+            `This device reports ${count} control attributes of model ${names}. With the selected model ` +
+                `"Generic" they are only exposed read-only under unknownStates.*. To get the controls, ` +
+                `select model ${names} in the adapter settings.`,
+        );
         return;
     }
     const [bestModel, bestCount] = [...foreignControlCount.entries()]

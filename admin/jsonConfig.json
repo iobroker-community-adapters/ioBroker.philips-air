@@ -93,7 +93,7 @@
       "noTranslation": true,
       "label": "Device model",
       "help": "Selects which controls are created for your device. Choose \"Generic\" if your model is not listed (read-only, no controls).",
-      "default": "AC2889",
+      "default": "Generic",
       "xs": 12,
       "sm": 12,
       "md": 4,

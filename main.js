@@ -3,7 +3,7 @@
 // The adapter-core module gives you access to the core ioBroker functions
 // you need to create an adapter
 const utils = require('@iobroker/adapter-core');
-const { createMapping, channelOf, stateCommon, modelsOwningRawKey } = require('./lib/mapping');
+const { createMapping, channelOf, stateCommon, modelsOwningRawKey, resolveModel } = require('./lib/mapping');
 const adapterName = require('./package.json').name.split('.').pop();
 
 /**
@@ -278,7 +278,7 @@ async function updateUnknownStates(status, mapped) {
             if (owners.length) {
                 adapter.log.debug(
                     `Raw attribute "${rawKey}" (a control of ${owners.join('/')}) is not mapped for the ` +
-                        `selected model "${adapter.config.model || 'AC2889'}"; exposed read-only as ` +
+                        `selected model "${resolveModel(adapter.config.model)}"; exposed read-only as ` +
                         `unknownStates.${rawKey}.`,
                 );
             } else {
@@ -321,7 +321,7 @@ function maybeWarnWrongModel(foreignControlCount) {
     if (wrongModelWarned) {
         return;
     }
-    const selectedModel = adapter.config.model || 'AC2889';
+    const selectedModel = resolveModel(adapter.config.model);
     // 'Generic' has no controls at all - it is the deliberate read-only choice, so every device
     // would trip the comparison. Someone who picked it does not need to be told about controls.
     if (selectedModel === 'Generic') {
@@ -348,6 +348,16 @@ async function main() {
 
     if (!adapter.config.host) {
         return adapter.log.warn('No IP defined');
+    }
+
+    // Without a usable model setting the adapter runs read-only instead of guessing a model.
+    const model = resolveModel(adapter.config.model);
+    if (model !== adapter.config.model) {
+        adapter.log.warn(
+            adapter.config.model
+                ? `Unknown device model "${adapter.config.model}" - using "${model}": all values are read, but no controls are created. Please select your device model in the instance settings.`
+                : `No device model selected - using "${model}": all values are read, but no controls are created. Please select your device model in the instance settings.`,
+        );
     }
 
     // Build the active (STANDARD + model) mapping before anything can trigger a 'status' event.

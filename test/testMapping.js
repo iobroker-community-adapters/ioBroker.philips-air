@@ -1,5 +1,13 @@
 const { expect } = require('chai');
-const { createMapping, channelOf, STANDARD_MAPPING, MODEL_MAPPING, modelsOwningRawKey } = require('../lib/mapping');
+const {
+    createMapping,
+    channelOf,
+    STANDARD_MAPPING,
+    MODEL_MAPPING,
+    modelsOwningRawKey,
+    resolveModel,
+    DEFAULT_MODEL,
+} = require('../lib/mapping');
 
 describe('mapping - renameReported (AC2889)', () => {
     const { renameReported } = createMapping('AC2889');
@@ -431,15 +439,39 @@ describe('mapping - Generic', () => {
 });
 
 describe('mapping - createMapping fallback', () => {
-    it('falls back to AC2889 controls for an undefined model', () => {
-        const { mapping } = createMapping(undefined);
-        expect(mapping.pwr).to.deep.equal(MODEL_MAPPING.AC2889.pwr);
+    const expectReadOnly = model => {
+        const { mapping } = createMapping(model);
+        expect(mapping).to.deep.equal(createMapping('Generic').mapping);
+        expect(Object.values(mapping).some(item => item.control)).to.be.false;
+        expect(mapping.pwr, 'no classic control').to.be.undefined;
+        expect(mapping.D03102, 'no next-generation control').to.be.undefined;
+    };
+
+    it('falls back to Generic (no controls) for a missing or empty model', () => {
+        expectReadOnly(undefined);
+        expectReadOnly(null);
+        expectReadOnly('');
     });
 
-    it('falls back to AC2889 controls for an unknown/mistyped model string', () => {
-        const { mapping } = createMapping('AC2889-typo');
-        expect(mapping.pwr).to.deep.equal(MODEL_MAPPING.AC2889.pwr);
-        expect(mapping.D03102).to.be.undefined;
+    it('falls back to Generic (no controls) for an unknown/mistyped model string', () => {
+        expectReadOnly('AC2889-typo');
+        // Names inherited from Object.prototype must not pass as a model either.
+        expectReadOnly('constructor');
+    });
+
+    it('resolveModel keeps every known model and maps everything else to the default', () => {
+        for (const model of Object.keys(MODEL_MAPPING)) {
+            expect(resolveModel(model)).to.equal(model);
+        }
+        expect(DEFAULT_MODEL).to.equal('Generic');
+        expect(resolveModel(undefined)).to.equal(DEFAULT_MODEL);
+        expect(resolveModel('')).to.equal(DEFAULT_MODEL);
+        expect(resolveModel('AC2889-typo')).to.equal(DEFAULT_MODEL);
+    });
+
+    it('ships Generic as the default model in io-package.json and in the admin settings', () => {
+        expect(require('../io-package.json').native.model).to.equal(DEFAULT_MODEL);
+        expect(require('../admin/jsonConfig.json').items.model.default).to.equal(DEFAULT_MODEL);
     });
 });
 

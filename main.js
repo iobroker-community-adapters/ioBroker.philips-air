@@ -3,7 +3,14 @@
 // The adapter-core module gives you access to the core ioBroker functions
 // you need to create an adapter
 const utils = require('@iobroker/adapter-core');
-const { createMapping, channelOf, stateCommon, modelsOwningRawKey } = require('./lib/mapping');
+const {
+    createMapping,
+    channelOf,
+    stateCommon,
+    modelsOwningRawKey,
+    resolveModel,
+    bestMatchingModels,
+} = require('./lib/mapping');
 const adapterName = require('./package.json').name.split('.').pop();
 
 /**
@@ -27,6 +34,9 @@ let knownNames;
 // shared/overlapping raw register (e.g. AC3221's D03105 seen on a CX3550) must not raise the hint,
 // but a device that answers eight controls of another model and only one of the selected one must.
 const activeModelControlsSeen = new Set();
+// With model 'Generic' the hint names the model the device looks like. It takes at least this many
+// matching controls: a single register can be shared with a model the device does not belong to.
+const MIN_CONTROLS_FOR_MODEL_HINT = 2;
 // Raised once the "wrong model?" hint has been logged, so it stays a one-off per adapter run.
 let wrongModelWarned = false;
 // Raw attribute keys we already logged once as "unknown" this adapter run, so a device that keeps
@@ -278,7 +288,7 @@ async function updateUnknownStates(status, mapped) {
             if (owners.length) {
                 adapter.log.debug(
                     `Raw attribute "${rawKey}" (a control of ${owners.join('/')}) is not mapped for the ` +
-                        `selected model "${adapter.config.model || 'AC2889'}"; exposed read-only as ` +
+                        `selected model "${resolveModel(adapter.config.model)}"; exposed read-only as ` +
                         `unknownStates.${rawKey}.`,
                 );
             } else {
@@ -321,10 +331,22 @@ function maybeWarnWrongModel(foreignControlCount) {
     if (wrongModelWarned) {
         return;
     }
-    const selectedModel = adapter.config.model || 'AC2889';
-    // 'Generic' has no controls at all - it is the deliberate read-only choice, so every device
-    // would trip the comparison. Someone who picked it does not need to be told about controls.
+    const selectedModel = resolveModel(adapter.config.model);
+    // 'Generic' has no controls at all, and it is what a new instance starts with. Name the model
+    // the device looks like, so the user knows what to select - at info level, because 'Generic' can
+    // also be a deliberate read-only choice. A single register is no evidence (see above).
     if (selectedModel === 'Generic') {
+        const { models, count } = bestMatchingModels(foreignControlCount);
+        if (count < MIN_CONTROLS_FOR_MODEL_HINT) {
+            return;
+        }
+        wrongModelWarned = true;
+        const names = models.map(model => `"${model}"`).join(' or ');
+        adapter.log.info(
+            `This device reports ${count} control attributes of model ${names}. With the selected model ` +
+                `"Generic" they are only exposed read-only under unknownStates.*. To get the controls, ` +
+                `select model ${names} in the adapter settings.`,
+        );
         return;
     }
     const [bestModel, bestCount] = [...foreignControlCount.entries()]
@@ -348,6 +370,16 @@ async function main() {
 
     if (!adapter.config.host) {
         return adapter.log.warn('No IP defined');
+    }
+
+    // Without a usable model setting the adapter runs read-only instead of guessing a model.
+    const model = resolveModel(adapter.config.model);
+    if (model !== adapter.config.model) {
+        adapter.log.warn(
+            adapter.config.model
+                ? `Unknown device model "${adapter.config.model}" - using "${model}": all values are read, but no controls are created. Please select your device model in the instance settings.`
+                : `No device model selected - using "${model}": all values are read, but no controls are created. Please select your device model in the instance settings.`,
+        );
     }
 
     // Build the active (STANDARD + model) mapping before anything can trigger a 'status' event.

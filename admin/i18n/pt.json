@@ -17,8 +17,8 @@
   "Send verification code": "Enviar código de verificação",
   "Email verification code": "Código de verificação do e-mail",
   "Confirm verification code": "Confirmar código de verificação",
-  "Save cloud protocol and country, then start the instance. Enter your account email, request a code and confirm the email code here. Email and code are not saved. All account devices are discovered automatically.": "Guarde o protocolo Cloud e o país e inicie a instância. Introduza o e-mail, solicite um código e confirme-o aqui. O e-mail e o código não são guardados. Todos os dispositivos são detetados automaticamente.",
   "Not signed in": "Sessão não iniciada",
-  "Sign-in saved. Access token will be renewed automatically when needed.": "Sessão guardada. O token de acesso será renovado automaticamente quando necessário.",
-  "Signed in. Access token valid until %s; renewed automatically.": "Sessão iniciada. Token de acesso válido até %s; renovação automática."
+  "Sign-in saved": "Sessão guardada",
+  "Signed in. Token valid until %s. Renewed automatically.": "Sessão iniciada. Token válido até %s. Renovado automaticamente.",
+  "Save cloud protocol and country, then start the instance. Enter your account email, request a code and confirm the email code here. All account devices are discovered automatically.": "Guarde o protocolo Cloud e o país e inicie a instância. Introduza o e-mail, solicite um código e confirme-o aqui. Todos os dispositivos são detetados automaticamente."
 }

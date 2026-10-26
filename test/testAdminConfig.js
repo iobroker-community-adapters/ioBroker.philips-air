@@ -67,11 +67,11 @@ describe('cloud Admin configuration contract', () => {
         expect(jsonConfig.items._cloudRequestCode.command).to.equal('cloudRequestCode');
         expect(jsonConfig.items._cloudConfirmCode.command).to.equal('cloudConfirmCode');
         expect(jsonConfig.items._cloudConfirmCode.reloadBrowser).to.equal(true);
-        for (const field of ['_cloudEmail', '_cloudCode']) {
-            expect(ioPackage.native).not.to.have.property(field);
-        }
+        expect(ioPackage.native).not.to.have.property('_cloudCode');
+        expect(ioPackage.native.cloudEmail).to.equal('');
+        expect(jsonConfig.items.cloudEmail.type).to.equal('text');
         const email = 'test"\\@example.invalid';
-        const data = { _cloudEmail: email, _cloudCode: '012345' };
+        const data = { cloudEmail: email, _cloudCode: '012345' };
         for (const [item, expected] of Object.entries({ _cloudRequestCode: { email }, _cloudConfirmCode: { code: '012345' } })) {
             const interpolate = new Function('data', `return \`${jsonConfig.items[item].jsonData}\`;`);
             expect(JSON.parse(interpolate(data))).to.deep.equal(expected);
@@ -79,6 +79,8 @@ describe('cloud Admin configuration contract', () => {
         expect(jsonConfig.items).not.to.have.property('_cloudReload');
         expect(jsonConfig.items._cloudStatus.type).to.equal('textSendTo');
         expect(jsonConfig.items._cloudStatus.command).to.equal('cloudLoginStatus');
+        const statusData = new Function('_system', `return \`${jsonConfig.items._cloudStatus.jsonData}\`;`);
+        expect(JSON.parse(statusData({ language: 'de' }))).to.deep.equal({ language: 'de' });
         expect(jsonConfig.items).not.to.have.property('cloudDeviceId');
         for (const secret of ioPackage.encryptedNative) {
             expect(ioPackage.protectedNative).to.include(secret);

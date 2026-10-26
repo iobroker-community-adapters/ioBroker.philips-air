@@ -17,8 +17,8 @@
   "Send verification code": "Bestätigungscode senden",
   "Email verification code": "Bestätigungscode aus der E-Mail",
   "Confirm verification code": "Bestätigungscode bestätigen",
-  "Save cloud protocol and country, then start the instance. Enter your account email, request a code and confirm the email code here. Email and code are not saved. All account devices are discovered automatically.": "Cloud-Protokoll und Kontoland speichern, dann die Instanz starten. E-Mail eingeben, Code anfordern und den E-Mail-Code hier bestätigen. E-Mail und Code werden nicht gespeichert. Alle Kontogeräte werden automatisch erkannt.",
   "Not signed in": "Nicht angemeldet",
-  "Sign-in saved. Access token will be renewed automatically when needed.": "Anmeldung gespeichert. Das Zugriffstoken wird bei Bedarf automatisch erneuert.",
-  "Signed in. Access token valid until %s; renewed automatically.": "Angemeldet. Zugriffstoken gültig bis %s; wird automatisch erneuert."
+  "Sign-in saved": "Anmeldung gespeichert",
+  "Signed in. Token valid until %s. Renewed automatically.": "Angemeldet. Token gültig bis %s. Wird automatisch erneuert.",
+  "Save cloud protocol and country, then start the instance. Enter your account email, request a code and confirm the email code here. All account devices are discovered automatically.": "Cloud-Protokoll und Kontoland speichern, dann die Instanz starten. E-Mail eingeben, Code anfordern und den E-Mail-Code hier bestätigen. Alle Kontogeräte werden automatisch erkannt."
 }

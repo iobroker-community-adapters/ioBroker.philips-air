@@ -17,8 +17,8 @@
   "Send verification code": "Verificatiecode verzenden",
   "Email verification code": "Verificatiecode uit e-mail",
   "Confirm verification code": "Verificatiecode bevestigen",
-  "Save cloud protocol and country, then start the instance. Enter your account email, request a code and confirm the email code here. Email and code are not saved. All account devices are discovered automatically.": "Sla het Cloud-protocol en het land op en start de instantie. Voer uw e-mailadres in, vraag een code aan en bevestig deze hier. E-mailadres en code worden niet opgeslagen. Alle apparaten worden automatisch gevonden.",
   "Not signed in": "Niet aangemeld",
-  "Sign-in saved. Access token will be renewed automatically when needed.": "Aanmelding opgeslagen. Het toegangstoken wordt indien nodig automatisch vernieuwd.",
-  "Signed in. Access token valid until %s; renewed automatically.": "Aangemeld. Toegangstoken geldig tot %s; wordt automatisch vernieuwd."
+  "Sign-in saved": "Aanmelding opgeslagen",
+  "Signed in. Token valid until %s. Renewed automatically.": "Aangemeld. Token geldig tot %s. Wordt automatisch vernieuwd.",
+  "Save cloud protocol and country, then start the instance. Enter your account email, request a code and confirm the email code here. All account devices are discovered automatically.": "Sla het Cloud-protocol en het land op en start de instantie. Voer uw e-mailadres in, vraag een code aan en bevestig deze hier. Alle apparaten worden automatisch gevonden."
 }

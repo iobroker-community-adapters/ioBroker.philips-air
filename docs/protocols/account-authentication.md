@@ -309,8 +309,8 @@ It calls `accounts.auth.otp.email.sendCode`, verifies through
 `accounts.auth.otp.email.login`, obtains an OAuth context with `prompt=none`,
 requests a `gmidTicket` from `socialize.getIDs`, and completes
 `authorize/continue` before exchanging the code at the discovery-advertised
-`/token` endpoint. No browser proxy remains. Email, verification code and Gigya
-session are not stored in native configuration. See [Cloud setup](../cloud.md)
+`/token` endpoint. No browser proxy remains. The email is saved with the account
+tokens; verification code and Gigya session are not stored in native configuration. See [Cloud setup](../cloud.md)
 for the current user-facing behavior and verification limits.
 
 Remaining proof: integrated Admin email-code login, country and account migration

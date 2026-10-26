@@ -716,6 +716,17 @@ describe('mapping - renameReported reports what it actually renamed', () => {
 describe('mapping - AC0651 cloud model boundaries', () => {
     const { stateCommon } = require('../lib/mapping');
     const model = require('../lib/mapping').createCloudMapping('AC0651');
+    it('names confirmed platform and status bits without guessing other fields or enabling writes', () => {
+        const values = { D01S04: 'MUJI plus', D03240: 49153, D0312C: 10, D01102: 5 };
+        model.renameReported(values);
+        expect(values).to.deep.equal({ platform: 'MUJI plus', statusBits: 49153, D0312C: 10, D01102: 5 });
+        expect(stateCommon(model.mapping.D01S04)).to.include({ type: 'string', read: true, write: false });
+        expect(stateCommon(model.mapping.D03240)).to.include({ type: 'number', read: true, write: false });
+        expect(model.channelOf(model.mapping.D01S04)).to.equal('device');
+        expect(model.channelOf(model.mapping.D03240)).to.equal('status');
+        expect(model.buildControlPayload({ platform: 'other', statusBits: 0 })).to.deep.equal({});
+        expect(createMapping('AC3221').mapping).not.to.have.property('D03240');
+    });
     it('separates reported fan speed from shadow power and maps all documented modes', () => {
         const values = { powerOn: false, D0310D: 3, D0310C: 1, D03221: 0, D03120: 0 };
         model.renameReported(values);

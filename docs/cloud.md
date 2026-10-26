@@ -110,6 +110,14 @@ accepted by a firmware. The default profile is a fallback, not a tested-device
 compatibility claim. Device/server rejection is reported rather than treated
 as successful control.
 
+`device.platform` names the reported platform (`D01S04`, for example `MUJI plus`).
+`status.statusBits` preserves the numeric status/error bit field (`D03240`)
+without decoding every bit. In the inspected AC0651 app logic, `49153` matches
+a filter-cleaning condition; it is not a universal fault-code table. Both states
+are read-only. Fields whose meaning is unconfirmed remain in `unknownStates`.
+Previously created raw states are retained and receive no further updates once
+their values are mapped to the named states.
+
 Observed values use `ack: true`. Sending a command never substitutes its desired
 value for reported device state. MQTT acknowledgement proves transmission only;
 port responses are correlated and followed by a status read. Power is confirmed

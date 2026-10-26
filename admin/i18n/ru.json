@@ -13,7 +13,10 @@
   "ms - should be >= Alive timeout": "мс — должно быть >= тайм-аута активности",
   "Cloud account country (two letters)": "Страна облачной учётной записи (две буквы)",
   "Enter a two-letter country code": "Введите двухбуквенный код страны",
-  "Sign in to Philips Cloud": "Войти в Philips Cloud",
   "Reload after signing in": "Обновить после входа",
-  "Save cloud protocol and country, then start the instance. Sign in in the new tab. After confirmation, return here and reload. All devices in your account are discovered automatically. The login uses HTTPS with the Admin certificate.": "Сохраните облачный протокол и страну, затем запустите экземпляр. Войдите в новой вкладке. После подтверждения вернитесь сюда и обновите страницу. Все устройства вашей учётной записи обнаруживаются автоматически. Для входа используется HTTPS с сертификатом Admin."
+  "Cloud account email": "Электронная почта облачного аккаунта",
+  "Send verification code": "Отправить код подтверждения",
+  "Email verification code": "Код подтверждения из письма",
+  "Confirm verification code": "Подтвердить код",
+  "Save cloud protocol and country, then start the instance. Enter your account email, request a code and confirm the email code here. Email and code are not saved. All account devices are discovered automatically.": "Сохраните протокол Cloud и страну, затем запустите экземпляр. Введите e-mail, запросите код и подтвердите его здесь. E-mail и код не сохраняются. Все устройства обнаруживаются автоматически."
 }

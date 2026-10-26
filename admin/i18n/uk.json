@@ -13,10 +13,12 @@
   "ms - should be >= Alive timeout": "мс — має бути >= тайм-аут активності",
   "Cloud account country (two letters)": "Країна хмарного облікового запису (дві літери)",
   "Enter a two-letter country code": "Введіть дволітерний код країни",
-  "Reload after signing in": "Оновити після входу",
   "Cloud account email": "Електронна пошта хмарного облікового запису",
   "Send verification code": "Надіслати код підтвердження",
   "Email verification code": "Код підтвердження з листа",
   "Confirm verification code": "Підтвердити код",
-  "Save cloud protocol and country, then start the instance. Enter your account email, request a code and confirm the email code here. Email and code are not saved. All account devices are discovered automatically.": "Збережіть протокол Cloud і країну та запустіть екземпляр. Введіть e-mail, запросіть код і підтвердьте його тут. E-mail і код не зберігаються. Усі пристрої виявляються автоматично."
+  "Save cloud protocol and country, then start the instance. Enter your account email, request a code and confirm the email code here. Email and code are not saved. All account devices are discovered automatically.": "Збережіть протокол Cloud і країну та запустіть екземпляр. Введіть e-mail, запросіть код і підтвердьте його тут. E-mail і код не зберігаються. Усі пристрої виявляються автоматично.",
+  "Not signed in": "Вхід не виконано",
+  "Sign-in saved. Access token will be renewed automatically when needed.": "Дані входу збережено. Токен доступу буде автоматично оновлено за потреби.",
+  "Signed in. Access token valid until %s; renewed automatically.": "Вхід виконано. Токен доступу дійсний до %s; оновлюється автоматично."
 }

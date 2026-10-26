@@ -13,10 +13,12 @@
   "ms - should be >= Alive timeout": "ms - should be >= Alive timeout",
   "Cloud account country (two letters)": "Cloud account country (two letters)",
   "Enter a two-letter country code": "Enter a two-letter country code",
-  "Reload after signing in": "Reload after signing in",
   "Cloud account email": "Cloud account email",
   "Send verification code": "Send verification code",
   "Email verification code": "Email verification code",
   "Confirm verification code": "Confirm verification code",
-  "Save cloud protocol and country, then start the instance. Enter your account email, request a code and confirm the email code here. Email and code are not saved. All account devices are discovered automatically.": "Save cloud protocol and country, then start the instance. Enter your account email, request a code and confirm the email code here. Email and code are not saved. All account devices are discovered automatically."
+  "Save cloud protocol and country, then start the instance. Enter your account email, request a code and confirm the email code here. Email and code are not saved. All account devices are discovered automatically.": "Save cloud protocol and country, then start the instance. Enter your account email, request a code and confirm the email code here. Email and code are not saved. All account devices are discovered automatically.",
+  "Not signed in": "Not signed in",
+  "Sign-in saved. Access token will be renewed automatically when needed.": "Sign-in saved. Access token will be renewed automatically when needed.",
+  "Signed in. Access token valid until %s; renewed automatically.": "Signed in. Access token valid until %s; renewed automatically."
 }

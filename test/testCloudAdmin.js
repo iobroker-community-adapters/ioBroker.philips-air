@@ -55,26 +55,33 @@ describe('cloud Admin account boundary', () => {
         admin.account.requestOtp = async (...args) => { calls.push(args); };
         admin.account.completeOtp = async (...args) => { calls.push(args); };
         await admin.onMessage(message('cloudRequestCode', { email: 'synthetic@example.test', owner: 'forged' }));
-        await admin.onMessage(message('cloudLoginStatus'));
-        assert.deepEqual(replies.at(-1).result, { signedIn: false, reloadBrowser: false });
         await admin.onMessage(message('cloudConfirmCode', { code: '123456' }));
         assert.deepEqual(calls, [['synthetic@example.test', 'system.adapter.admin.0:system.user.admin'],
             ['123456', 'system.adapter.admin.0:system.user.admin']]);
         assert.equal(replies.at(-1).result.reloadBrowser, true);
-        await admin.onMessage(message('cloudLoginStatus'));
-        assert.deepEqual(replies.at(-1).result, { signedIn: true, reloadBrowser: true });
     });
 
-    it('returns stored login status and ignores removed browser commands', async () => {
+    it('ignores removed browser commands', async () => {
         const { admin, replies } = fixture();
         await admin.onMessage(message('cloudLogin'));
         await admin.onMessage(message('cloudCompleteLogin'));
         assert.equal(replies.length, 0);
+    });
+
+    it('shows saved login and expiry without exposing tokens or claiming refresh lifetime', async () => {
+        const { admin, replies } = fixture();
+        admin.account.now = () => 1000;
         await admin.onMessage(message('cloudLoginStatus'));
-        assert.deepEqual(replies.at(-1).result, { signedIn: true, reloadBrowser: true });
+        assert.match(replies.at(-1).result.text, /^Signed in\. Access token valid until /);
+        assert.ok(admin.account.tokens);
+        admin.account.tokens.expiresAt = 1;
+        await admin.onMessage(message('cloudLoginStatus'));
+        assert.equal(replies.at(-1).result.text, 'Sign-in saved. Access token will be renewed automatically when needed.');
         admin.account.tokens = undefined;
-        await admin.onMessage(message('cloudLoginStatus'));
-        assert.deepEqual(replies.at(-1).result, { signedIn: false, reloadBrowser: false });
+        await admin.onMessage(message('cloudLoginStatus', { language: 'de' }));
+        assert.equal(replies.at(-1).result.text, 'Nicht angemeldet');
+        assert.ok(replies.every(reply => Object.keys(reply.result).join() === 'text'));
+        assert.ok(replies.every(reply => !JSON.stringify(reply.result).includes('synthetic-')));
     });
 
     it('discards superseded starts and late confirmations', async () => {
@@ -93,7 +100,7 @@ describe('cloud Admin account boundary', () => {
         finish();
         await confirmation;
         assert.equal(replies.length, 2);
-        assert.equal(admin.loginCompleted, false);
+        assert.ok(replies.every(reply => !reply.result.reloadBrowser));
     });
 
     it('sanitizes unexpected failures and preserves stable CloudError messages', async () => {

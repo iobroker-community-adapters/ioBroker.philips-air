@@ -117,6 +117,18 @@
       "xl": 12,
       "newLine": true
     },
+    "_cloudStatus": {
+      "type": "textSendTo",
+      "command": "cloudLoginStatus",
+      "container": "div",
+      "jsonData": "{\"language\":${JSON.stringify(_system.common.language || \"en\")}}",
+      "hidden": "data.protocol !== 'cloud'",
+      "xs": 12,
+      "sm": 12,
+      "md": 12,
+      "lg": 12,
+      "xl": 12
+    },
     "cloudCountry": {
       "type": "text",
       "label": "Cloud account country (two letters)",
@@ -179,20 +191,6 @@
       "reloadBrowser": true,
       "showProcess": true,
       "timeout": 90000,
-      "hidden": "data.protocol !== 'cloud'",
-      "xs": 12,
-      "sm": 12,
-      "md": 4,
-      "lg": 4,
-      "xl": 4
-    },
-    "_cloudReload": {
-      "type": "sendTo",
-      "label": "Reload after signing in",
-      "command": "cloudLoginStatus",
-      "reloadBrowser": true,
-      "showProcess": true,
-      "timeout": 30000,
       "hidden": "data.protocol !== 'cloud'",
       "xs": 12,
       "sm": 12,

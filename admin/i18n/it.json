@@ -13,10 +13,12 @@
   "ms - should be >= Alive timeout": "ms - deve essere >= timeout di attività",
   "Cloud account country (two letters)": "Paese dell’account cloud (due lettere)",
   "Enter a two-letter country code": "Inserisci un codice paese di due lettere",
-  "Reload after signing in": "Ricarica dopo l’accesso",
   "Cloud account email": "Email dell’account Cloud",
   "Send verification code": "Invia codice di verifica",
   "Email verification code": "Codice di verifica ricevuto via email",
   "Confirm verification code": "Conferma codice di verifica",
-  "Save cloud protocol and country, then start the instance. Enter your account email, request a code and confirm the email code here. Email and code are not saved. All account devices are discovered automatically.": "Salvare il protocollo Cloud e il paese, quindi avviare l’istanza. Inserire l’email, richiedere un codice e confermarlo qui. Email e codice non vengono salvati. Tutti i dispositivi vengono rilevati automaticamente."
+  "Save cloud protocol and country, then start the instance. Enter your account email, request a code and confirm the email code here. Email and code are not saved. All account devices are discovered automatically.": "Salvare il protocollo Cloud e il paese, quindi avviare l’istanza. Inserire l’email, richiedere un codice e confermarlo qui. Email e codice non vengono salvati. Tutti i dispositivi vengono rilevati automaticamente.",
+  "Not signed in": "Non connesso",
+  "Sign-in saved. Access token will be renewed automatically when needed.": "Accesso salvato. Il token di accesso verrà rinnovato automaticamente quando necessario.",
+  "Signed in. Access token valid until %s; renewed automatically.": "Connesso. Token di accesso valido fino al %s; rinnovo automatico."
 }

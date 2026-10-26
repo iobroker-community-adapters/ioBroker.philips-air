@@ -26,8 +26,8 @@ HTTP/CoAP support; their Cloud login path is unavailable.
    code**. No account password is required. A rejected code can be corrected;
    after ten minutes or an instance restart, request a new code.
 4. After successful login, the controller restarts the instance and settings
-   reload. If the restart interrupts the response, wait for the instance and
-   select **Reload after signing in** before saving settings again.
+   reload automatically. If the restart interrupts the response, wait for the
+   instance and refresh the browser before saving settings again.
 5. All account devices are discovered automatically. No device selection,
    local device address or device ID is required.
 
@@ -49,6 +49,14 @@ Only the resulting access/refresh/ID tokens are persisted, in flat native fields
 declared in both `encryptedNative` and `protectedNative`. Administrative access
 to the installation still grants access to credentials. Keep Admin access
 protected; the email and code travel through its existing connection.
+
+The settings show the saved login status automatically when opened. This uses
+the locally stored tokens, not a separate login request. It displays the current
+access token's expiry without exposing cookies or tokens. The adapter refreshes
+that token automatically when needed; its expiry is not the end of the account
+session. Philips does not provide a fixed refresh-token lifetime. If renewal is
+rejected, sign in again. After an instance restart or configuration reload the
+status is read again; it is not a continuously polled service-health indicator.
 
 The controller restarts the instance after a successful token configuration
 write. Initial login and refresh therefore interrupt the current connection;

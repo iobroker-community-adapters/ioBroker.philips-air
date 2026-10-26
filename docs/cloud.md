@@ -85,7 +85,10 @@ devices. Previously created objects are retained.
 HTTP and CoAP retain one configured local device per instance, their existing
 state IDs, host field and manual model selection. Use another instance for
 another local device. Cloud's automatic profiles and device trees apply only
-to the Cloud connection.
+to the Cloud connection. New Cloud instances create only shared `info`
+infrastructure and the `devices` tree, without local root channels or `info.key`.
+Objects left over from an earlier local configuration are retained when changing
+protocol; the adapter does not delete existing states or user customizations.
 
 ## Shared profiles and observed controls
 

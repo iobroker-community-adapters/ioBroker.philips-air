@@ -55,12 +55,11 @@ See [Cloud setup and limits](docs/cloud.md).
 For an Air+ account connection, select **Philips Cloud** and follow the
 [Cloud setup and limits](docs/cloud.md). Sign in
 by entering your account email and the verification code in the adapter settings.
-No password, external login page or callback copying is required. The email is
-saved after sign-in; the verification code is not.
+No account password is required.
 
 Cloud supports multiple account devices in one instance. With **HTTP or CoAP**,
 each instance connects **one local device**; create another instance for another
-device. Local state IDs and model settings remain unchanged.
+device.
 
 For a local HTTP or CoAP connection:
 Enter the IP address or the hostname of your device. You can find it in your router, where the device often shows up as `MiCO`.
@@ -125,7 +124,8 @@ Further setup instructions and technical references: [Documentation](docs/README
 -->
 ### **WORK IN PROGRESS**
 
-- (reloxx13) Added Philips Cloud with email verification login, automatic discovery of all account devices with separate object trees, shared device profiles, status and explicit filter maintenance commands; physical controls remain unverified
+- (reloxx13) Cloud sign-in renews automatically without restarting the adapter instance
+- (reloxx13) Added Philips Cloud with email verification login, automatic discovery of all account devices with separate object trees, shared device profiles, status and explicit filter maintenance commands
 - (tt-tom17) A new instance now starts with the device model "Generic" (read-only values, no controls) instead of silently using the AC2889 controls; instances that already have a model keep it
 - (tt-tom17) With the device model "Generic" the log now names the model your device looks like, so you know which one to select
 - (reloxx13) Updated the shared test framework to 6.3.1, disabling diagnostic reporting in test installations and supporting npm 12 setup

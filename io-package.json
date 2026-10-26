@@ -232,7 +232,8 @@
     "cloudAccessToken": "",
     "cloudRefreshToken": "",
     "cloudIdToken": "",
-    "cloudExpiresAt": 0
+    "cloudExpiresAt": 0,
+    "cloudEmail": ""
   },
   "objects": [],
   "instanceObjects": [

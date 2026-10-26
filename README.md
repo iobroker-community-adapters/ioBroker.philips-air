@@ -53,8 +53,9 @@ For an Air+ account connection, select **Philips Cloud** and follow the
 [Cloud setup and limits](docs/cloud.md). This connection uses a shared default
 profile and app-derived family overrides for all account devices. Sign in
 by entering your account email and the verification code in the adapter settings.
-No password, external login page or callback copying is required. Email and code
-are not saved. Physical Cloud controls still need device acceptance.
+No password, external login page or callback copying is required. The email is
+saved after sign-in; the verification code is not. Physical Cloud controls still
+need device acceptance.
 
 Cloud supports multiple account devices in one instance. With **HTTP or CoAP**,
 each instance connects **one local device**; create another instance for another

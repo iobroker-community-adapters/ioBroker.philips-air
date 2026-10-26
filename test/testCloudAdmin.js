@@ -71,16 +71,18 @@ describe('cloud Admin account boundary', () => {
     it('shows saved login and expiry without exposing tokens or claiming refresh lifetime', async () => {
         const { admin, replies } = fixture();
         admin.account.now = () => 1000;
-        await admin.onMessage(message('cloudLoginStatus'));
-        assert.match(replies.at(-1).result.text, /^Signed in\. Access token valid until /);
+        await admin.onMessage(message('cloudLoginStatus', { language: 'de' }));
+        assert.match(replies.at(-1).result.text, /^Angemeldet\. Token gültig bis /);
+        assert.ok(replies.at(-1).result.text.endsWith('. Wird automatisch erneuert.'));
+        assert.equal(replies.at(-1).result.style.fontSize, '1.1rem');
         assert.ok(admin.account.tokens);
         admin.account.tokens.expiresAt = 1;
         await admin.onMessage(message('cloudLoginStatus'));
-        assert.equal(replies.at(-1).result.text, 'Sign-in saved. Access token will be renewed automatically when needed.');
+        assert.equal(replies.at(-1).result.text, 'Sign-in saved');
         admin.account.tokens = undefined;
         await admin.onMessage(message('cloudLoginStatus', { language: 'de' }));
         assert.equal(replies.at(-1).result.text, 'Nicht angemeldet');
-        assert.ok(replies.every(reply => Object.keys(reply.result).join() === 'text'));
+        assert.ok(replies.every(reply => Object.keys(reply.result).sort().join() === 'style,text'));
         assert.ok(replies.every(reply => !JSON.stringify(reply.result).includes('synthetic-')));
     });
 
@@ -138,5 +140,7 @@ describe('cloud Admin account boundary', () => {
         }
         assert.ok(admin.account.tokens);
         assert.equal(admin.account.tokens.accessToken, 'synthetic-access');
+        await admin.account.saveTokens(tokens, 'synthetic@example.test');
+        assert.equal(updates.at(-1)?.cloudEmail, 'synthetic@example.test');
     });
 });

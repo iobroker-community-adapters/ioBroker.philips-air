@@ -711,3 +711,53 @@ describe('mapping - renameReported reports what it actually renamed', () => {
         expect([...renameReported(undefined)]).to.deep.equal([]);
     });
 });
+
+
+describe('mapping - AC0651 cloud model boundaries', () => {
+    const { stateCommon } = require('../lib/mapping');
+    const model = require('../lib/mapping').createCloudMapping('AC0651');
+    it('separates reported fan speed from shadow power and maps all documented modes', () => {
+        const values = { powerOn: false, D0310D: 3, D0310C: 1, D03221: 0, D03120: 0 };
+        model.renameReported(values);
+        expect(values).to.deep.equal({ power: false, fanSpeedReported: 'speed3', mode: 'gentle', pm25: 0, allergenIndex: 0 });
+        for (const [mode, raw] of Object.entries({ auto: 0, gentle: 1, sleep: 17, turbo: 18 })) {
+            expect(model.buildControlPayload({ mode })).to.deep.equal({ D0310C: raw });
+        }
+        expect(createMapping('CX3550').buildControlPayload({ mode: 'speed1' })).to.deep.equal({ D0310C: 1 });
+    });
+    it('keeps unproven counter units out of metadata and creates write-only buttons', () => {
+        for (const key of ['D05207', 'D0520D', 'D05408', 'D0540E']) {
+            expect(stateCommon(model.mapping[key])).not.to.have.property('unit');
+        }
+        expect(stateCommon(model.mapping.resetPreFilter)).to.include({ type: 'boolean', role: 'button', read: false, write: true });
+        expect(stateCommon(model.mapping.preFilterPercent)).to.include({ min: 0, max: 100, unit: '%' });
+        expect(createMapping('Generic').buildControlPayload({ power: true, mode: 'gentle', resetPreFilter: true })).to.deep.equal({});
+    });
+});
+
+
+describe('cloud shared profiles from app inheritance', () => {
+    const { createCloudMapping } = require('../lib/mapping');
+    it('gives an unknown device the shared default with controls', () => {
+        const cloud = createCloudMapping('UNLISTED/01');
+        expect(cloud.buildControlPayload({ mode: 'gentle' })).to.deep.equal({ D0310C: 1 });
+        expect(cloud.buildControlPayload({ standbyMonitor: false })).to.deep.equal({ D03134: 0 });
+        expect(cloud.mapping.powerOn.control).to.equal(true);
+    });
+    it('uses app family mode differences without transport-specific branches', () => {
+        expect(createCloudMapping('AC0650/10').buildControlPayload({ mode: 'gentle' })).to.deep.equal({ D0310C: 1 });
+        expect(() => createCloudMapping('AC0650/10').buildControlPayload({ mode: 'auto' })).to.throw();
+        for (const ctn of ['AC1715/11', 'AC1711/10']) {
+            expect(createCloudMapping(ctn).buildControlPayload({ mode: 'speed2' })).to.deep.equal({ D0310C: 2 });
+        }
+        for (const ctn of ['AC0710/10', 'AC0720/10', 'AC0721/10']) {
+            expect(createCloudMapping(ctn).buildControlPayload({ mode: 'gentle' })).to.deep.equal({ D0310C: 19 });
+        }
+        expect(createCloudMapping('AC0651/10').buildControlPayload({ mode: 'auto' })).to.deep.equal({ D0310C: 0 });
+    });
+    it('does not change local mappings or guess local cloud support', () => {
+        expect(createMapping('AC0651').mapping).to.deep.equal(createMapping('Generic').mapping);
+        expect(createMapping('CX3550').buildControlPayload({ mode: 'speed1' })).to.deep.equal({ D0310C: 1 });
+        expect(() => createMapping('CX3550').buildControlPayload({ mode: 'gentle' })).to.throw();
+    });
+});

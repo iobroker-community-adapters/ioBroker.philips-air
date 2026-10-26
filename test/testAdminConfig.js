@@ -44,3 +44,27 @@ describe('admin config', () => {
         }
     });
 });
+
+
+describe('cloud Admin configuration contract', () => {
+    it('offers generic Cloud without changing local defaults', () => {
+        expect(jsonConfig.items.protocol.options.find(option => option.value === 'cloud').label).to.equal('Philips Cloud');
+        expect(ioPackage.native.protocol).to.equal('coap');
+        expect(ioPackage.native.model).to.equal('Generic');
+        const validate = new Function('data', `return (${jsonConfig.items.host.validator});`);
+        expect(validate({ protocol: 'cloud', host: '' })).to.equal(true);
+        expect(validate({ protocol: 'coap', host: '' })).to.equal(false);
+        expect(validate({ protocol: 'http', host: 'synthetic.invalid' })).to.equal(true);
+        expect(jsonConfig.items).not.to.have.property('_cloudRedirect');
+        expect(jsonConfig.items).not.to.have.property('_cloudComplete');
+        expect(jsonConfig.items._cloudLogin.jsonData).to.equal('{"origin":"${data._origin}"}');
+        expect(jsonConfig.items._cloudLogin.openUrl).to.equal(true);
+        expect(jsonConfig.items._cloudReload.command).to.equal('cloudLoginStatus');
+        expect(jsonConfig.items._cloudReload.reloadBrowser).to.equal(true);
+        expect(jsonConfig.items).not.to.have.property('cloudDeviceId');
+        for (const secret of ioPackage.encryptedNative) {
+            expect(ioPackage.protectedNative).to.include(secret);
+            expect(jsonConfig.items).not.to.have.property(secret);
+        }
+    });
+});

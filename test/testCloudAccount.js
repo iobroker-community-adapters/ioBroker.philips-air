@@ -11,29 +11,53 @@ const response = (data, status = 200) => new Response(JSON.stringify(data), { st
 function fixture(replies = []) {
     const calls = [];
     const saved = [];
-    const account = new CloudAccount({ tokens: { ...tokens }, now: () => 1000,
+    const account = new CloudAccount({ tokens: { ...tokens }, now: () => 1000, countryCode: 'DE',
         saveTokens: async data => { saved.push(data); },
         fetch: async (url, init) => { calls.push({ url, init }); return response(replies.shift()); } });
     return { account, calls, saved };
 }
-function callback(account) {
-    const url = new URL(account.startLogin('admin.0').url);
-    return `com.philips.air://loginredirect?code=synthetic%2Bcode&state=${url.searchParams.get('state')}`;
+function otpFetch(calls, token = tokenReply) {
+    return async (url, init) => {
+        calls.push({ url, init });
+        if (url.endsWith('sendCode')) return response({ errorCode: 0, vToken: 'synthetic-vtoken' });
+        if (url.endsWith('email.login')) return response({ errorCode: 0, sessionInfo: { cookieValue: 'synthetic-session' } });
+        if (url.includes('/authorize?')) return new Response(null, { status: 302,
+            headers: { location: 'https://www.accounts.home.id/authui/client/proxy?context=synthetic-context' } });
+        if (url.endsWith('socialize.getIDs')) return response({ errorCode: 0, gmidTicket: 'synthetic-ticket' });
+        if (url.includes('/authorize/continue?')) return new Response(null, { status: 302,
+            headers: { location: 'com.philips.air://loginredirect?code=synthetic%2Bcode' } });
+        return response(token);
+    };
+}
+async function login(account) {
+    await account.requestOtp('synthetic@example.test', 'admin.0');
+    return account.completeOtp('123456', 'admin.0');
 }
 
 describe('cloud account OAuth and REST', () => {
+    it('requires an explicit country before login or regional discovery', async () => {
+        let requests = 0;
+        const account = new CloudAccount({ saveTokens: async () => {},
+            fetch: async () => { requests++; return response(routing); } });
+        await assert.rejects(account.requestOtp('synthetic@example.test', 'admin.0'), /country_required/);
+        await assert.rejects(account.discover(), /country_required/);
+        assert.equal(requests, 0);
+        account.destroy();
+    });
+
     it('does not let an old refresh overwrite a newly completed account login', async () => {
         const { account, saved } = fixture();
         let finishRefresh = (_reply) => {};
+        const oauth = otpFetch([] , { ...tokenReply, access_token: 'new-account' });
         account.fetch = async (_url, init) => {
             const form = new URLSearchParams(String(init?.body));
             if (form.get('grant_type') === 'refresh_token') {
                 return new Promise(resolve => { finishRefresh = resolve; });
             }
-            return response({ ...tokenReply, access_token: 'new-account' });
+            return oauth(_url, init);
         };
         const refresh = account.ensureAccessToken(true).catch(error => error.message);
-        await account.completeLogin(callback(account), 'admin.0');
+        await login(account);
         finishRefresh(response({ ...tokenReply, access_token: 'old-account' }));
         assert.match(await refresh, /login_superseded/);
         assert.deepEqual(saved.map(value => value.accessToken), ['new-account']);
@@ -56,11 +80,13 @@ describe('cloud account OAuth and REST', () => {
         };
         const refresh = account.ensureAccessToken(true).catch(error => error.message);
         await enteredSave;
-        const login = account.completeLogin(callback(account), 'admin.0');
+        account.fetch = otpFetch([], { ...tokenReply, access_token: 'new-account' });
+        await account.requestOtp('synthetic@example.test', 'admin.0');
+        const signingIn = account.completeOtp('123456', 'admin.0');
         await assert.rejects(account.ensureAccessToken(), /login_in_progress/);
         finishSave();
         assert.match(await refresh, /login_superseded/);
-        await login;
+        await signingIn;
         assert.equal(saved.at(-1).accessToken, 'new-account');
         assert.equal(account.tokens?.accessToken, 'new-account');
     });
@@ -77,35 +103,143 @@ describe('cloud account OAuth and REST', () => {
         assert.equal(count, 2);
         assert.ok(calls.every(call => !call.init.headers.Authorization));
     });
-    it('uses S256 and an encoded form, saves tokens before exposing them, and consumes callbacks once', async () => {
-        const { account, calls, saved } = fixture([tokenReply]);
-        const redirect = callback(account);
+    it('sends OTP and completes passive S256 PKCE without following redirects or retaining credentials', async () => {
+        const { account, calls, saved } = fixture();
+        account.fetch = otpFetch(calls);
+        await account.requestOtp('synthetic@example.test', 'admin.0');
         assert.ok(account.login);
         const verifier = account.login.verifier;
-        assert.equal(verifier.length, 86);
-        const other = new URL(account.startLogin('other').url);
-        assert.ok(account.login);
-        assert.equal(other.searchParams.get('code_challenge'), createHash('sha256').update(account.login.verifier).digest('base64url'));
-        assert.equal(other.searchParams.get('code_challenge_method'), 'S256');
-        await assert.rejects(account.completeLogin(redirect, 'admin.0'), /invalid_state/);
-        const current = callback(account);
-        await account.completeLogin(current, 'admin.0');
-        const form = new URLSearchParams(String(calls[0].init.body));
+        await account.completeOtp('123456', 'admin.0');
+        const authorization = new URL(calls.find(call => call.url.includes('/authorize?')).url);
+        assert.equal(authorization.searchParams.get('prompt'), 'none');
+        assert.equal(authorization.searchParams.get('code_challenge'), createHash('sha256').update(verifier).digest('base64url'));
+        assert.equal(authorization.searchParams.get('code_challenge_method'), 'S256');
+        assert.equal(authorization.searchParams.get('redirect_uri'), 'com.philips.air://loginredirect');
+        const form = new URLSearchParams(calls.at(-1).init.body);
         assert.equal(form.get('code'), 'synthetic+code');
-        assert.equal(form.get('redirect_uri'), 'com.philips.air://loginredirect');
+        assert.equal(form.get('code_verifier'), verifier);
+        assert.ok(calls.at(-1).url.endsWith('/token'));
         assert.equal(saved[0].accessToken, 'new-access');
-        await assert.rejects(account.completeLogin(current, 'admin.0'), /invalid_state/);
+        assert.equal(account.login, undefined);
+        assert.ok(calls.every(call => call.init.redirect === (call.url.includes('/authorize') ? 'manual' : 'error')));
+        await assert.rejects(account.completeOtp('123456', 'admin.0'), /invalid_state/);
     });
 
-    it('rejects wrong owners, expired states, duplicate parameters and altered callback hosts', async () => {
+    it('rejects invalid inputs, wrong owners and expired sessions before verification', async () => {
         const { account, calls } = fixture();
-        const redirect = callback(account);
-        await assert.rejects(account.completeLogin(redirect, 'another'), /invalid_state/);
-        await assert.rejects(account.completeLogin(redirect.replace('loginredirect', 'loginredirect.attacker'), 'admin.0'), /invalid_redirect/);
-        await assert.rejects(account.completeLogin(`${redirect}&state=duplicate`, 'admin.0'), /invalid_state/);
+        account.fetch = otpFetch(calls);
+        await assert.rejects(account.requestOtp('bad', 'admin.0'), /invalid_email/);
+        await assert.rejects(account.requestOtp('synthetic@example.test', ''), /invalid_owner/);
+        await account.requestOtp('synthetic@example.test', 'admin.0');
+        await assert.rejects(account.completeOtp('123456', 'another'), /invalid_state/);
+        await assert.rejects(account.completeOtp('12345', 'admin.0'), /otp_invalid/);
         account.now = () => 700000;
-        await assert.rejects(account.completeLogin(redirect, 'admin.0'), /invalid_state/);
-        assert.equal(calls.length, 0);
+        await assert.rejects(account.completeOtp('123456', 'admin.0'), /invalid_state/);
+        assert.equal(calls.length, 1);
+    });
+
+    it('allows correcting a rejected OTP but blocks parallel completion and consumes verified sessions', async () => {
+        const { account } = fixture();
+        account.fetch = otpFetch([]);
+        await account.requestOtp('synthetic@example.test', 'admin.0');
+        const oauth = account.fetch;
+        let finish = (_response) => {};
+        account.fetch = async () => new Promise(resolve => { finish = resolve; });
+        const first = account.completeOtp('123456', 'admin.0');
+        await assert.rejects(account.completeOtp('123456', 'admin.0'), /login_in_progress/);
+        finish(response({ errorCode: 403000, errorMessage: 'private-data' }));
+        await assert.rejects(first, /otp_invalid/);
+        assert.ok(account.login);
+        account.fetch = oauth;
+        await account.completeOtp('654321', 'admin.0');
+        await assert.rejects(account.completeOtp('654321', 'admin.0'), /invalid_state/);
+    });
+
+    it('discards superseded OTP requests and verification results', async () => {
+        const { account, saved } = fixture();
+        let finish = (_response) => {};
+        account.fetch = async () => new Promise(resolve => { finish = resolve; });
+        const old = account.requestOtp('old@example.test', 'admin.0');
+        account.fetch = otpFetch([]);
+        await account.requestOtp('new@example.test', 'admin.0');
+        finish(response({ errorCode: 0, vToken: 'old-token' }));
+        await assert.rejects(old, /login_superseded/);
+        assert.equal(account.login?.email, 'new@example.test');
+        account.fetch = async () => new Promise(resolve => { finish = resolve; });
+        const verifying = account.completeOtp('123456', 'admin.0');
+        account.fetch = otpFetch([]);
+        await account.requestOtp('newest@example.test', 'admin.0');
+        finish(response({ errorCode: 0, sessionInfo: { cookieValue: 'old-session' } }));
+        await assert.rejects(verifying, /login_superseded/);
+        assert.equal(saved.length, 0);
+    });
+
+    it('rejects changed callback destinations, duplicate codes and wrong states without token exchange', async () => {
+        for (const callback of ['https://attacker.test/?code=secret',
+            'com.philips.air://loginredirect.attacker?code=secret',
+            'com.philips.air://loginredirect?code=one&code=two',
+            'com.philips.air://loginredirect?code=one&state=wrong']) {
+            const { account, calls, saved } = fixture();
+            const oauth = otpFetch(calls);
+            account.fetch = async (url, init) => String(url).includes('/authorize/continue?')
+                ? new Response(null, { status: 302, headers: { location: callback } }) : oauth(url, init);
+            await assert.rejects(login(account), /invalid_redirect|authorization_failed|invalid_state/);
+            assert.equal(saved.length, 0);
+            assert.equal(account.tokens?.accessToken, tokens.accessToken);
+            assert.ok(!calls.some(call => call.url.endsWith('/token')));
+        }
+    });
+
+    it('rejects untrusted context redirects without following them or requesting a ticket', async () => {
+        const { account, calls, saved } = fixture();
+        const oauth = otpFetch(calls);
+        account.fetch = async (url, init) => String(url).includes('/authorize?')
+            ? new Response(null, { status: 302, headers: { location: 'https://attacker.test/?context=secret' } }) : oauth(url, init);
+        await assert.rejects(login(account), /invalid_redirect/);
+        assert.equal(saved.length, 0);
+        assert.ok(!calls.some(call => call.url.endsWith('socialize.getIDs')));
+    });
+
+    it('releases OAuth response bodies on both valid and rejected redirects', async () => {
+        for (const status of [302, 200]) {
+            const { account } = fixture();
+            let canceled = false;
+            account.fetch = async () => new Response(new ReadableStream({
+                cancel() { canceled = true; },
+            }), { status, headers: { location: 'https://www.accounts.home.id/authui/client/proxy?context=synthetic' } });
+            if (status === 302) {
+                assert.match(await account.redirect('https://cdc.accounts.home.id/synthetic'), /context=synthetic/);
+            } else {
+                await assert.rejects(account.redirect('https://cdc.accounts.home.id/synthetic'), /authorization_failed/);
+            }
+            assert.equal(canceled, true);
+        }
+    });
+
+    it('requires app registration when Gigya accepts a pending account and sanitizes provider errors', async () => {
+        const { account } = fixture();
+        const oauth = otpFetch([]);
+        account.fetch = async (url, init) => String(url).endsWith('email.login')
+            ? response({ errorCode: 206001, errorMessage: 'private-account-data' }) : oauth(url, init);
+        await assert.rejects(login(account), /account_pending_registration/);
+        assert.equal(account.login, undefined);
+        assert.equal(account.tokens?.accessToken, tokens.accessToken);
+    });
+
+    it('rejects verification after its session expires or the adapter unloads', async () => {
+        for (const stop of [false, true]) {
+            const { account, saved } = fixture();
+            account.fetch = otpFetch([]);
+            await account.requestOtp('synthetic@example.test', 'admin.0');
+            let finish = (_response) => {};
+            account.fetch = async () => new Promise(resolve => { finish = resolve; });
+            const verification = account.completeOtp('123456', 'admin.0');
+            if (stop) account.destroy();
+            else account.now = () => 700000;
+            finish(response({ errorCode: 0, sessionInfo: { cookieValue: 'late-private-session' } }));
+            await assert.rejects(verification, stop ? /stopped/ : /invalid_state/);
+            assert.equal(saved.length, 0);
+        }
     });
 
     it('coalesces concurrent refreshes and includes both existing tokens in the refresh form', async () => {
@@ -122,9 +256,10 @@ describe('cloud account OAuth and REST', () => {
         const { account, saved } = fixture([tokenReply, tokenReply]);
         account.saveTokens = async () => { throw new Error('private token storage data'); };
         await assert.rejects(account.ensureAccessToken(true), /token_storage_failed/);
-        await assert.rejects(account.ensureAccessToken(), /login_required/);
+        assert.equal(account.tokens?.accessToken, tokens.accessToken);
+        account.fetch = otpFetch([]);
         account.saveTokens = async data => { saved.push(data); };
-        await account.completeLogin(callback(account), 'admin.0');
+        await login(account);
         assert.equal(saved.length, 1);
     });
 

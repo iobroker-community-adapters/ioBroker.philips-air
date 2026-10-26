@@ -7,7 +7,7 @@ supported devices.
 
 | Guide | Scope |
 | --- | --- |
-| [Philips Cloud](cloud.md) | Browser login, certificates, automatic account-device discovery and verification limits |
+| [Philips Cloud](cloud.md) | Email-code login, automatic account-device discovery and verification limits |
 | [CX3550/01](devices/cx3550.md) | Local CoAP setup, tested controls and read-only timer limitation |
 | [CX7550/01](devices/cx7550.md) | Local CoAP setup, tested controls, timer, display and temperature |
 

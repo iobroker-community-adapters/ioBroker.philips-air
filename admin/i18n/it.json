@@ -13,7 +13,10 @@
   "ms - should be >= Alive timeout": "ms - deve essere >= timeout di attività",
   "Cloud account country (two letters)": "Paese dell’account cloud (due lettere)",
   "Enter a two-letter country code": "Inserisci un codice paese di due lettere",
-  "Sign in to Philips Cloud": "Accedi a Philips Cloud",
   "Reload after signing in": "Ricarica dopo l’accesso",
-  "Save cloud protocol and country, then start the instance. Sign in in the new tab. After confirmation, return here and reload. All devices in your account are discovered automatically. The login uses HTTPS with the Admin certificate.": "Salva il protocollo cloud e il paese, quindi avvia l’istanza. Accedi nella nuova scheda. Dopo la conferma, torna qui e ricarica. Tutti i dispositivi del tuo account vengono rilevati automaticamente. L’accesso usa HTTPS con il certificato Admin."
+  "Cloud account email": "Email dell’account Cloud",
+  "Send verification code": "Invia codice di verifica",
+  "Email verification code": "Codice di verifica ricevuto via email",
+  "Confirm verification code": "Conferma codice di verifica",
+  "Save cloud protocol and country, then start the instance. Enter your account email, request a code and confirm the email code here. Email and code are not saved. All account devices are discovered automatically.": "Salvare il protocollo Cloud e il paese, quindi avviare l’istanza. Inserire l’email, richiedere un codice e confermarlo qui. Email e codice non vengono salvati. Tutti i dispositivi vengono rilevati automaticamente."
 }

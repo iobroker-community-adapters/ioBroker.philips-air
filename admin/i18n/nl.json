@@ -13,7 +13,10 @@
   "ms - should be >= Alive timeout": "ms - moet >= Alive-timeout zijn",
   "Cloud account country (two letters)": "Land van het cloudaccount (twee letters)",
   "Enter a two-letter country code": "Voer een landcode van twee letters in",
-  "Sign in to Philips Cloud": "Aanmelden bij Philips Cloud",
   "Reload after signing in": "Herladen na aanmelden",
-  "Save cloud protocol and country, then start the instance. Sign in in the new tab. After confirmation, return here and reload. All devices in your account are discovered automatically. The login uses HTTPS with the Admin certificate.": "Sla het cloudprotocol en land op en start de instantie. Meld u aan in het nieuwe tabblad. Keer na de bevestiging hier terug en herlaad. Alle apparaten in uw account worden automatisch ontdekt. Aanmelden gebruikt HTTPS met het Admin-certificaat."
+  "Cloud account email": "E-mailadres van cloudaccount",
+  "Send verification code": "Verificatiecode verzenden",
+  "Email verification code": "Verificatiecode uit e-mail",
+  "Confirm verification code": "Verificatiecode bevestigen",
+  "Save cloud protocol and country, then start the instance. Enter your account email, request a code and confirm the email code here. Email and code are not saved. All account devices are discovered automatically.": "Sla het Cloud-protocol en het land op en start de instantie. Voer uw e-mailadres in, vraag een code aan en bevestig deze hier. E-mailadres en code worden niet opgeslagen. Alle apparaten worden automatisch gevonden."
 }

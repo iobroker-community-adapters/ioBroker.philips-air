@@ -17,58 +17,51 @@ context is absent or the user differs, account commands fail closed. A `user` fi
 does not grant permission. Older controller/Admin versions retain their local
 HTTP/CoAP support; their Cloud login path is unavailable.
 
-1. Select **Philips Cloud**, enter the account's two-letter country code, save
-   the settings and start the instance. A local host is not required.
-2. Open the settings as **admin** and select **Sign in to Philips Cloud**.
-   A temporary HTTPS login page opens in a new tab. Complete the Home.ID
-   sign-in there, including an e-mail verification code if requested.
-3. Wait for the sign-in confirmation, then return to the adapter settings and
-   select **Reload after signing in**. The OAuth callback is captured
-   automatically; no URL needs to be copied.
-4. All account devices are discovered automatically after the login restart.
-   No device selection or device ID is required. The country code is the
-   account's two-letter country, for example `DE`, `AT`, `CH`, `GB` or `US`.
+1. Select **Philips Cloud**, enter the account's two-letter country code (empty
+   by default), save the settings and start the instance. The country is used
+   for Cloud routing, for example `DE`, `AT`, `CH`, `GB` or `US`.
+2. Open the settings as **admin**, enter your Cloud account email and select
+   **Send verification code**. This sends an email through Philips/Home.ID.
+3. Enter the six-digit code from that email and select **Confirm verification
+   code**. No account password is required. A rejected code can be corrected;
+   after ten minutes or an instance restart, request a new code.
+4. After successful login, the controller restarts the instance and settings
+   reload. If the restart interrupts the response, wait for the instance and
+   select **Reload after signing in** before saving settings again.
+5. All account devices are discovered automatically. No device selection,
+   local device address or device ID is required.
 
-No e-mail address or password is stored in adapter settings. The opened page
-serves Home.ID content through a temporary login proxy on your ioBroker host;
-its address is your host, not the Home.ID domain. Login requests go to the
-allowlisted Home.ID/Gigya services. Account tokens are stored in flat native
-fields declared in both `encryptedNative` and `protectedNative`.
-Administrative access to the installation still grants access to credentials.
+Email and code fields are temporary Admin inputs: their underscore-prefixed
+names prevent JSON Config from saving them to native configuration. The backend
+keeps only the pending session in memory, tied to the authenticated Admin owner.
+A new code request replaces the previous attempt. Codes and account tokens
+must never be shared in issues or chat.
 
-### Temporary HTTPS login connection
+The adapter calls the Home.ID/Gigya email-OTP API and completes a passive PKCE
+OAuth exchange, following the [Home Assistant Home.ID integration's HTTP
+flow](https://github.com/renaudallard/homeassistant_philips_homeid/blob/ea3d1b76834adee15abc39165fe4f4e4333d126a/custom_components/philips_homeid/cloud_auth.py).
+No browser proxy, extra port, Admin certificate or same-host Admin installation
+is required for this login. The adapter needs outbound HTTPS to the Philips
+services. Accounts requiring additional registration or consent must complete
+that step in the official app first; social-provider login is not offered here.
 
-- Admin and this adapter must run on the same ioBroker host. Login through a
-  different host or an external reverse proxy that exposes only the Admin port
-  is not supported by this flow.
-- The login server uses Admin's selected public/private certificates and a
-  temporary port. Your browser must be able to reach that host and port. The
-  certificate must be trusted by the browser and cover the host name you use
-  for Admin. Configure certificates in ioBroker before starting login; no
-  unencrypted fallback is provided.
-- Home.ID can change its login scripts. If the page stops progressing after an
-  upstream change, the proxy may need an adapter update; social sign-in has not
-  been verified.
-- The login link is single-use. The session expires after ten minutes, closes
-  after successful login and is discarded on stop or restart. Starting another
-  login replaces it. If it expires, start again from adapter settings.
-- Save the Cloud connection and country before signing in. After login, reload
-  settings before saving again, to avoid overwriting new tokens with stale
-  form values. Do not share login links, codes or tokens.
+Only the resulting access/refresh/ID tokens are persisted, in flat native fields
+declared in both `encryptedNative` and `protectedNative`. Administrative access
+to the installation still grants access to credentials. Keep Admin access
+protected; the email and code travel through its existing connection.
 
 The controller restarts the instance after a successful token configuration
 write. Initial login and refresh therefore interrupt the current connection;
 the restarted instance reconnects using the saved token set. An in-flight
-command can have an unknown outcome and is not replayed automatically.
+command can have an unknown outcome and is not replayed automatically. Reload
+settings after login before saving again, to avoid overwriting stored tokens
+with stale form data.
 
-An authorized account test completed Home.ID e-mail-code sign-in and token
-exchange, found an AC0651 and received MQTT status. Automatic callback and token
-exchange were also verified through the integrated HTTPS login proxy with a
-local test certificate, both by hostname and IPv4 address. This does not
-establish acceptance of the complete ioBroker Admin flow, social sign-in,
-multiple real devices, token rotation across a controller restart or physical
-controls. Never enter account data in an issue
-or chat.
+The direct email-code path was tested with an authorized account: verification,
+token exchange and discovery of one device succeeded. An earlier test also
+verified AC0651 MQTT status. Protocol and security tests use synthetic fixtures.
+End-to-end acceptance through ioBroker Admin, token rotation across a controller
+restart, multiple real devices and physical controls remain unverified.
 
 ## Multiple devices and local connections
 

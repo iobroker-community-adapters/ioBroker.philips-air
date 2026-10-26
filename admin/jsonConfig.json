@@ -108,7 +108,7 @@
     },
     "_cloudHelp": {
       "type": "staticText",
-      "label": "Save cloud protocol and country, then start the instance. Sign in in the new tab. After confirmation, return here and reload. All devices in your account are discovered automatically. The login uses HTTPS with the Admin certificate.",
+      "label": "Save cloud protocol and country, then start the instance. Enter your account email, request a code and confirm the email code here. Email and code are not saved. All account devices are discovered automatically.",
       "hidden": "data.protocol !== 'cloud'",
       "xs": 12,
       "sm": 12,
@@ -120,7 +120,7 @@
     "cloudCountry": {
       "type": "text",
       "label": "Cloud account country (two letters)",
-      "default": "GB",
+      "default": "",
       "maxLength": 2,
       "validator": "data.protocol !== 'cloud' || /^[A-Za-z]{2}$/.test(data.cloudCountry)",
       "validatorErrorText": "Enter a two-letter country code",
@@ -133,11 +133,23 @@
       "validatorNoSaveOnError": true,
       "newLine": true
     },
-    "_cloudLogin": {
+    "_cloudEmail": {
+      "type": "text",
+      "label": "Cloud account email",
+      "maxLength": 254,
+      "hidden": "data.protocol !== 'cloud'",
+      "xs": 12,
+      "sm": 12,
+      "md": 4,
+      "lg": 4,
+      "xl": 4,
+      "newLine": true
+    },
+    "_cloudRequestCode": {
       "type": "sendTo",
-      "label": "Sign in to Philips Cloud",
-      "command": "cloudLogin",
-      "openUrl": true,
+      "label": "Send verification code",
+      "command": "cloudRequestCode",
+      "jsonData": "{\"email\":${JSON.stringify(data._cloudEmail || \"\")}}",
       "showProcess": true,
       "timeout": 30000,
       "hidden": "data.protocol !== 'cloud'",
@@ -145,8 +157,34 @@
       "sm": 12,
       "md": 4,
       "lg": 4,
+      "xl": 4
+    },
+    "_cloudCode": {
+      "type": "text",
+      "label": "Email verification code",
+      "maxLength": 6,
+      "hidden": "data.protocol !== 'cloud'",
+      "xs": 12,
+      "sm": 12,
+      "md": 4,
+      "lg": 4,
       "xl": 4,
-      "jsonData": "{\"origin\":\"${data._origin}\"}"
+      "newLine": true
+    },
+    "_cloudConfirmCode": {
+      "type": "sendTo",
+      "label": "Confirm verification code",
+      "command": "cloudConfirmCode",
+      "jsonData": "{\"code\":${JSON.stringify(data._cloudCode || \"\")}}",
+      "reloadBrowser": true,
+      "showProcess": true,
+      "timeout": 90000,
+      "hidden": "data.protocol !== 'cloud'",
+      "xs": 12,
+      "sm": 12,
+      "md": 4,
+      "lg": 4,
+      "xl": 4
     },
     "_cloudReload": {
       "type": "sendTo",

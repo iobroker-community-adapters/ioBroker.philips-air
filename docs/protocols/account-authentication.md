@@ -303,7 +303,17 @@ prototype also intercepted the callback automatically. This is a runtime result
 for one account, not a provider support commitment or permission to register
 another callback.
 
-Remaining proof: integrated HTTPS/Admin login, country and account migration
+The adapter now uses the direct email-OTP and passive-PKCE flow documented by
+the [Home Assistant Home.ID integration](https://github.com/renaudallard/homeassistant_philips_homeid/blob/ea3d1b76834adee15abc39165fe4f4e4333d126a/custom_components/philips_homeid/cloud_auth.py).
+It calls `accounts.auth.otp.email.sendCode`, verifies through
+`accounts.auth.otp.email.login`, obtains an OAuth context with `prompt=none`,
+requests a `gmidTicket` from `socialize.getIDs`, and completes
+`authorize/continue` before exchanging the code at the discovery-advertised
+`/token` endpoint. No browser proxy remains. Email, verification code and Gigya
+session are not stored in native configuration. See [Cloud setup](../cloud.md)
+for the current user-facing behavior and verification limits.
+
+Remaining proof: integrated Admin email-code login, country and account migration
 differences, other consent/sign-in paths, exact error responses,
 refresh rotation and lifetime rules, logout/revocation behavior, process-death
 recovery, optional SDK failure-handler registration, and live account/device

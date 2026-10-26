@@ -17,8 +17,8 @@
   "Send verification code": "Отправить код подтверждения",
   "Email verification code": "Код подтверждения из письма",
   "Confirm verification code": "Подтвердить код",
-  "Save cloud protocol and country, then start the instance. Enter your account email, request a code and confirm the email code here. Email and code are not saved. All account devices are discovered automatically.": "Сохраните протокол Cloud и страну, затем запустите экземпляр. Введите e-mail, запросите код и подтвердите его здесь. E-mail и код не сохраняются. Все устройства обнаруживаются автоматически.",
   "Not signed in": "Вход не выполнен",
-  "Sign-in saved. Access token will be renewed automatically when needed.": "Данные входа сохранены. Токен доступа будет автоматически обновлён при необходимости.",
-  "Signed in. Access token valid until %s; renewed automatically.": "Вход выполнен. Токен доступа действителен до %s; обновляется автоматически."
+  "Sign-in saved": "Данные входа сохранены",
+  "Signed in. Token valid until %s. Renewed automatically.": "Вход выполнен. Токен действителен до %s. Обновляется автоматически.",
+  "Save cloud protocol and country, then start the instance. Enter your account email, request a code and confirm the email code here. All account devices are discovered automatically.": "Сохраните протокол Cloud и страну, затем запустите экземпляр. Введите e-mail, запросите код и подтвердите его здесь. Все устройства обнаруживаются автоматически."
 }

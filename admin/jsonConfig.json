@@ -108,7 +108,7 @@
     },
     "_cloudHelp": {
       "type": "staticText",
-      "label": "Save cloud protocol and country, then start the instance. Enter your account email, request a code and confirm the email code here. Email and code are not saved. All account devices are discovered automatically.",
+      "label": "Save cloud protocol and country, then start the instance. Enter your account email, request a code and confirm the email code here. All account devices are discovered automatically.",
       "hidden": "data.protocol !== 'cloud'",
       "xs": 12,
       "sm": 12,
@@ -121,7 +121,7 @@
       "type": "textSendTo",
       "command": "cloudLoginStatus",
       "container": "div",
-      "jsonData": "{\"language\":${JSON.stringify(_system.common.language || \"en\")}}",
+      "jsonData": "{\"language\":${JSON.stringify(_system.language || \"en\")}}",
       "hidden": "data.protocol !== 'cloud'",
       "xs": 12,
       "sm": 12,
@@ -145,7 +145,7 @@
       "validatorNoSaveOnError": true,
       "newLine": true
     },
-    "_cloudEmail": {
+    "cloudEmail": {
       "type": "text",
       "label": "Cloud account email",
       "maxLength": 254,
@@ -155,13 +155,14 @@
       "md": 4,
       "lg": 4,
       "xl": 4,
-      "newLine": true
+      "newLine": true,
+      "default": ""
     },
     "_cloudRequestCode": {
       "type": "sendTo",
       "label": "Send verification code",
       "command": "cloudRequestCode",
-      "jsonData": "{\"email\":${JSON.stringify(data._cloudEmail || \"\")}}",
+      "jsonData": "{\"email\":${JSON.stringify(data.cloudEmail || \"\")}}",
       "showProcess": true,
       "timeout": 30000,
       "hidden": "data.protocol !== 'cloud'",

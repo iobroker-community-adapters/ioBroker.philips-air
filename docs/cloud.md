@@ -31,9 +31,11 @@ HTTP/CoAP support; their Cloud login path is unavailable.
 5. All account devices are discovered automatically. No device selection,
    local device address or device ID is required.
 
-Email and code fields are temporary Admin inputs: their underscore-prefixed
-names prevent JSON Config from saving them to native configuration. The backend
-keeps only the pending session in memory, tied to the authenticated Admin owner.
+The email address is a normal saved setting. A successful login saves it together
+with the new tokens, so it remains visible after the automatic reload; a token
+refresh preserves that address. The code field is temporary: its underscore-prefixed
+name prevents JSON Config from saving it to native configuration. The backend
+keeps the pending verification session in memory, tied to the authenticated Admin owner.
 A new code request replaces the previous attempt. Codes and account tokens
 must never be shared in issues or chat.
 
@@ -50,7 +52,7 @@ declared in both `encryptedNative` and `protectedNative`. Administrative access
 to the installation still grants access to credentials. Keep Admin access
 protected; the email and code travel through its existing connection.
 
-The settings show the saved login status automatically when opened. This uses
+The settings show the saved login status in the ioBroker system language when opened. This uses
 the locally stored tokens, not a separate login request. It displays the current
 access token's expiry without exposing cookies or tokens. The adapter refreshes
 that token automatically when needed; its expiry is not the end of the account

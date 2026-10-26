@@ -35,6 +35,15 @@ async function login(account) {
 }
 
 describe('cloud account OAuth and REST', () => {
+    it('persists the verified login email with its tokens without overwriting it on refresh', async () => {
+        const { account } = fixture();
+        const emails = [];
+        account.fetch = otpFetch([]);
+        account.saveTokens = async (_tokens, email) => { emails.push(email); };
+        await login(account);
+        await account.ensureAccessToken(true);
+        assert.deepEqual(emails, ['synthetic@example.test', undefined]);
+    });
     it('requires an explicit country before login or regional discovery', async () => {
         let requests = 0;
         const account = new CloudAccount({ saveTokens: async () => {},

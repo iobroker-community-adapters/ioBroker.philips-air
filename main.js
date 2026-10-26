@@ -392,15 +392,35 @@ async function main() {
     const cloud = adapter.config.protocol === 'cloud';
     const CloudAdmin = require('./lib/cloudAdmin');
     cloudAdmin = new CloudAdmin(adapter);
-    if (!cloud && !adapter.config.host) {
-        return adapter.log.warn('No IP defined');
-    }
-
     if (cloud) {
         const CloudDevices = require('./lib/cloudDevices');
         cloudDevices = new CloudDevices(adapter, cloudAdmin.account);
         await cloudDevices.start();
         return;
+    }
+
+    for (const [id, name] of Object.entries({
+        control: 'Control air purifier',
+        filter: 'Filter information',
+        status: 'Device status',
+        device: 'Device information',
+        unknownStates: 'Unmapped raw device attributes',
+    })) {
+        await adapter.setObjectNotExistsAsync(id, { type: 'channel', common: { name }, native: {} });
+        if (stopping) {
+            return;
+        }
+    }
+    await adapter.setObjectNotExistsAsync('info.key', {
+        type: 'state',
+        common: { role: 'state', name: 'HTTP secret key', type: 'string', read: true, write: false, def: '' },
+        native: {},
+    });
+    if (stopping) {
+        return;
+    }
+    if (!adapter.config.host) {
+        return adapter.log.warn('No IP defined');
     }
 
     // Without a usable model setting the adapter runs read-only instead of guessing a model.

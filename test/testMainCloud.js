@@ -9,6 +9,9 @@ function harness(config) {
     let transport;
     const transports = [];
     const objects = new Map();
+    for (const object of require('../io-package.json').instanceObjects) {
+        objects.set(object._id, object);
+    }
     const writes = [];
     const controls = [];
     const adapter = {
@@ -56,6 +59,16 @@ function harness(config) {
 }
 
 describe('main - cloud integration preserves local contracts', () => {
+    it('creates only shared infrastructure and device-scoped objects in cloud mode', async () => {
+        for (const cloudRefreshToken of ['', 'synthetic-refresh']) {
+            const h = harness({ protocol: 'cloud', cloudRefreshToken });
+            await h.callbacks.ready();
+            for (const id of ['control', 'filter', 'status', 'device', 'unknownStates', 'info.key']) {
+                assert.equal(h.objects.has(id), false, `${id} is local-only`);
+            }
+            assert.ok(h.objects.has('info.connection'));
+        }
+    });
     it('replaces cloud profile choices while preserving user metadata and existing ACLs', async () => {
         const h = harness({ protocol: 'cloud', cloudRefreshToken: 'synthetic-refresh' });
         h.objects.set('devices.synthetic-device.control.mode', { type: 'state', common: {
@@ -167,6 +180,7 @@ describe('main - cloud integration preserves local contracts', () => {
 
     it('does not initialize cloud after unload during the first startup write', async () => {
         const h = harness({ protocol: 'cloud', cloudRefreshToken: 'synthetic-refresh' });
+        const initialObjects = h.objects.size;
         const write = h.adapter.setStateAsync;
         let release = () => {};
         const wait = new Promise(resolve => release = () => resolve(undefined));
@@ -179,7 +193,7 @@ describe('main - cloud integration preserves local contracts', () => {
         release();
         await started;
         assert.equal(h.transports.length, 0);
-        assert.equal(h.objects.size, 0);
+        assert.equal(h.objects.size, initialObjects);
     });
 
     it('drains startup object creation before unload and avoids missing connection writes', async () => {
@@ -229,6 +243,9 @@ describe('main - cloud integration preserves local contracts', () => {
             assert.equal(missing.transport(), undefined);
             const h = harness({ protocol, host: 'synthetic.invalid', model: 'CX3550' });
             await h.callbacks.ready();
+            for (const id of ['control', 'filter', 'status', 'device', 'unknownStates', 'info.key']) {
+                assert.ok(h.objects.has(id), `${protocol} needs ${id}`);
+            }
             h.callbacks.stateChange('philips-air.0.control.oscillation', { val: true, ack: false });
             assert.equal(h.controls.length, 1);
             h.transport().emit('status', { oscillation: true }, new Set(['oscillation']));

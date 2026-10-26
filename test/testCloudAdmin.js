@@ -2,6 +2,7 @@
 
 const assert = require('node:assert/strict');
 const CloudAdmin = require('../lib/cloudAdmin');
+const CloudTokenStore = require('../lib/cloudTokenStore');
 const { CloudError } = require('../lib/cloudAccount');
 const metadata = require('../io-package.json');
 
@@ -19,7 +20,11 @@ function fixture() {
         sendTo: (from, command, result, callback) => replies.push({ from, command, result, callback }),
     };
     const admin = new CloudAdmin(adapter);
-    return { admin, adapter, replies, updates };
+    const rotations = [];
+    admin.tokenStore = new CloudTokenStore(adapter);
+    admin.tokenStore.save = async tokens => { rotations.push(tokens); };
+    adapter.log = { warn() {} };
+    return { admin, adapter, replies, updates, rotations };
 }
 
 function message(command, payload = {}) {
@@ -126,13 +131,38 @@ describe('cloud Admin account boundary', () => {
         assert.equal(updates.length, 0);
     });
 
-    it('uses controller updateConfig with flat metadata-protected secret fields', async () => {
-        const { admin, updates } = fixture();
+    it('waits for an in-flight rotation to reach storage during unload', async () => {
+        const { admin } = fixture();
+        let finishSave = () => {};
+        let enteredSave = () => {};
+        const entered = new Promise(resolve => { enteredSave = () => resolve(undefined); });
+        assert.ok(admin.tokenStore);
+        admin.tokenStore.save = async () => {
+            enteredSave();
+            await new Promise(resolve => { finishSave = () => resolve(undefined); });
+        };
+        admin.account.fetch = async () => new Response(JSON.stringify({
+            access_token: 'a', refresh_token: 'r', id_token: 'i', expires_in: 3600,
+        }));
+        const refresh = admin.account.ensureAccessToken(true).catch(error => error);
+        await entered;
+        let stopped = false;
+        const stopping = admin.destroy().then(() => { stopped = true; });
+        await new Promise(resolve => setImmediate(resolve));
+        assert.equal(stopped, false);
+        finishSave();
+        await stopping;
+        assert.equal(stopped, true);
+        assert.match((await refresh).message, /stopped/);
+    });
+
+    it('persists refreshes without native writes and keeps explicit login encrypted in native', async () => {
+        const { admin, updates, rotations } = fixture();
         const tokens = { accessToken: 'new-synthetic-access', refreshToken: 'new-synthetic-refresh',
             idToken: 'new-synthetic-id', expiresAt: 999999 };
         await admin.account.saveTokens(tokens);
-        assert.deepEqual(updates, [{ cloudAccessToken: tokens.accessToken, cloudRefreshToken: tokens.refreshToken,
-            cloudIdToken: tokens.idToken, cloudExpiresAt: tokens.expiresAt }]);
+        assert.equal(updates.length, 0);
+        assert.deepEqual(rotations, [tokens]);
         for (const field of ['cloudAccessToken', 'cloudRefreshToken', 'cloudIdToken']) {
             assert.ok(metadata.encryptedNative.includes(field), `${field} must be encrypted`);
             assert.ok(metadata.protectedNative.includes(field), `${field} must be protected`);

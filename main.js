@@ -73,11 +73,11 @@ function startAdapter(options) {
                     airPurifier = null;
                     const cloudStopped = cloudDevices ? cloudDevices.destroy() : Promise.resolve();
                     cloudDevices = null;
-                    cloudAdmin && cloudAdmin.destroy();
+                    const accountStopped = cloudAdmin ? cloudAdmin.destroy() : Promise.resolve();
                     // Await the final write before signalling "done". Reporting completion while the
                     // write is still in flight makes the controller close the database underneath it,
                     // which surfaced as "unhandled promise rejection: DB closed" on every stop.
-                    Promise.resolve(cloudStopped)
+                    Promise.all([cloudStopped, accountStopped])
                         .then(() => adapter.setState('info.connection', false, true))
                         .catch(() => {})
                         .then(() => callback());
@@ -393,6 +393,10 @@ async function main() {
     const CloudAdmin = require('./lib/cloudAdmin');
     cloudAdmin = new CloudAdmin(adapter);
     if (cloud) {
+        await cloudAdmin.restoreTokens();
+        if (stopping) {
+            return;
+        }
         const CloudDevices = require('./lib/cloudDevices');
         cloudDevices = new CloudDevices(adapter, cloudAdmin.account);
         await cloudDevices.start();

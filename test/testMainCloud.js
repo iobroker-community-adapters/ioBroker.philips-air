@@ -42,7 +42,8 @@ function harness(config) {
     }
     class Admin {
         constructor() { this.account = { tokens: config.cloudRefreshToken ? { refreshToken: config.cloudRefreshToken } : undefined, listDevices: async () => config.devices || [{ id: 'synthetic-device', ctn: 'AC0651' }] }; }
-        destroy() {}
+        async restoreTokens() {}
+        destroy() { return config.accountStopped; }
     }
     const entry = { exports: (_options) => {} };
     const customRequire = name => {
@@ -67,6 +68,19 @@ function harness(config) {
 }
 
 describe('main - cloud integration preserves local contracts', () => {
+    it('does not finish unload before account persistence completes', async () => {
+        let finish = () => {};
+        const accountStopped = new Promise(resolve => { finish = () => resolve(undefined); });
+        const h = harness({ protocol: 'cloud', accountStopped });
+        await h.callbacks.ready();
+        let stopped = false;
+        h.callbacks.unload(() => { stopped = true; });
+        await new Promise(resolve => setImmediate(resolve));
+        assert.equal(stopped, false);
+        finish();
+        await new Promise(resolve => setImmediate(resolve));
+        assert.equal(stopped, true);
+    });
     it('creates only shared infrastructure and device-scoped objects in cloud mode', async () => {
         for (const cloudRefreshToken of ['', 'synthetic-refresh']) {
             const h = harness({ protocol: 'cloud', cloudRefreshToken });

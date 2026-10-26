@@ -320,3 +320,44 @@ recovery, optional SDK failure-handler registration, and live account/device
 behavior. Public constants and offline fixtures make reconstruction repeatable;
 they do not establish a working cloud integration or permission to reuse the
 mobile client's server-side registration.
+
+
+## Adapter credential persistence
+
+The adapter implementation is in [`cloudAccount.js`](../../lib/cloudAccount.js),
+[`cloudAdmin.js`](../../lib/cloudAdmin.js) and
+[`cloudTokenStore.js`](../../lib/cloudTokenStore.js).
+
+Explicit login saves access, refresh and ID tokens in flat native fields declared
+in both `encryptedNative` and `protectedNative`, together with the account email.
+The verification code and Gigya verification session remain transient. Admin
+messages require the controller-propagated built-in administrator identity;
+a `user` field supplied inside the request payload is not trusted.
+
+Routine refresh saves a JSON envelope in `auth.tokens`. Its token payload is
+encrypted with the installation secret through `adapter.encrypt()`. The state
+has administrator-only object/state ACLs and is not user-writable. Native
+protection lists do not encrypt states; encryption and decryption are explicit.
+An initial native-refresh-token fingerprint binds the envelope to the saved
+login. Missing states use native credentials; corrupt states fail closed because
+native credentials may have been superseded by a provider rotation.
+
+An explicit login updates native configuration before replacing the envelope,
+so a failed native write preserves the previous rotation. `adapter.updateConfig()`
+restarts the adapter instance. Refresh writes the runtime state instead and
+keeps the instance running. Shutdown aborts account requests and drains token
+restoration and persistence before completing unload. No token file or custom
+file-backup directory is used.
+
+`info.cloudTokenExpiresAt` exposes the access-token expiry as Unix milliseconds
+(`value.time`), with zero when no saved token is available at startup. It is
+read-only and acknowledged, and is updated after token restoration and storage.
+It describes the access token, not refresh-token lifetime or current service
+health. Its diagnostic write failing does not invalidate a successfully saved
+refresh token.
+
+This uses the supported [encryption APIs](https://github.com/ioBroker/ioBroker.docs/blob/master/docs/en/dev/adaptersecurity.md#manually-encrypt-and-decrypt-sensitive-data)
+and [state APIs](https://github.com/ioBroker/ioBroker.js-controller/blob/master/packages/controller/doc/classes/AdapterClass.md).
+Installation administrators can still access credentials. Synthetic tests cover
+storage, login changes and shutdown; real provider rotation and restart recovery
+remain unverified.

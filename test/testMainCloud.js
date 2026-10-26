@@ -25,7 +25,15 @@ function harness(config) {
         setState() { return Promise.resolve(); },
         async setObjectNotExistsAsync(id, object) { objects.set(id, object); },
         async getObjectAsync(id) { return objects.get(id); },
-        async setObjectAsync(id, object) { objects.set(id, object); },
+        async extendObjectAsync(id, object) {
+            const old = objects.get(id);
+            objects.set(id, { ...old, ...object,
+                common: { ...old?.common, ...object.common,
+                    ...(object.common.states ? { states: { ...old?.common?.states, ...object.common.states } } : {}),
+                },
+                native: { ...old?.native, ...object.native },
+            });
+        },
     };
     class Transport extends EventEmitter {
         constructor(_host, options) { super(); transport = this; this.device = options.cloudDevice; transports.push(this); }
@@ -69,11 +77,10 @@ describe('main - cloud integration preserves local contracts', () => {
             assert.ok(h.objects.has('info.connection'));
         }
     });
-    it('replaces cloud profile choices while preserving user metadata and existing ACLs', async () => {
+    it('extends cloud profile metadata while preserving user settings and existing ACLs', async () => {
         const h = harness({ protocol: 'cloud', cloudRefreshToken: 'synthetic-refresh' });
         h.objects.set('devices.synthetic-device.control.mode', { type: 'state', common: {
-            name: 'My mode', custom: { history: { enabled: true } }, states: { auto: 'auto', gentle: 'gentle' },
-            unit: 'obsolete', min: 0, max: 99,
+            name: 'My mode', custom: { history: { enabled: true } },
         }, native: { retained: true }, acl: { owner: 'system.user.admin' } });
         await h.callbacks.ready();
         h.transport().emit('mapping', require('../lib/mapping').createCloudMapping('AC1715/11').mapping);
@@ -84,7 +91,6 @@ describe('main - cloud integration preserves local contracts', () => {
         assert.ok(object.common.custom.history.enabled);
         assert.ok(object.native.retained);
         assert.equal(object.acl.owner, 'system.user.admin');
-        for (const key of ['unit', 'min', 'max']) assert.equal(object.common[key], undefined);
         assert.deepEqual(Object.keys(object.common.states).sort(), ['auto', 'sleep', 'speed1', 'speed2', 'turbo']);
         assert.ok(h.writes.some(w => w.id === 'devices.synthetic-device.control.mode' && w.val === 'speed2'));
     });

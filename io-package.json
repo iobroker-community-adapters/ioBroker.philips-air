@@ -142,7 +142,7 @@
     "mode": "daemon",
     "type": "household",
     "compact": true,
-    "connectionType": "local",
+    "connectionType": "cloud",
     "dataSource": "push",
     "adminUI": {
       "config": "json"
@@ -218,7 +218,8 @@
           "cancel"
         ]
       }
-    ]
+    ],
+    "messagebox": true
   },
   "native": {
     "host": "",
@@ -226,7 +227,12 @@
     "reconnectInterval": 30000,
     "protocol": "coap",
     "model": "Generic",
-    "logUnknownStatesAsDebug": false
+    "logUnknownStatesAsDebug": false,
+    "cloudCountry": "GB",
+    "cloudAccessToken": "",
+    "cloudRefreshToken": "",
+    "cloudIdToken": "",
+    "cloudExpiresAt": 0
   },
   "objects": [],
   "instanceObjects": [
@@ -304,5 +310,15 @@
       },
       "native": {}
     }
+  ],
+  "encryptedNative": [
+    "cloudAccessToken",
+    "cloudRefreshToken",
+    "cloudIdToken"
+  ],
+  "protectedNative": [
+    "cloudAccessToken",
+    "cloudRefreshToken",
+    "cloudIdToken"
   ]
 }

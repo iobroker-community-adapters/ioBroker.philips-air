@@ -76,8 +76,9 @@ describe('cloud Admin configuration contract', () => {
             const interpolate = new Function('data', `return \`${jsonConfig.items[item].jsonData}\`;`);
             expect(JSON.parse(interpolate(data))).to.deep.equal(expected);
         }
-        expect(jsonConfig.items._cloudReload.command).to.equal('cloudLoginStatus');
-        expect(jsonConfig.items._cloudReload.reloadBrowser).to.equal(true);
+        expect(jsonConfig.items).not.to.have.property('_cloudReload');
+        expect(jsonConfig.items._cloudStatus.type).to.equal('textSendTo');
+        expect(jsonConfig.items._cloudStatus.command).to.equal('cloudLoginStatus');
         expect(jsonConfig.items).not.to.have.property('cloudDeviceId');
         for (const secret of ioPackage.encryptedNative) {
             expect(ioPackage.protectedNative).to.include(secret);

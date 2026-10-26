@@ -18,7 +18,49 @@ Connects Philips air purifiers and selected Philips/Versuni fans with ioBroker.
 
 [Link to philips website](https://www.philips.de/c-m-ho/luftreiniger-und-luftbefeuchter/kombi)
 
+## Supported devices
+
+### Local HTTP / CoAP
+
+Confirmed on real hardware: AC2729, AC2889, AC3221, AC3829, AC4236/14,
+CX3550/01 and CX7550/01. See [model selection](#which-device-model-should-i-select)
+for the matching configuration. Other classic purifiers can use the shared
+`AC2889` mapping; unlisted local devices start with read-only `Generic`.
+
+### Philips Cloud (Air+ account)
+
+One Cloud instance automatically connects all devices returned by the account.
+Each device has its own object tree under `devices.<deviceId>`, including its
+status, controls and connection indicator. Profiles are selected automatically
+from the model number; no device or model selection is needed.
+
+| Device / family | Mode profile | Evidence |
+| --- | --- | --- |
+| AC0650 | Gentle, Sleep, Turbo | Derived from the app; hardware validation pending |
+| AC0651 | Auto, Gentle, Sleep, Turbo | Account discovery and MQTT status verified; controls untested |
+| AC17 family, including AC1715 | Auto, Speed 1, Speed 2, Sleep, Turbo | Derived from the app; hardware validation pending |
+| AC0710, AC0720, AC0721 | Gentle, Sleep, Turbo (different Gentle value) | Derived from the app; hardware validation pending |
+| Other / unknown models | Shared default: Auto, Gentle, Sleep, Turbo | Fallback; compatibility unverified |
+
+Cloud controls become available when the device reports the corresponding
+properties. Unknown models receive this default including controls, but may
+use different mode values or lack individual functions. Account visibility
+alone does not prove compatible control. See [Cloud setup and limits](docs/cloud.md)
+and the [app profile evidence](docs/protocols/cloud-device-profiles.md).
+
 ## Usage
+For an Air+ account connection, select **Philips Cloud** and follow the
+[Cloud setup and limits](docs/cloud.md). This connection uses a shared default
+profile and app-derived family overrides for all account devices. Sign in
+through the temporary HTTPS Home.ID login page and reload the settings. No e-mail/password configuration
+or manual callback copying is required. See the setup guide for certificate and
+network requirements. Physical Cloud controls still need device acceptance.
+
+Cloud supports multiple account devices in one instance. With **HTTP or CoAP**,
+each instance connects **one local device**; create another instance for another
+device. Local state IDs and model settings remain unchanged.
+
+For a local HTTP or CoAP connection:
 Enter the IP address or the hostname of your device. You can find it in your router, where the device often shows up as `MiCO`.
 Most devices are reached over CoAP, which is the default. Some older ones, such as the AC2729 and the AC3829, only answer over HTTP - if the connection does not come up, switch the protocol in the instance settings.
 Then pick your device model, so that the adapter creates the controls that match your device. A new instance starts with `Generic`: you get every read-only value, but no controls until you select a model. `Generic` is also the right choice if your model is not in the list.
@@ -37,6 +79,8 @@ Over CoAP the device pushes its status on its own, so there is no polling. Some 
 
 ### Which device model should I select?
 
+This selection applies to local HTTP / CoAP connections. Cloud profiles are selected automatically.
+
 | Your device | Model to select |
 | --- | --- |
 | AC2889 and the other classic purifiers, for example AC1214, AC2729, AC2939, AC3059, AC3829 or AC4236 | `AC2889` |
@@ -51,42 +95,26 @@ The model number on its own tells you nothing about the register set: the AC4236
 
 If you are unsure, connect with `Generic` first and look at the raw keys under `unknownStates`: plain names such as `pwr` or `pm25` mean a classic device, keys such as `D03102` mean a next-generation device. If your device turns out to be a next-generation model that is not in the list, please open an issue with a debug log - that is how the CX7550/01 and the AC3221 were added.
 
+Developer notes on the app's connection families, handshakes and the AC0651
+remote-control path are in [Protocol reference](docs/protocols/README.md).
+
 ![Objects](img/objects.png)
 
-## Philips/Versuni CX3550/01 fan
-The CX3550/01 is supported through the local encrypted CoAP connection. No Philips, Versuni or HomeID cloud API is used.
+## Philips/Versuni fans (local CoAP)
 
-Tested CX3550/01 functions:
+Use one local instance per fan and select its exact model. Both models support
+power, sleep, natural breeze, oscillation and beep, but their raw command values
+differ.
 
-- Power on/off
-- Fan speed 1, 2 and 3
-- Sleep mode
-- Natural breeze
-- Oscillation on/off
-- Beep on/off
-- Status reading via local CoAP
-- Timer status reading
+| Device | Model setting | Main differences | Detailed guide |
+| --- | --- | --- | --- |
+| CX3550/01 pedestal fan | `CX3550` | Speeds 1–3; timer read-only | [Setup, controls and protocol](docs/devices/cx3550.md) |
+| CX7550/01 tower fan | `CX7550` | Speeds 1–12, AutoAdapt, writable timer, display and temperature | [Setup, controls and protocol](docs/devices/cx7550.md) |
 
-Timer control is intentionally not supported for the CX3550/01. Local timer write payloads can make the firmware set `D03102` to `0`, which switches the fan off. The adapter therefore exposes CX3550/01 timer information only as read-only status.
+**CX3550 timer warning:** local timer writes can switch the fan off. The adapter
+therefore exposes its timer values read-only. CX7550 timer control is supported.
 
-More details are documented in [docs/CX3550.md](docs/CX3550.md).
-
-## Philips/Versuni CX7550/01 tower fan
-The CX7550/01 ("Smart Tower Fan 7000 series") uses the same local encrypted CoAP connection, but different raw values than the CX3550/01 - select `CX7550` as the device model.
-
-Tested CX7550/01 functions:
-
-- Power on/off
-- Fan speeds 1 to 12 and AutoAdapt
-- Sleep mode
-- Natural breeze
-- Oscillation on/off
-- Timer (off, 1 to 12 hours) - writable on this model
-- Beep on/off
-- Display brightness, temperature colour display and what the display shows permanently
-- Room temperature
-
-More details are documented in [docs/CX7550.md](docs/CX7550.md).
+Further setup instructions and technical references: [Documentation](docs/README.md).
 
 ## Changelog
 <!--
@@ -95,8 +123,10 @@ More details are documented in [docs/CX7550.md](docs/CX7550.md).
 -->
 ### **WORK IN PROGRESS**
 
+- (reloxx13) Added Philips Cloud with automatic browser login through a temporary HTTPS proxy, automatic discovery of all account devices with separate object trees, shared device profiles, status and explicit filter maintenance commands; physical controls remain unverified
 - (tt-tom17) A new instance now starts with the device model "Generic" (read-only values, no controls) instead of silently using the AC2889 controls; instances that already have a model keep it
 - (tt-tom17) With the device model "Generic" the log now names the model your device looks like, so you know which one to select
+- (reloxx13) Updated the shared test framework to 6.3.1, disabling diagnostic reporting in test installations and supporting npm 12 setup
 - (tt-tom17) Dependencies updated
 
 ### 2.2.0 (2026-09-08)

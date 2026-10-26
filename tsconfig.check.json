@@ -12,6 +12,7 @@
     "exclude": [
         "**/build",
         "node_modules/",
+        "tmp/",
         "widgets/"
     ]
 }

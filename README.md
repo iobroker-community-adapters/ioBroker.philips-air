@@ -52,9 +52,9 @@ and the [app profile evidence](docs/protocols/cloud-device-profiles.md).
 For an Air+ account connection, select **Philips Cloud** and follow the
 [Cloud setup and limits](docs/cloud.md). This connection uses a shared default
 profile and app-derived family overrides for all account devices. Sign in
-through the temporary HTTPS Home.ID login page and reload the settings. No e-mail/password configuration
-or manual callback copying is required. See the setup guide for certificate and
-network requirements. Physical Cloud controls still need device acceptance.
+by entering your account email and the verification code in the adapter settings.
+No password, external login page or callback copying is required. Email and code
+are not saved. Physical Cloud controls still need device acceptance.
 
 Cloud supports multiple account devices in one instance. With **HTTP or CoAP**,
 each instance connects **one local device**; create another instance for another
@@ -123,7 +123,7 @@ Further setup instructions and technical references: [Documentation](docs/README
 -->
 ### **WORK IN PROGRESS**
 
-- (reloxx13) Added Philips Cloud with automatic browser login through a temporary HTTPS proxy, automatic discovery of all account devices with separate object trees, shared device profiles, status and explicit filter maintenance commands; physical controls remain unverified
+- (reloxx13) Added Philips Cloud with email verification login, automatic discovery of all account devices with separate object trees, shared device profiles, status and explicit filter maintenance commands; physical controls remain unverified
 - (tt-tom17) A new instance now starts with the device model "Generic" (read-only values, no controls) instead of silently using the AC2889 controls; instances that already have a model keep it
 - (tt-tom17) With the device model "Generic" the log now names the model your device looks like, so you know which one to select
 - (reloxx13) Updated the shared test framework to 6.3.1, disabling diagnostic reporting in test installations and supporting npm 12 setup

@@ -13,7 +13,10 @@
   "ms - should be >= Alive timeout": "毫秒 - 应 >= 活动超时",
   "Cloud account country (two letters)": "云账户所属国家（两个字母）",
   "Enter a two-letter country code": "请输入由两个字母组成的国家代码",
-  "Sign in to Philips Cloud": "登录 Philips Cloud",
   "Reload after signing in": "登录后刷新",
-  "Save cloud protocol and country, then start the instance. Sign in in the new tab. After confirmation, return here and reload. All devices in your account are discovered automatically. The login uses HTTPS with the Admin certificate.": "保存云协议和国家，然后启动实例。在新标签页中登录。确认后返回此处并刷新页面。账户中的所有设备都会自动发现。登录使用 HTTPS 和 Admin 证书。"
+  "Cloud account email": "云账户电子邮件",
+  "Send verification code": "发送验证码",
+  "Email verification code": "电子邮件验证码",
+  "Confirm verification code": "确认验证码",
+  "Save cloud protocol and country, then start the instance. Enter your account email, request a code and confirm the email code here. Email and code are not saved. All account devices are discovered automatically.": "保存云协议和账户国家，然后启动实例。输入电子邮件地址，获取验证码并在此确认。电子邮件和验证码不会保存。账户中的所有设备都会自动发现。"
 }

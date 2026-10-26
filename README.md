@@ -14,7 +14,7 @@
 ## Philips air purifier adapter for ioBroker
 Connects Philips air purifiers and selected Philips/Versuni fans with ioBroker.
 **Tested with AC2729 and the Philips/Versuni fans CX3550/01 and CX7550/01**, but should work with newer purifiers that communicate via local CoAP with encryption.
-![AC2729](img/device.png)
+<img src="img/device.png" alt="Philips AC2729 air purifier" width="180">
 
 [Link to philips website](https://www.philips.de/c-m-ho/luftreiniger-und-luftbefeuchter/kombi)
 
@@ -34,28 +34,29 @@ Each device has its own object tree under `devices.<deviceId>`, including its
 status, controls and connection indicator. Profiles are selected automatically
 from the model number; no device or model selection is needed.
 
-| Device / family | Mode profile | Evidence |
-| --- | --- | --- |
-| AC0650 | Gentle, Sleep, Turbo | Derived from the app; hardware validation pending |
-| AC0651 | Auto, Gentle, Sleep, Turbo | Account discovery and MQTT status verified; controls untested |
-| AC17 family, including AC1715 | Auto, Speed 1, Speed 2, Sleep, Turbo | Derived from the app; hardware validation pending |
-| AC0710, AC0720, AC0721 | Gentle, Sleep, Turbo (different Gentle value) | Derived from the app; hardware validation pending |
-| Other / unknown models | Shared default: Auto, Gentle, Sleep, Turbo | Fallback; compatibility unverified |
+The Cloud connection includes profiles for these models:
 
-Cloud controls become available when the device reports the corresponding
-properties. Unknown models receive this default including controls, but may
-use different mode values or lack individual functions. Account visibility
-alone does not prove compatible control. See [Cloud setup and limits](docs/cloud.md)
-and the [app profile evidence](docs/protocols/cloud-device-profiles.md).
+| Device / family | Modes |
+| --- | --- |
+| AC0650 | Gentle, Sleep, Turbo |
+| AC0651 | Auto, Gentle, Sleep, Turbo |
+| AC17xx, including AC1715 | Auto, Speed 1, Speed 2, Sleep, Turbo |
+| AC0710, AC0720, AC0721 | Gentle, Sleep, Turbo |
+
+Cloud operation has been confirmed for AC0651. The other listed models have
+not yet been tested with this adapter. Individual controls and filter resets
+still need confirmation on real devices.
+
+Other models returned by the account are added automatically, but compatibility
+is not guaranteed. Available readings and controls depend on the device.
+See [Cloud setup and limits](docs/cloud.md).
 
 ## Usage
 For an Air+ account connection, select **Philips Cloud** and follow the
-[Cloud setup and limits](docs/cloud.md). This connection uses a shared default
-profile and app-derived family overrides for all account devices. Sign in
+[Cloud setup and limits](docs/cloud.md). Sign in
 by entering your account email and the verification code in the adapter settings.
 No password, external login page or callback copying is required. The email is
-saved after sign-in; the verification code is not. Physical Cloud controls still
-need device acceptance.
+saved after sign-in; the verification code is not.
 
 Cloud supports multiple account devices in one instance. With **HTTP or CoAP**,
 each instance connects **one local device**; create another instance for another

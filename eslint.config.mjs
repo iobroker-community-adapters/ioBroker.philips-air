@@ -11,6 +11,7 @@ export default [
             '.dev-server/',
             '.claude/',
             '.vscode/',
+            'tmp/**',
             '*.test.js', 
             'test/**/*.js', 
             '*.config.mjs', 

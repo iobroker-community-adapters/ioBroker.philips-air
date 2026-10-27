@@ -2,49 +2,7 @@
   "i18n": true,
   "type": "panel",
   "items": {
-    "host": {
-      "type": "text",
-      "label": "Device IP or hostname",
-      "validator": "!!data.host && /^[a-zA-Z0-9]([a-zA-Z0-9.\\-]*[a-zA-Z0-9])?$/.test(data.host)",
-      "validatorErrorText": "Enter a valid IP address or hostname (no http://, no spaces)",
-      "validatorNoSaveOnError": true,
-      "xs": 12,
-      "sm": 12,
-      "md": 4,
-      "lg": 4,
-      "xl": 4
-    },
-    "aliveTimeout": {
-      "newLine": true,
-      "type": "number",
-      "label": "Alive timeout",
-      "help": "ms",
-      "default": 30000,
-      "min": 1000,
-      "max": 600000,
-      "xs": 12,
-      "sm": 6,
-      "md": 2,
-      "lg": 2,
-      "xl": 2
-    },
-    "reconnectInterval": {
-      "type": "number",
-      "label": "Reconnect interval",
-      "help": "ms - should be >= Alive timeout",
-      "default": 30000,
-      "min": 1000,
-      "max": 600000,
-      "validator": "data.reconnectInterval >= data.aliveTimeout",
-      "validatorErrorText": "Reconnect interval should be at least the Alive timeout",
-      "xs": 12,
-      "sm": 6,
-      "md": 2,
-      "lg": 2,
-      "xl": 2
-    },
     "protocol": {
-      "newLine": true,
       "type": "select",
       "options": [
         {
@@ -54,6 +12,10 @@
         {
           "label": "HTTP",
           "value": "http"
+        },
+        {
+          "label": "Philips Cloud",
+          "value": "cloud"
         }
       ],
       "noTranslation": true,
@@ -65,8 +27,20 @@
       "lg": 4,
       "xl": 4
     },
+    "host": {
+      "type": "text",
+      "label": "Device IP or hostname",
+      "validator": "data.protocol === 'cloud' || (!!data.host && /^[a-zA-Z0-9]([a-zA-Z0-9.\\-]*[a-zA-Z0-9])?$/.test(data.host))",
+      "validatorErrorText": "Enter a valid IP address or hostname (no http://, no spaces)",
+      "validatorNoSaveOnError": true,
+      "xs": 12,
+      "sm": 12,
+      "md": 4,
+      "lg": 4,
+      "xl": 4,
+      "hidden": "data.protocol === 'cloud'"
+    },
     "model": {
-      "newLine": true,
       "type": "select",
       "options": [
         {
@@ -98,6 +72,131 @@
       "sm": 12,
       "md": 4,
       "lg": 4,
+      "xl": 4,
+      "hidden": "data.protocol === 'cloud'"
+    },
+    "aliveTimeout": {
+      "newLine": true,
+      "type": "number",
+      "label": "Alive timeout",
+      "help": "ms",
+      "default": 30000,
+      "min": 1000,
+      "max": 600000,
+      "xs": 12,
+      "sm": 6,
+      "md": 4,
+      "lg": 4,
+      "xl": 4,
+      "hidden": "data.protocol === 'cloud'"
+    },
+    "reconnectInterval": {
+      "type": "number",
+      "label": "Reconnect interval",
+      "help": "ms - should be >= Alive timeout",
+      "default": 30000,
+      "min": 1000,
+      "max": 600000,
+      "validator": "data.reconnectInterval >= data.aliveTimeout",
+      "validatorErrorText": "Reconnect interval should be at least the Alive timeout",
+      "xs": 12,
+      "sm": 6,
+      "md": 4,
+      "lg": 4,
+      "xl": 4,
+      "hidden": "data.protocol === 'cloud'"
+    },
+    "_cloudHelp": {
+      "type": "staticText",
+      "label": "Save cloud protocol and country, then start the instance. Enter your account email, request a code and confirm the email code here. All account devices are discovered automatically.",
+      "hidden": "data.protocol !== 'cloud'",
+      "xs": 12,
+      "sm": 12,
+      "md": 12,
+      "lg": 12,
+      "xl": 12,
+      "newLine": true
+    },
+    "_cloudStatus": {
+      "type": "textSendTo",
+      "command": "cloudLoginStatus",
+      "container": "div",
+      "jsonData": "{\"language\":${JSON.stringify(_system.language || \"en\")}}",
+      "hidden": "data.protocol !== 'cloud'",
+      "xs": 12,
+      "sm": 12,
+      "md": 12,
+      "lg": 12,
+      "xl": 12
+    },
+    "cloudCountry": {
+      "type": "text",
+      "label": "Cloud account country (two letters)",
+      "default": "",
+      "maxLength": 2,
+      "validator": "data.protocol !== 'cloud' || /^[A-Za-z]{2}$/.test(data.cloudCountry)",
+      "validatorErrorText": "Enter a two-letter country code",
+      "hidden": "data.protocol !== 'cloud'",
+      "xs": 12,
+      "md": 4,
+      "sm": 12,
+      "lg": 4,
+      "xl": 4,
+      "validatorNoSaveOnError": true,
+      "newLine": true
+    },
+    "cloudEmail": {
+      "type": "text",
+      "label": "Cloud account email",
+      "maxLength": 254,
+      "hidden": "data.protocol !== 'cloud'",
+      "xs": 12,
+      "sm": 12,
+      "md": 4,
+      "lg": 4,
+      "xl": 4,
+      "newLine": true,
+      "default": ""
+    },
+    "_cloudRequestCode": {
+      "type": "sendTo",
+      "label": "Send verification code",
+      "command": "cloudRequestCode",
+      "jsonData": "{\"email\":${JSON.stringify(data.cloudEmail || \"\")}}",
+      "showProcess": true,
+      "timeout": 30000,
+      "hidden": "data.protocol !== 'cloud'",
+      "xs": 12,
+      "sm": 12,
+      "md": 4,
+      "lg": 4,
+      "xl": 4
+    },
+    "_cloudCode": {
+      "type": "text",
+      "label": "Email verification code",
+      "maxLength": 6,
+      "hidden": "data.protocol !== 'cloud'",
+      "xs": 12,
+      "sm": 12,
+      "md": 4,
+      "lg": 4,
+      "xl": 4,
+      "newLine": true
+    },
+    "_cloudConfirmCode": {
+      "type": "sendTo",
+      "label": "Confirm verification code",
+      "command": "cloudConfirmCode",
+      "jsonData": "{\"code\":${JSON.stringify(data._cloudCode || \"\")}}",
+      "reloadBrowser": true,
+      "showProcess": true,
+      "timeout": 90000,
+      "hidden": "data.protocol !== 'cloud'",
+      "xs": 12,
+      "sm": 12,
+      "md": 4,
+      "lg": 4,
       "xl": 4
     },
     "logUnknownStatesAsDebug": {
@@ -110,7 +209,8 @@
       "sm": 12,
       "md": 8,
       "lg": 8,
-      "xl": 8
+      "xl": 8,
+      "hidden": "data.protocol === 'cloud'"
     }
   }
 }

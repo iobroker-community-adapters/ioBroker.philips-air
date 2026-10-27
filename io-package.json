@@ -142,7 +142,7 @@
     "mode": "daemon",
     "type": "household",
     "compact": true,
-    "connectionType": "local",
+    "connectionType": "cloud",
     "dataSource": "push",
     "adminUI": {
       "config": "json"
@@ -218,7 +218,8 @@
           "cancel"
         ]
       }
-    ]
+    ],
+    "messagebox": true
   },
   "native": {
     "host": "",
@@ -226,7 +227,13 @@
     "reconnectInterval": 30000,
     "protocol": "coap",
     "model": "Generic",
-    "logUnknownStatesAsDebug": false
+    "logUnknownStatesAsDebug": false,
+    "cloudCountry": "",
+    "cloudAccessToken": "",
+    "cloudRefreshToken": "",
+    "cloudIdToken": "",
+    "cloudExpiresAt": 0,
+    "cloudEmail": ""
   },
   "objects": [],
   "instanceObjects": [
@@ -250,59 +257,16 @@
         "def": false
       },
       "native": {}
-    },
-    {
-      "_id": "info.key",
-      "type": "state",
-      "common": {
-        "role": "state",
-        "name": "HTTP secret key",
-        "type": "string",
-        "read": true,
-        "write": false,
-        "def": ""
-      },
-      "native": {}
-    },
-    {
-      "_id": "control",
-      "type": "channel",
-      "common": {
-        "name": "Control air purifier"
-      },
-      "native": {}
-    },
-    {
-      "_id": "filter",
-      "type": "channel",
-      "common": {
-        "name": "Filter information"
-      },
-      "native": {}
-    },
-    {
-      "_id": "status",
-      "type": "channel",
-      "common": {
-        "name": "Device status"
-      },
-      "native": {}
-    },
-    {
-      "_id": "device",
-      "type": "channel",
-      "common": {
-        "name": "Device information"
-      },
-      "native": {}
-    },
-    {
-      "_id": "unknownStates",
-      "type": "channel",
-      "common": {
-        "name": "Unmapped raw device attributes"
-      },
-      "native": {}
     }
+  ],
+  "encryptedNative": [
+    "cloudAccessToken",
+    "cloudRefreshToken",
+    "cloudIdToken"
+  ],
+  "protectedNative": [
+    "cloudAccessToken",
+    "cloudRefreshToken",
+    "cloudIdToken"
   ]
 }

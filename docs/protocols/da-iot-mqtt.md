@@ -368,6 +368,22 @@ Runtime share codes, account-link codes and signed URLs are not shared
 protocol secrets. These entry points do not document the complete Amazon
 or Philips account-linking server implementation.
 
+## Adapter session renewal
+
+The adapter schedules renewal 60 seconds before the access token used by each
+MQTT session expires. It obtains current account credentials and a matching
+signature before closing the old client, then creates a new client and
+subscribes again. Account token refreshes share the existing in-flight request
+and encrypted persistence path; a newer token from another device can be reused.
+
+A planned switch is logged at debug level. Unexpected disconnects are warnings
+with the remaining session-token lifetime. Failed renewal uses the existing
+bounded reconnect path. Pending commands are rejected with an unknown outcome
+and are not replayed. Disconnect and shutdown cancel the renewal timer and
+ignore late credential responses.
+
+This is adapter behavior, separate from the inspected app lifecycle above.
+
 ## Remaining proof
 
 This reference covers discovered connection families and inspected operations,

@@ -39,6 +39,11 @@ in milliseconds for scripts and visualizations. Zero means no saved token is
 available at startup. This is not the end of the account session: the access
 token renews automatically when needed.
 
+Before the MQTT session's access token expires, the adapter obtains current
+credentials and reconnects the device session. This causes a brief connection
+interruption without restarting the adapter. Planned renewals are logged at
+debug level; unexpected disconnects are warnings.
+
 ## Multiple devices and local connections
 
 One Cloud instance discovers all devices in the signed-in account at startup.

@@ -120,6 +120,31 @@ describe('main - cloud integration preserves local contracts', () => {
         assert.equal(h.objects.get('devices.synthetic-device.control.resetPreFilter').common.read, false);
     });
 
+    it('logs the specific cloud failure and session token lifetime without credentials', async () => {
+        const h = harness({ protocol: 'cloud', cloudRefreshToken: 'synthetic-refresh' });
+        const messages = [];
+        const renewals = [];
+        h.adapter.log.warn = message => messages.push(message);
+        h.adapter.log.debug = message => renewals.push(message);
+        h.adapter.log.info = () => assert.fail('Cloud transport diagnostics should use warn or debug');
+        await h.callbacks.ready();
+        const transport = h.transport();
+        transport.tokenExpiresAt = Date.now() - 5000;
+        transport.emit('error', 'Cloud MQTT disconnected');
+        assert.match(messages[0], /Cloud MQTT disconnected; MQTT token remaining: -[56]s/);
+        transport.tokenExpiresAt = undefined;
+        transport.emit('error', 'Cloud Status read failed');
+        assert.match(messages[1], /Cloud Status read failed; MQTT token remaining: unknown/);
+        transport.emit('renewal');
+        assert.match(renewals[0], /renewing MQTT session before access token expiry/);
+        await new Promise(resolve => h.callbacks.unload(resolve));
+        transport.emit('error', 'Cloud MQTT disconnected');
+        transport.emit('renewal');
+        assert.equal(messages.length, 2);
+        assert.equal(renewals.length, 1);
+        assert.ok(messages.every(message => !message.includes('synthetic-refresh')));
+    });
+
     it('only explicit unacknowledged TRUE reset events reach the transport', async () => {
         const h = harness({ protocol: 'cloud', cloudRefreshToken: 'synthetic-refresh' });
         await h.callbacks.ready();

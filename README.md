@@ -124,8 +124,7 @@ Further setup instructions and technical references: [Documentation](docs/README
 -->
 ### **WORK IN PROGRESS**
 
-- (reloxx13) Cloud sign-in renews automatically without restarting the adapter instance
-- (reloxx13) Added Philips Cloud with email verification login, automatic discovery of all account devices with separate object trees, shared device profiles, status and explicit filter maintenance commands
+- (reloxx13) Added Philips Cloud support
 - (tt-tom17) A new instance now starts with the device model "Generic" (read-only values, no controls) instead of silently using the AC2889 controls; instances that already have a model keep it
 - (tt-tom17) With the device model "Generic" the log now names the model your device looks like, so you know which one to select
 - (reloxx13) Updated the shared test framework to 6.3.1, disabling diagnostic reporting in test installations and supporting npm 12 setup

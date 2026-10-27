@@ -7,13 +7,14 @@ const flush = () => new Promise(resolve => setImmediate(resolve));
 async function fixture(ctn = 'AC0651/10', observedPower = true) {
     const timers = new Map();
     const clients = [];
+    const expiresAt = Date.now() + 3600000;
     const account = {
         calls: 0,
         listDevices: async () => { throw new Error('Transport must reuse discovered device'); },
         async getConnectionInfo() {
             this.calls++;
             return { accessToken: 'synthetic-token', signature: `signature-${this.calls}`, userId: 'user',
-                brokerUrl: 'wss://example.invalid/mqtt', tenant: 'da' };
+                brokerUrl: 'wss://example.invalid/mqtt', tenant: 'da', expiresAt };
         },
     };
     const options = { cloudAccount: account, cloudDevice: { id: 'device-id', thingName: 'real-thing', ctn }, mqttConnect: (_url, opts) => {
@@ -54,7 +55,7 @@ async function fixture(ctn = 'AC0651/10', observedPower = true) {
         client.emit('message', `${cloud.shadow}/get/accepted`, Buffer.from('{"state":{"reported":{"powerOn":false}}}'));
         statuses.length = 0;
     }
-    return { cloud, client, clients, account, timers, errors, statuses, answer };
+    return { cloud, client, clients, account, timers, errors, statuses, answer, expiresAt };
 }
 
 describe('Cloud DA IoT transport (synthetic)', () => {
@@ -107,8 +108,109 @@ describe('Cloud DA IoT transport (synthetic)', () => {
         expect(f.client.topics).to.have.length(5);
         expect(f.cloud.outbound).to.equal('da_ctrl/real-thing/to_ncp');
         expect(f.cloud.connected).to.equal(true);
+        expect(f.cloud.tokenExpiresAt).to.equal(f.expiresAt);
         f.cloud.destroy();
         expect(f.client.ended).to.equal(true);
+        expect(f.timers.size).to.equal(0);
+    });
+
+    it('renews before bearer expiry with fresh credentials and no disconnect error or command replay', async () => {
+        const f = await fixture();
+        const renewal = [...f.timers.values()].find(timer => timer.delay > 3500000);
+        expect(renewal.delay).to.be.within(f.expiresAt - Date.now() - 60100, f.expiresAt - Date.now() - 59900);
+        const events = [];
+        f.cloud.on('renewal', () => events.push('renewal'));
+        const command = f.cloud.command('setPort', 'Control', { D0310C: 0 }).catch(error => error.message);
+        renewal.callback();
+        await flush();
+        expect(await command).to.include('outcome unknown');
+        expect(f.client.ended).to.equal(true);
+        expect(f.account.calls).to.equal(2);
+        expect(f.clients).to.have.length(2);
+        const next = /** @type {any} */ (f.clients[1]);
+        expect(next.opts.wsOptions.headers['x-amz-customauthorizer-signature']).to.equal('signature-2');
+        expect(next.opts.wsOptions.headers['token-header']).to.equal('Bearer synthetic-token');
+        next.emit('connect');
+        const newTimer = f.cloud.renewalTimer;
+        renewal.callback();
+        await flush();
+        expect(f.cloud.renewalTimer).to.equal(newTimer);
+        expect(f.timers.has(newTimer)).to.equal(true);
+        expect(f.account.calls).to.equal(2);
+        expect(next.topics).to.have.length(5);
+        expect(next.sent.some(item => item.payload.cn === 'setPort')).to.equal(false);
+        expect(events).to.deep.equal(['renewal']);
+        expect(f.errors).to.deep.equal([]);
+        f.cloud.destroy();
+        expect(f.timers.size).to.equal(0);
+    });
+
+    it('keeps the socket until fresh credentials arrive and ignores late renewal after disconnect or destroy', async () => {
+        for (const stop of ['disconnect', 'destroy']) {
+            const f = await fixture();
+            /** @type {(info: object) => void} */
+            let finish = () => { throw new Error('Renewal did not request credentials'); };
+            f.account.getConnectionInfo = () => new Promise(resolve => { finish = resolve; });
+            const renewal = [...f.timers.values()].find(timer => timer.delay > 3500000);
+            renewal.callback();
+            renewal.callback();
+            expect(f.client.ended).to.equal(false);
+            if (stop === 'destroy') f.cloud.destroy();
+            else f.cloud.disconnect('synthetic disconnect');
+            finish({ expiresAt: Date.now() + 3600000 });
+            await flush();
+            expect(f.clients).to.have.length(1);
+            expect(f.cloud.connected).to.equal(false);
+            f.cloud.destroy();
+            expect(f.timers.size).to.equal(0);
+        }
+    });
+
+    it('routes failed renewal through bounded reconnect and cancels the renewal timer', async () => {
+        const f = await fixture();
+        f.account.getConnectionInfo = async () => { throw new Error('synthetic failure'); };
+        const renewal = [...f.timers.values()].find(timer => timer.delay > 3500000);
+        renewal.callback();
+        await flush();
+        expect(f.client.ended).to.equal(true);
+        expect(f.errors).to.deep.equal(['Cloud session renewal failed']);
+        expect([...f.timers.values()].filter(timer => timer.delay === 1500)).to.have.length(1);
+        f.cloud.destroy();
+        expect(f.timers.size).to.equal(0);
+    });
+
+    it('reuses account credentials already renewed by another device without forcing token refresh', async () => {
+        const f = await fixture();
+        const args = [];
+        f.account.getConnectionInfo = async (...values) => {
+            args.push(values);
+            return { accessToken: 'already-renewed', signature: 'new-signature', userId: 'user',
+                brokerUrl: 'wss://example.invalid/mqtt', tenant: 'da', expiresAt: Date.now() + 7200000 };
+        };
+        const renewal = [...f.timers.values()].find(timer => timer.delay > 3500000);
+        renewal.callback();
+        await flush();
+        const next = /** @type {any} */ (f.clients[1]);
+        expect(next.opts.wsOptions.headers['token-header']).to.equal('Bearer already-renewed');
+        expect(args).to.deep.equal([[]]);
+        next.emit('connect');
+        const timers = f.timers.size;
+        const requests = next.sent.length;
+        next.emit('connect');
+        expect(f.timers.size).to.equal(timers);
+        expect(next.sent).to.have.length(requests);
+        f.cloud.destroy();
+    });
+
+    it('bounds overdue and distant deadlines and skips missing or nonfinite expiry', async () => {
+        const f = await fixture();
+        for (const [expiresAt, delay] of [[Date.now() - 1000, 1000], [Number.MAX_VALUE, 2147483647],
+            [undefined, undefined], [NaN, undefined], [Infinity, undefined]]) {
+            f.cloud.tokenExpiresAt = expiresAt;
+            f.cloud.scheduleRenewal(f.client);
+            expect(f.cloud.renewalTimer ? f.timers.get(f.cloud.renewalTimer).delay : undefined).to.equal(delay);
+        }
+        f.cloud.destroy();
         expect(f.timers.size).to.equal(0);
     });
 

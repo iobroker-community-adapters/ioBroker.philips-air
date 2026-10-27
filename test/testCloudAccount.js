@@ -279,9 +279,26 @@ describe('cloud account OAuth and REST', () => {
         const info = await account.getConnectionInfo();
         assert.equal(info.signature, 'signature');
         assert.equal(info.accessToken, tokens.accessToken);
+        assert.equal(info.expiresAt, tokens.expiresAt);
         assert.equal(info.brokerUrl, 'wss://ats.prod.eu-da.iot.versuni.com:443/mqtt');
         assert.equal(calls[0].init.headers.Authorization, undefined);
         assert.equal(calls[1].init.headers.Authorization, `Bearer ${tokens.accessToken}`);
+    });
+
+    it('keeps MQTT expiry paired with its bearer when another request rotates the account', async () => {
+        const { account } = fixture([routing, { id: 'user-id' }, { signature: 'signature' }]);
+        const fetch = account.fetch;
+        account.fetch = async (url, init) => {
+            const reply = await fetch(url, init);
+            if (String(url).endsWith('/signature')) {
+                account.tokens = { ...tokens, accessToken: 'other-request-token', expiresAt: tokens.expiresAt + 3600000 };
+            }
+            return reply;
+        };
+        const info = await account.getConnectionInfo();
+        assert.equal(info.accessToken, tokens.accessToken);
+        assert.equal(info.expiresAt, tokens.expiresAt);
+        assert.notEqual(info.expiresAt, account.tokens?.expiresAt);
     });
 
     it('rejects discovery destinations outside Versuni IoT before sending credentials', async () => {
@@ -296,6 +313,7 @@ describe('cloud account OAuth and REST', () => {
         account.fetch = async (url, init) => { calls.push({ url, init }); const reply = replies.shift(); assert.ok(reply); return reply; };
         const info = await account.getConnectionInfo();
         assert.equal(info.accessToken, 'new-access');
+        assert.equal(info.expiresAt, account.tokens?.expiresAt);
         assert.equal(info.signature, 'new-signature');
         assert.equal(calls.length, 5);
     });

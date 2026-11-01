@@ -329,10 +329,12 @@ The adapter implementation is in [`cloudAccount.js`](../../lib/cloudAccount.js),
 [`cloudTokenStore.js`](../../lib/cloudTokenStore.js).
 
 Explicit login saves access, refresh and ID tokens in flat native fields declared
-in both `encryptedNative` and `protectedNative`, together with the account email.
-The verification code and Gigya verification session remain transient. Admin
-messages require the controller-propagated built-in administrator identity;
-a `user` field supplied inside the request payload is not trusted.
+in both `encryptedNative` and `protectedNative`. The account email is listed in
+`protectedNative`. The verification code and Gigya verification session remain
+transient. Admin messages require the controller-propagated identity of the
+built-in admin or a member of `system.group.administrator`; a `user` field
+supplied inside the request payload is not trusted. Missing user context or
+failed group lookups deny access.
 
 Routine refresh saves a JSON envelope in `auth.tokens`. Its token payload is
 encrypted with the installation secret through `adapter.encrypt()`. The state

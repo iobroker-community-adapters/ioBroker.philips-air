@@ -142,7 +142,7 @@
     "mode": "daemon",
     "type": "household",
     "compact": true,
-    "connectionType": "cloud",
+    "connectionType": "local",
     "dataSource": "push",
     "adminUI": {
       "config": "json"
@@ -265,6 +265,7 @@
     "cloudIdToken"
   ],
   "protectedNative": [
+    "cloudEmail",
     "cloudAccessToken",
     "cloudRefreshToken",
     "cloudIdToken"

@@ -12,7 +12,7 @@ function fixture() {
     const adapter = {
         host: 'synthetic-host',
         setTimeout, clearTimeout,
-        getForeignObjectAsync: async () => ({ common: { host: 'synthetic-host' }, native: {} }),
+        getForeignObjectAsync: async _id => /** @type {object} */ ({ common: { host: 'synthetic-host' }, native: {} }),
         getCertificatesAsync: async () => [{ key: 'synthetic-key', cert: 'synthetic-cert' }],
         config: { cloudCountry: 'DE', cloudAccessToken: 'synthetic-access', cloudRefreshToken: 'synthetic-refresh',
             cloudIdToken: 'synthetic-id', cloudExpiresAt: 12345 },
@@ -32,7 +32,7 @@ function message(command, payload = {}) {
 }
 
 describe('cloud Admin account boundary', () => {
-    it('requires the trusted built-in administrator, independently of payload claims', async () => {
+    it('requires a trusted administrator, independently of payload claims', async () => {
         const { admin, replies } = fixture();
         admin.account.requestOtp = async () => { throw new Error('must not start'); };
         await admin.onMessage({ ...message('cloudRequestCode', { user: 'system.user.admin' }), user: 'system.user.guest' });
@@ -40,6 +40,46 @@ describe('cloud Admin account boundary', () => {
         assert.deepEqual(replies.map(reply => reply.result.error), [
             new CloudError('administrator_required').message, new CloudError('admin_user_context_required').message,
         ]);
+    });
+    it('accepts administrator group members and binds login to their trusted identity', async () => {
+        const { admin, adapter } = fixture();
+        adapter.getForeignObjectAsync = async id => {
+            assert.equal(id, 'system.group.administrator');
+            return { common: { members: ['system.user.operator'] } };
+        };
+        const calls = [];
+        admin.account.requestOtp = async (...args) => { calls.push(args); };
+        await admin.onMessage({ ...message('cloudRequestCode', { email: 'synthetic@example.test' }),
+            user: 'system.user.operator' });
+        assert.deepEqual(calls, [['synthetic@example.test', 'system.adapter.admin.0:system.user.operator']]);
+    });
+
+    it('fails closed when group lookup fails or shutdown occurs during authorization', async () => {
+        const { admin, adapter, replies } = fixture();
+        let calls = 0;
+        admin.account.requestOtp = async () => { calls++; };
+        const request = { ...message('cloudRequestCode'), user: 'system.user.operator' };
+        adapter.getForeignObjectAsync = async () => { throw new Error('private lookup failure'); };
+        await admin.onMessage(request);
+        assert.deepEqual(replies.map(reply => reply.result), [{ error: 'Philips cloud: request_failed' }]);
+        adapter.getForeignObjectAsync = async () => {
+            await admin.destroy();
+            return { common: { members: ['system.user.operator'] } };
+        };
+        await admin.onMessage(request);
+        assert.equal(calls, 0);
+        assert.equal(replies.length, 1);
+    });
+
+    it('rejects missing or malformed administrator membership', async () => {
+        const { admin, adapter, replies } = fixture();
+        admin.account.requestOtp = async () => { throw new Error('must not start'); };
+        for (const group of [{}, { common: { members: 'system.user.operator' } }, { common: { members: [] } }]) {
+            adapter.getForeignObjectAsync = async () => group;
+            await admin.onMessage({ ...message('cloudRequestCode'), user: 'system.user.operator' });
+        }
+        assert.deepEqual(replies.map(reply => reply.result.error),
+            Array(3).fill(new CloudError('administrator_required').message));
     });
     it('ignores non-Admin senders, missing callbacks and unknown commands', async () => {
         const { admin, replies } = fixture();
@@ -168,6 +208,7 @@ describe('cloud Admin account boundary', () => {
             assert.ok(metadata.protectedNative.includes(field), `${field} must be protected`);
             assert.ok(Object.hasOwn(metadata.native, field), `${field} must be a flat native field`);
         }
+        assert.ok(metadata.protectedNative.includes('cloudEmail'));
         assert.ok(admin.account.tokens);
         assert.equal(admin.account.tokens.accessToken, 'synthetic-access');
         await admin.account.saveTokens(tokens, 'synthetic@example.test');

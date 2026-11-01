@@ -29,6 +29,9 @@ for the matching configuration. Other classic purifiers can use the shared
 
 ### Philips Cloud (Air+ account)
 
+Cloud support uses an unofficial Philips/Versuni API. Provider changes to the
+API or app credentials can interrupt the connection or require an adapter update.
+
 One Cloud instance automatically connects all devices returned by the account.
 Each device has its own object tree under `devices.<deviceId>`, including its
 status, controls and connection indicator. Profiles are selected automatically
@@ -97,7 +100,7 @@ The model number on its own tells you nothing about the register set: the AC4236
 If you are unsure, connect with `Generic` first and look at the raw keys under `unknownStates`: plain names such as `pwr` or `pm25` mean a classic device, keys such as `D03102` mean a next-generation device. If your device turns out to be a next-generation model that is not in the list, please open an issue with a debug log - that is how the CX7550/01 and the AC3221 were added.
 
 Developer notes on the app's connection families, handshakes and the AC0651
-remote-control path are in [Protocol reference](docs/protocols/README.md).
+remote-control path are in [Protocol reference](https://github.com/iobroker-community-adapters/ioBroker.philips-air/blob/master/docs/protocols/README.md).
 
 ![Objects](img/objects.png)
 
@@ -120,6 +123,7 @@ Further setup instructions and technical references: [Documentation](docs/README
 ## Changelog
 
 ### **WORK IN PROGRESS**
+- (reloxx13) Added Philips Cloud support
 - (copilot) Adapter requires node.js >= 22.19.0 now
 <!--
     Placeholder for the next version (at the beginning of the line):
@@ -127,10 +131,8 @@ Further setup instructions and technical references: [Documentation](docs/README
 -->
 ### 2.3.0 (2026-10-26)
 
-- (reloxx13) Added Philips Cloud support
 - (tt-tom17) A new instance now starts with the device model "Generic" (read-only values, no controls) instead of silently using the AC2889 controls; instances that already have a model keep it
 - (tt-tom17) With the device model "Generic" the log now names the model your device looks like, so you know which one to select
-- (reloxx13) Updated the shared test framework to 6.3.1, disabling diagnostic reporting in test installations and supporting npm 12 setup
 - (tt-tom17) Dependencies updated
 
 ### 2.2.0 (2026-09-08)

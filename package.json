@@ -40,7 +40,9 @@
   "main": "main.js",
   "files": [
     "admin/",
-    "docs/",
+    "docs/README.md",
+    "docs/cloud.md",
+    "docs/devices/",
     "img/",
     "lib/",
     "main.js",

@@ -8,14 +8,15 @@ or every account platform described in the protocol inventory.
 
 ## Sign in and connect account devices
 
-Sign in as the built-in ioBroker `admin` user. Use an up-to-date ioBroker
+Sign in as an ioBroker user in the `administrator` group (including the built-in
+`admin` user). Use an up-to-date ioBroker
 Admin and js-controller. If login reports that authenticated user information
 is missing, update both before trying again.
 
 1. Select **Philips Cloud**, enter the account's two-letter country code (empty
    by default), save the settings and start the instance. The country is used
    for Cloud routing, for example `DE`, `AT`, `CH`, `GB` or `US`.
-2. Open the settings as **admin**, enter your Cloud account email and select
+2. Open the settings as an administrator, enter your Cloud account email and select
    **Send verification code**. This sends an email through Philips/Home.ID.
 3. Enter the six-digit code from that email and select **Confirm verification
    code**. No account password is required. A rejected code can be corrected;
@@ -97,5 +98,5 @@ with an unknown outcome is not retried automatically.
 If saved credentials cannot be loaded, sign in again in the instance settings.
 Keep ioBroker backups so credentials and configuration can be restored together.
 
-Developer details: [authentication and token storage](protocols/account-authentication.md#adapter-credential-persistence),
-[MQTT](protocols/da-iot-mqtt.md) and [device profiles](protocols/cloud-device-profiles.md).
+Developer details: [authentication and token storage](https://github.com/iobroker-community-adapters/ioBroker.philips-air/blob/master/docs/protocols/account-authentication.md#adapter-credential-persistence),
+[MQTT](https://github.com/iobroker-community-adapters/ioBroker.philips-air/blob/master/docs/protocols/da-iot-mqtt.md) and [device profiles](https://github.com/iobroker-community-adapters/ioBroker.philips-air/blob/master/docs/protocols/cloud-device-profiles.md).

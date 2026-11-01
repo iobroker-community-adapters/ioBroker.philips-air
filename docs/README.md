@@ -17,7 +17,7 @@ Cloud compatibility.
 
 ## Technical reference
 
-[Protocol inventory](protocols/README.md) contains app-derived authentication,
+[Protocol inventory](https://github.com/iobroker-community-adapters/ioBroker.philips-air/blob/master/docs/protocols/README.md) contains app-derived authentication,
 transport, provisioning and device-profile evidence. App observations and
 synthetic tests are distinguished from verified hardware behavior.
 

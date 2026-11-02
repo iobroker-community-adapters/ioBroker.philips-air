@@ -427,6 +427,97 @@ describe('mapping - AC3221', () => {
     });
 });
 
+describe('mapping - AC3737', () => {
+    const { renameReported, mapping } = createMapping('AC3737');
+
+    // The complete status frame from GitHub #407, captured on an AC3737/10 that was powered on in
+    // auto mode, humidifying with the tank in place, target humidity 70 %, room 53 % / 23.2 °C.
+    const frame = () => ({
+        D01102: 4,
+        D01S03: 'Obergeschoss ',
+        D01S04: 'Carnation',
+        D01S05: 'AC3737/10',
+        D01107: 0,
+        D01108: 3,
+        D01109: 1,
+        D0110A: 0,
+        D0110B: 0,
+        D0110C: 3,
+        D0110F: 3,
+        D01S12: '1.0.4',
+        D01213: 0,
+        MCUBoot: true,
+        D03102: 1,
+        D03103: 0,
+        D03105: 0,
+        D03106: 2,
+        D0310A: 4,
+        D0310B: 1,
+        D0310C: 0,
+        D03120: 1,
+        D03221: 1,
+        D03224: 233,
+        D03125: 53,
+        D03128: 70,
+        D0312A: 6,
+        D0312B: 6,
+        D0312C: 0,
+        D03240: 0,
+        D05102: 3,
+        D05207: 720,
+        D05408: 4800,
+        D0520D: 720,
+        D0540E: 4800,
+        D05212: 2400,
+        D05213: 1994,
+    });
+
+    it('names the confirmed readings and controls of the #407 frame', () => {
+        const reported = frame();
+        renameReported(reported);
+        expect(reported.power, 'power').to.equal(true);
+        expect(reported.mode, 'mode').to.equal('auto');
+        expect(reported.childLock, 'childLock').to.equal(false);
+        expect(reported.displayBrightness, 'displayBrightness').to.equal('off');
+        expect(reported.targetHumidity, 'targetHumidity').to.equal(70);
+        expect(reported.pm25, 'pm25').to.equal(1);
+        expect(reported.allergenIndex, 'allergenIndex').to.equal(1);
+        expect(reported.humidity, 'humidity').to.equal(53);
+        // scale 10: the register carries tenths of a degree.
+        expect(reported.temperature, 'temperature').to.equal(23.3);
+        expect(reported.preFilterCleanInHours, 'preFilterCleanInHours').to.equal(720);
+        expect(reported.preFilterTotalHours, 'preFilterTotalHours').to.equal(720);
+        expect(reported.hepaFilterReplaceInHours, 'hepaFilterReplaceInHours').to.equal(4800);
+        expect(reported.hepaFilterTotalHours, 'hepaFilterTotalHours').to.equal(4800);
+    });
+
+    // Guard against a future "helpful" completion of the profile: these registers are named in
+    // kongo09's table but were constant in the only capture we have, so they must keep falling
+    // through to unknownStates.* until a tester varies them (same rule as the AC3221 block).
+    it('leaves the unconfirmed registers unmapped so they stay raw', () => {
+        ['D05212', 'D05213', 'D0310A', 'D0312B', 'D03240', 'D0312A', 'D03106', 'D0310B', 'D0312C', 'D05102'].forEach(
+            key => {
+                expect(mapping[key], `${key} must stay unmapped`).to.be.undefined;
+            },
+        );
+
+        const reported = frame();
+        renameReported(reported);
+        expect(reported.D05212, 'wick candidate stays raw').to.equal(2400);
+        expect(reported.D05213, 'wick candidate stays raw').to.equal(1994);
+        expect(reported.D03240, 'error code stays raw').to.equal(0);
+        expect(reported.D0310A, 'humidifier mode stays raw').to.equal(4);
+    });
+
+    it('exposes the humidity target as a control and the sensors read-only', () => {
+        expect(mapping.D03128.control, 'targetHumidity is writable').to.be.true;
+        expect(mapping.D03128.unit).to.equal('%');
+        ['D03221', 'D03120', 'D03125', 'D03224'].forEach(key => {
+            expect(mapping[key].control, `${key} stays read-only`).to.be.undefined;
+        });
+    });
+});
+
 describe('mapping - Generic', () => {
     it('has no controls, so unmapped attributes stay untouched (handled upstream as unknownStates)', () => {
         const { mapping, renameReported } = createMapping('Generic');
@@ -577,7 +668,7 @@ describe('mapping - bestMatchingModels (model hint for Generic)', () => {
 
     it('names every model that ties, in a stable order', () => {
         const result = bestMatchingModels(count({ D03102: 1 }));
-        expect(result).to.deep.equal({ models: ['AC3221', 'CX3550', 'CX7550'], count: 1 });
+        expect(result).to.deep.equal({ models: ['AC3221', 'AC3737', 'CX3550', 'CX7550'], count: 1 });
     });
 
     it('prefers the model that claims more controls', () => {
@@ -605,7 +696,7 @@ describe('mapping - modelsOwningRawKey (wrong-model hint)', () => {
     it('names every model that owns a shared new-gen control key', () => {
         // D03102 (power) is a control of every new-gen table - a Generic/AC2889 user seeing it should
         // be pointed at all candidates.
-        expect(modelsOwningRawKey('D03102')).to.have.members(['CX3550', 'CX7550', 'AC3221']);
+        expect(modelsOwningRawKey('D03102')).to.have.members(['CX3550', 'CX7550', 'AC3221', 'AC3737']);
     });
 
     it('returns no owner for a genuinely unknown raw attribute', () => {
@@ -623,7 +714,7 @@ describe('mapping - modelsOwningRawKey (wrong-model hint)', () => {
         // configured fan reporting them must never be nagged with a wrong-model hint. D03105 is still
         // owned by AC3221 and CX7550 (there it IS a control), but no longer by CX3550.
         expect(modelsOwningRawKey('D0310A')).to.deep.equal([]);
-        expect(modelsOwningRawKey('D03105')).to.have.members(['CX7550', 'AC3221']);
+        expect(modelsOwningRawKey('D03105')).to.have.members(['CX7550', 'AC3221', 'AC3737']);
     });
 });
 

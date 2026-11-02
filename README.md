@@ -41,11 +41,12 @@ Over CoAP the device pushes its status on its own, so there is no polling. Some 
 | --- | --- |
 | AC2889 and the other classic purifiers, for example AC1214, AC2729, AC2939, AC3059, AC3829 or AC4236 | `AC2889` |
 | AC3221 | `AC3221` |
+| AC3737/10 2-in-1 purifier/humidifier | `AC3737` |
 | CX3550/01 pedestal fan | `CX3550` |
 | CX7550/01 tower fan | `CX7550` |
 | Anything else, or if you are unsure | `Generic` |
 
-The classic purifiers all report the same plain keys (`pwr`, `om`, `mode` and so on), which is why one entry covers the whole family. Confirmed on real hardware so far: AC2729, AC2889, AC3221, AC3829, AC4236/14, CX3550/01 and CX7550/01.
+The classic purifiers all report the same plain keys (`pwr`, `om`, `mode` and so on), which is why one entry covers the whole family. Confirmed on real hardware so far: AC2729, AC2889, AC3221, AC3829, AC4236/14, CX3550/01 and CX7550/01. The `AC3737` entry was built from a complete status frame of an AC3737/10 (GitHub #407); its readings and filters are confirmed against the app, while writing to the humidity target still needs a test on the device.
 
 The model number on its own tells you nothing about the register set: the AC4236/14 carries a higher number than the AC3221, yet it is a classic device and needs `AC2889`. Pick the entry that matches the keys your device reports, not the one that looks closest to its name.
 
@@ -91,6 +92,7 @@ More details are documented in [docs/CX7550.md](docs/CX7550.md).
 ## Changelog
 
 ### **WORK IN PROGRESS**
+- (tt-tom17) New device model "AC3737" for the AC3737/10 2-in-1 purifier/humidifier: readings, filters and the humidity target are now named instead of appearing as raw values
 - (copilot) Adapter requires node.js >= 22.19.0 now
 <!--
     Placeholder for the next version (at the beginning of the line):

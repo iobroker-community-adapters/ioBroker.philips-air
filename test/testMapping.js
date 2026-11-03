@@ -432,6 +432,8 @@ describe('mapping - AC3737', () => {
 
     // The complete status frame from GitHub #407, captured on an AC3737/10 that was powered on in
     // auto mode, humidifying with the tank in place, target humidity 70 %, room 53 % / 23.2 °C.
+    // The readings of the follow-up measurement series on the same device (#407, 2026-11-03) are
+    // quoted in the assertions below, because several of them only make sense as a pair of values.
     const frame = () => ({
         D01102: 4,
         D01S03: 'Obergeschoss ',
@@ -487,26 +489,36 @@ describe('mapping - AC3737', () => {
         expect(reported.temperature, 'temperature').to.equal(23.3);
         expect(reported.preFilterCleanInHours, 'preFilterCleanInHours').to.equal(720);
         expect(reported.preFilterTotalHours, 'preFilterTotalHours').to.equal(720);
-        expect(reported.hepaFilterReplaceInHours, 'hepaFilterReplaceInHours').to.equal(4800);
-        expect(reported.hepaFilterTotalHours, 'hepaFilterTotalHours').to.equal(4800);
+        // The app calls the 4800 pair the humidifier filter (97 % matched 4656/4800 and nothing
+        // else), so this model must NOT inherit the AC3221 'hepaFilter' name for it.
+        expect(reported.wickFilterReplaceInHours, 'wickFilterReplaceInHours').to.equal(4800);
+        expect(reported.wickFilterTotalHours, 'wickFilterTotalHours').to.equal(4800);
+        expect(reported.hepaFilterReplaceInHours, 'no hepaFilter name on this model').to.be.undefined;
+        // Measured by pulling the water tank: 4 = water in place, 2 = tank removed.
+        expect(reported.humidifierReady, 'humidifierReady').to.equal(true);
+        // Measured by switching the preferred index in the app: allergen 0, PM2.5 1, humidity 6.
+        expect(reported.preferredIndex, 'preferredIndex').to.equal('humidity');
     });
 
-    // Guard against a future "helpful" completion of the profile: these registers are named in
-    // kongo09's table but were constant in the only capture we have, so they must keep falling
-    // through to unknownStates.* until a tester varies them (same rule as the AC3221 block).
+    // Guard against a future "helpful" completion of the profile: what is left here is what the
+    // measurement series could NOT settle, so it must keep falling through to unknownStates.* until
+    // somebody measures it (same rule as the AC3221 block).
     it('leaves the unconfirmed registers unmapped so they stay raw', () => {
-        ['D05212', 'D05213', 'D0310A', 'D0312B', 'D03240', 'D0312A', 'D03106', 'D0310B', 'D0312C', 'D05102'].forEach(
-            key => {
-                expect(mapping[key], `${key} must stay unmapped`).to.be.undefined;
-            },
-        );
+        ['D05212', 'D05213', 'D0312B', 'D03240', 'D03106', 'D0310B', 'D0312C', 'D05102'].forEach(key => {
+            expect(mapping[key], `${key} must stay unmapped`).to.be.undefined;
+        });
 
         const reported = frame();
         renameReported(reported);
-        expect(reported.D05212, 'wick candidate stays raw').to.equal(2400);
-        expect(reported.D05213, 'wick candidate stays raw').to.equal(1994);
+        // The roles of this pair are known (total/remaining) but not which filter it belongs to:
+        // rounded up, 553/720 and 1827/2400 both show as the app's single '77 % air filter'.
+        expect(reported.D05212, 'filter pair of unknown kind stays raw').to.equal(2400);
+        expect(reported.D05213, 'filter pair of unknown kind stays raw').to.equal(1994);
+        // kongo09's table says bit 8 of this register means 'water tank empty'. Pulling the tank on
+        // this model left it at 0, so the claim is measured wrong here and must not be named.
         expect(reported.D03240, 'error code stays raw').to.equal(0);
-        expect(reported.D0310A, 'humidifier mode stays raw').to.equal(4);
+        // Follows the tank (6 in, 1 out) but means neither 'tank' nor 'humidifying' - stays raw.
+        expect(reported.D0312B, 'humidifying candidate stays raw').to.equal(6);
     });
 
     it('exposes the humidity target as a control and the sensors read-only', () => {
@@ -515,6 +527,22 @@ describe('mapping - AC3737', () => {
         ['D03221', 'D03120', 'D03125', 'D03224'].forEach(key => {
             expect(mapping[key].control, `${key} stays read-only`).to.be.undefined;
         });
+    });
+
+    it('offers only the modes this device actually exposes', () => {
+        // Measured in the app (#407, 2026-11-03): auto 0, speed1 1, speed2 2, sleep 17, turbo 18.
+        // The AC3221 levels 3/4/5 and 19 are unreachable here and must not sit in the dropdown;
+        // '-16' stays because the family reports it in standby.
+        expect(Object.keys(mapping.D0310C.options).sort()).to.deep.equal(['-16', '0', '1', '17', '18', '2']);
+        // Writing the mode is confirmed on hardware, and D0310C alone is enough for it.
+        expect(mapping.D0310C.control, 'mode is writable').to.be.true;
+    });
+
+    it('keeps the two measured humidifier registers read-only', () => {
+        // D0310A has nothing to write, and the device overrides a written preferred index within
+        // seconds while humidifying - a control that visibly does not stick is worse than none.
+        expect(mapping.D0310A.control, 'humidifierReady stays read-only').to.be.undefined;
+        expect(mapping.D0312A.control, 'preferredIndex stays read-only').to.be.undefined;
     });
 });
 

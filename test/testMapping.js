@@ -752,7 +752,9 @@ describe('cloud shared profiles from app inheritance', () => {
     it('gives an unknown device the shared default with controls', () => {
         const cloud = createCloudMapping('UNLISTED/01');
         expect(cloud.buildControlPayload({ mode: 'gentle' })).to.deep.equal({ D0310C: 1 });
-        expect(cloud.buildControlPayload({ standbyMonitor: false })).to.deep.equal({ D03134: 0 });
+        expect(cloud.buildControlPayload({ standbyMonitor: false })).to.deep.equal({});
+        expect(cloud.stateCommon(cloud.mapping.D03134)).to.include({ write: false, read: true, role: 'indicator' });
+        expect(channelOf(cloud.mapping.D03134)).to.equal('control');
         expect(cloud.mapping.powerOn.control).to.equal(true);
     });
     it('uses app family mode differences without transport-specific branches', () => {

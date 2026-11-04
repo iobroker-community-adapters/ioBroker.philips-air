@@ -29,7 +29,7 @@ for the matching configuration. Other classic purifiers can use the shared
 
 ### Philips Cloud (Air+ account)
 
-Cloud support uses an unofficial Philips/Versuni API. Provider changes to the
+Cloud support is experimental and uses an unofficial Philips/Versuni API. Provider changes to the
 API or app credentials can interrupt the connection or require an adapter update.
 
 One Cloud instance automatically connects all devices returned by the account.
@@ -123,7 +123,7 @@ Further setup instructions and technical references: [Documentation](docs/README
 ## Changelog
 
 ### **WORK IN PROGRESS**
-- (reloxx13) Added Philips Cloud support
+- (reloxx13) Added experimental Philips Cloud support with login version diagnostics and automatic network recovery
 - (copilot) Adapter requires node.js >= 22.19.0 now
 <!--
     Placeholder for the next version (at the beginning of the line):

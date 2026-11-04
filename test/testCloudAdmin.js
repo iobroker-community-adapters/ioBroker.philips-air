@@ -12,7 +12,7 @@ function fixture() {
     const adapter = {
         host: 'synthetic-host',
         setTimeout, clearTimeout,
-        getForeignObjectAsync: async _id => /** @type {object} */ ({ common: { host: 'synthetic-host' }, native: {} }),
+        getForeignObjectAsync: async _id => /** @type {object} */ ({ common: { host: 'synthetic-host', installedVersion: '7.2.5', version: '8.1.0' }, native: {} }),
         getCertificatesAsync: async () => [{ key: 'synthetic-key', cert: 'synthetic-cert' }],
         config: { cloudCountry: 'DE', cloudAccessToken: 'synthetic-access', cloudRefreshToken: 'synthetic-refresh',
             cloudIdToken: 'synthetic-id', cloudExpiresAt: 12345 },
@@ -32,6 +32,32 @@ function message(command, payload = {}) {
 }
 
 describe('cloud Admin account boundary', () => {
+    it('reports both runtime versions and blocks login only for the requesting old Admin or controller', async () => {
+        const { admin, adapter, replies } = fixture();
+        let calls = 0;
+        admin.account.requestOtp = async () => { calls++; };
+        for (const [controller, version] of [['7.2.2', '8.0.14'], ['7.2.5', '8.0.14'],
+            ['7.2.5-beta.1', '8.1.0'], [undefined, '8.1.0']]) {
+            const ids = [];
+            adapter.getForeignObjectAsync = async id => {
+                ids.push(id);
+                return { common: { installedVersion: controller, version } };
+            };
+            await admin.onMessage({ ...message('cloudLoginStatus'), from: 'system.adapter.admin.2', user: undefined });
+            assert.match(replies.at(-1).result.text, /js-controller >= 7\.2\.5 and Admin >= 8\.1\.0/);
+            assert.ok(replies.at(-1).result.text.includes(`${controller || 'unknown'} / ${version}`));
+            assert.deepEqual(ids.sort(), ['system.adapter.admin.2', 'system.host.synthetic-host']);
+            await admin.onMessage(message('cloudRequestCode'));
+            assert.match(replies.at(-1).result.error, /Cloud login requires/);
+        }
+        assert.equal(calls, 0);
+        for (const [controller, version] of [['7.2.5', '8.1.0'], ['7.10.0', '8.10.0'], ['8.0.0', '9.0.0']]) {
+            adapter.getForeignObjectAsync = async () => ({ common: { installedVersion: controller, version } });
+            await admin.onMessage(message('cloudRequestCode'));
+        }
+        assert.equal(calls, 3);
+    });
+
     it('requires a trusted administrator, independently of payload claims', async () => {
         const { admin, replies } = fixture();
         admin.account.requestOtp = async () => { throw new Error('must not start'); };
@@ -43,7 +69,9 @@ describe('cloud Admin account boundary', () => {
     });
     it('accepts administrator group members and binds login to their trusted identity', async () => {
         const { admin, adapter } = fixture();
+        const read = adapter.getForeignObjectAsync;
         adapter.getForeignObjectAsync = async id => {
+            if (id !== 'system.group.administrator') return read(id);
             assert.equal(id, 'system.group.administrator');
             return { common: { members: ['system.user.operator'] } };
         };
@@ -59,10 +87,15 @@ describe('cloud Admin account boundary', () => {
         let calls = 0;
         admin.account.requestOtp = async () => { calls++; };
         const request = { ...message('cloudRequestCode'), user: 'system.user.operator' };
-        adapter.getForeignObjectAsync = async () => { throw new Error('private lookup failure'); };
+        const read = adapter.getForeignObjectAsync;
+        adapter.getForeignObjectAsync = async id => {
+            if (id !== 'system.group.administrator') return read(id);
+            throw new Error('private lookup failure');
+        };
         await admin.onMessage(request);
         assert.deepEqual(replies.map(reply => reply.result), [{ error: 'Philips cloud: request_failed' }]);
-        adapter.getForeignObjectAsync = async () => {
+        adapter.getForeignObjectAsync = async id => {
+            if (id !== 'system.group.administrator') return read(id);
             await admin.destroy();
             return { common: { members: ['system.user.operator'] } };
         };
@@ -74,8 +107,9 @@ describe('cloud Admin account boundary', () => {
     it('rejects missing or malformed administrator membership', async () => {
         const { admin, adapter, replies } = fixture();
         admin.account.requestOtp = async () => { throw new Error('must not start'); };
+        const read = adapter.getForeignObjectAsync;
         for (const group of [{}, { common: { members: 'system.user.operator' } }, { common: { members: [] } }]) {
-            adapter.getForeignObjectAsync = async () => group;
+            adapter.getForeignObjectAsync = async id => id === 'system.group.administrator' ? group : read(id);
             await admin.onMessage({ ...message('cloudRequestCode'), user: 'system.user.operator' });
         }
         assert.deepEqual(replies.map(reply => reply.result.error),
@@ -136,6 +170,7 @@ describe('cloud Admin account boundary', () => {
         let finish = () => {};
         admin.account.requestOtp = async () => new Promise(resolve => { finish = () => resolve(undefined); });
         const first = admin.onMessage(message('cloudRequestCode', { email: 'old@example.test' }));
+        await new Promise(resolve => setImmediate(resolve));
         admin.account.requestOtp = async () => {};
         await admin.onMessage(message('cloudRequestCode', { email: 'new@example.test' }));
         finish();
@@ -143,6 +178,7 @@ describe('cloud Admin account boundary', () => {
         assert.equal(replies.length, 1);
         admin.account.completeOtp = async () => new Promise(resolve => { finish = () => resolve(undefined); });
         const confirmation = admin.onMessage(message('cloudConfirmCode', { code: '123456' }));
+        await new Promise(resolve => setImmediate(resolve));
         await admin.onMessage(message('cloudRequestCode', { email: 'newest@example.test' }));
         finish();
         await confirmation;

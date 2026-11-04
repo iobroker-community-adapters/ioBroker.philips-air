@@ -3,15 +3,16 @@
 Philips Cloud is an additional connection for devices already paired with the
 Philips Air+ app. It needs an Internet connection and the manufacturer's
 services. HTTP and CoAP remain local connections with their existing settings.
-Cloud support currently targets the DA/NCP platform, not every Philips product
+Cloud support is experimental. It currently targets the DA/NCP platform, not every Philips product
 or every account platform described in the protocol inventory.
 
 ## Sign in and connect account devices
 
 Sign in as an ioBroker user in the `administrator` group (including the built-in
-`admin` user). Use an up-to-date ioBroker
-Admin and js-controller. If login reports that authenticated user information
-is missing, update both before trying again.
+`admin` user). Cloud login requires **js-controller >= 7.2.5** and **Admin >= 8.1.0**.
+The settings check the controller on the adapter host and the Admin instance
+used to open the settings, and show their versions if an update is needed.
+These requirements apply to Cloud login; local HTTP/CoAP updates remain available.
 
 1. Select **Philips Cloud**, enter the account's two-letter country code (empty
    by default), save the settings and start the instance. The country is used
@@ -53,7 +54,8 @@ Each device has a separate `devices.<deviceId>` object tree with its own
 characters in device IDs are encoded for safe, stable object IDs. Controls
 always target the corresponding device. `devices.<deviceId>.info.connection`
 shows that device's connection; the instance's `info.connection` is true while
-at least one device is connected. Restart the instance to discover newly paired
+at least one device is connected. To detect any individual device outage,
+monitor each device’s connection state. Restart the instance to discover newly paired
 devices. Previously created objects are retained.
 
 HTTP and CoAP connect one configured local device per instance. Use another
@@ -72,13 +74,25 @@ read-only under `unknownStates`.
 
 `control.power` switches the device on or off. `device.platform` identifies its
 platform; `status.statusBits` exposes its numeric status field for diagnostics.
+`control.standbyMonitor` retains its existing path but is read-only until a
+hardware write has been verified. Reporting a 0/1 value does not prove write support.
 Control values are updated from device reports. A sent command does not by
 itself confirm that the device applied it.
+
+## Mapping evidence
+
+Cloud mappings follow the inspected HomeCare app’s model-specific readers and
+writers. They are not inferred from identical register names in local CoAP
+profiles. `status.statusBits` is an app-derived diagnostic field; individual bits
+are not decoded. App code establishes the filter total/remaining pairs, but not
+their units. Automated tests use synthetic reports and do not establish physical
+command effects. In particular, no hardware write to `D03134` has been verified.
 
 ## Filters and maintenance
 
 Cleaning/replacement counters and percentages use the observed filter port.
-Counter units have not been established, so the Cloud mapping does not label
+The mappings follow the inspected app’s filter readers, not the local transport
+profiles. Counter units have not been established, so the Cloud mapping does not label
 them as hours. Zero totals, unavailable sentinels and invalid pairs do not
 produce a percentage.
 
@@ -91,8 +105,10 @@ device maintenance counters; an ioBroker configuration backup cannot undo it.
 
 ## Connection problems
 
-The adapter retries a failed device connection up to five times. After those
-attempts, check the network and account, then restart the instance. A command
+Failed device connections and failed startup device discovery are retried
+automatically with increasing delays, capped at five minutes. Warnings stop
+after the first five consecutive failures; retries continue until recovery or
+shutdown. Invalid credentials may still require signing in again. A command
 with an unknown outcome is not retried automatically.
 
 If saved credentials cannot be loaded, sign in again in the instance settings.

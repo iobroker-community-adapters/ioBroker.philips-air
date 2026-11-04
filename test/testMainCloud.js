@@ -14,8 +14,11 @@ function harness(config) {
     }
     const writes = [];
     const controls = [];
+    const timers = new Map();
     const adapter = {
         config, namespace: 'philips-air.0',
+        setTimeout(callback, delay) { const id = {}; timers.set(id, { callback, delay }); return id; },
+        clearTimeout(id) { timers.delete(id); },
         log: { info() {}, debug() {}, warn() {}, error() {} },
         subscribeStates() {},
         async setStateAsync(id, val, ack) {
@@ -41,7 +44,7 @@ function harness(config) {
         destroy() { this.stopped = true; }
     }
     class Admin {
-        constructor() { this.account = { tokens: config.cloudRefreshToken ? { refreshToken: config.cloudRefreshToken } : undefined, listDevices: async () => config.devices || [{ id: 'synthetic-device', ctn: 'AC0651' }] }; }
+        constructor() { this.account = { tokens: config.cloudRefreshToken ? { refreshToken: config.cloudRefreshToken } : undefined, listDevices: config.listDevices || (async () => config.devices || [{ id: 'synthetic-device', ctn: 'AC0651' }]) }; }
         async restoreTokens() {}
         destroy() { return config.accountStopped; }
     }
@@ -64,10 +67,85 @@ function harness(config) {
         require: customRequire, module: entry, Set, Map, Promise, Object, Date, Buffer,
     });
     entry.exports({});
-    return { adapter, callbacks, objects, writes, controls, transports, transport: () => transport };
+    return { adapter, callbacks, objects, writes, controls, transports, timers, transport: () => transport };
 }
 
 describe('main - cloud integration preserves local contracts', () => {
+    it('retries failed discovery beyond five attempts and cancels pending retries on unload', async () => {
+        let available = false;
+        const h = harness({ protocol: 'cloud', cloudRefreshToken: 'synthetic-refresh',
+            listDevices: async () => {
+                if (!available) throw new Error('synthetic network outage');
+                return [{ id: 'recovered', ctn: 'AC0651' }];
+            } });
+        const warnings = [];
+        h.adapter.log.warn = text => warnings.push(text);
+        await h.callbacks.ready();
+        for (let i = 0; i < 30; i++) {
+            const [id, timer] = [...h.timers][0];
+            assert.ok(timer.delay <= 300000);
+            h.timers.delete(id);
+            timer.callback();
+            await new Promise(resolve => setImmediate(resolve));
+        }
+        assert.equal([...h.timers.values()][0].delay, 300000);
+        assert.equal(warnings.length, 5);
+        available = true;
+        const [id, timer] = [...h.timers][0];
+        h.timers.delete(id);
+        timer.callback();
+        await new Promise(resolve => setImmediate(resolve));
+        assert.equal(h.transports.length, 1);
+        assert.equal(h.transport().device.id, 'recovered');
+        assert.equal(h.timers.size, 0);
+        await new Promise(resolve => h.callbacks.unload(resolve));
+
+        const failed = harness({ protocol: 'cloud', cloudRefreshToken: 'synthetic-refresh',
+            listDevices: async () => { throw new Error('offline'); } });
+        await failed.callbacks.ready();
+        assert.equal(failed.timers.size, 1);
+        const stale = [...failed.timers.values()][0];
+        await new Promise(resolve => failed.callbacks.unload(resolve));
+        assert.equal(failed.timers.size, 0);
+        stale.callback();
+        await new Promise(resolve => setImmediate(resolve));
+        assert.equal(failed.transports.length, 0);
+        assert.equal(failed.timers.size, 0);
+    });
+
+    it('retries partially created devices without duplicating completed sessions', async () => {
+        const h = harness({ protocol: 'cloud', cloudRefreshToken: 'synthetic-refresh', devices: [
+            { id: 'first', ctn: 'AC0651' }, { id: 'second', ctn: 'AC0651' },
+        ] });
+        const create = h.adapter.setObjectNotExistsAsync;
+        let fail = true;
+        h.adapter.setObjectNotExistsAsync = async (id, object) => {
+            if (id === 'devices.second' && fail) { fail = false; throw new Error('synthetic DB outage'); }
+            return create(id, object);
+        };
+        await h.callbacks.ready();
+        assert.equal(h.transports.length, 1);
+        const [id, timer] = [...h.timers][0];
+        h.timers.delete(id);
+        timer.callback();
+        await new Promise(resolve => setImmediate(resolve));
+        assert.equal(h.transports.length, 2);
+        assert.equal(h.timers.size, 0);
+        await new Promise(resolve => h.callbacks.unload(resolve));
+    });
+
+    it('retains the standby state path as read-only and rejects writes to existing objects', async () => {
+        const h = harness({ protocol: 'cloud', cloudRefreshToken: 'synthetic-refresh' });
+        await h.callbacks.ready();
+        h.transport().emit('status', { standbyMonitor: false }, new Set(['standbyMonitor']));
+        await new Promise(resolve => setImmediate(resolve));
+        assert.equal(h.objects.get('devices.synthetic-device.control.standbyMonitor').common.write, false);
+        h.callbacks.stateChange('philips-air.0.devices.synthetic-device.control.standbyMonitor', { val: true, ack: false });
+        await new Promise(resolve => setImmediate(resolve));
+        assert.equal(h.controls.length, 0);
+        await new Promise(resolve => h.callbacks.unload(resolve));
+    });
+
     it('does not finish unload before account persistence completes', async () => {
         let finish = () => {};
         const accountStopped = new Promise(resolve => { finish = () => resolve(undefined); });

@@ -59,20 +59,15 @@ async function fixture(ctn = 'AC0651/10', observedPower = true) {
 }
 
 describe('Cloud DA IoT transport (synthetic)', () => {
-    it('enables the shared standby control only for a valid reported flag', async () => {
+    it('keeps standby reports readable but rejects writes even after a valid report', async () => {
         const f = await fixture('OTHER/10');
         expect(await f.cloud.control({ standbyMonitor: true }).catch(error => error.message)).to.include('observed Status');
         f.cloud.port({ portName: 'Status', properties: { D03134: 2 } });
         expect(f.cloud.ports.Status).not.to.have.property('D03134');
         f.cloud.port({ portName: 'Status', properties: { D03134: 0 } });
         expect(f.statuses.at(-1)).to.deep.equal({ standbyMonitor: false });
-        const control = f.cloud.control({ standbyMonitor: true });
-        await flush();
-        expect(f.client.sent[0].payload.data.properties).to.deep.equal({ D03134: 1 });
-        f.answer(f.client.sent[0]);
-        await flush();
-        f.answer(f.client.sent[1], { D03134: 1 });
-        await control;
+        expect(await f.cloud.control({ standbyMonitor: true }).catch(error => error.message)).to.include('observed Status');
+        expect(f.client.sent).to.have.length(0);
         f.cloud.destroy();
     });
     it('allows shared cloud controls only after observed capabilities', async () => {
@@ -166,7 +161,7 @@ describe('Cloud DA IoT transport (synthetic)', () => {
         }
     });
 
-    it('routes failed renewal through bounded reconnect and cancels the renewal timer', async () => {
+    it('routes failed renewal through reconnect and cancels the renewal timer', async () => {
         const f = await fixture();
         f.account.getConnectionInfo = async () => { throw new Error('synthetic failure'); };
         const renewal = [...f.timers.values()].find(timer => timer.delay > 3500000);
@@ -365,6 +360,34 @@ describe('Cloud DA IoT transport (synthetic)', () => {
         expect(await result).to.include('rejected');
         expect(f.statuses.flatMap(Object.keys)).not.to.include('mode');
         f.cloud.destroy();
+    });
+
+    it('retries beyond five failures, caps the delay and recovers without replaying commands', async () => {
+        const f = await fixture();
+        f.account.getConnectionInfo = async () => { throw new Error('synthetic outage'); };
+        f.client.emit('close');
+        for (let i = 0; i < 30; i++) {
+            const timer = f.timers.get(f.cloud.retryTimer);
+            expect(timer.delay).to.be.at.most(300000);
+            f.timers.delete(f.cloud.retryTimer);
+            timer.callback();
+            await flush();
+        }
+        expect(f.timers.get(f.cloud.retryTimer).delay).to.equal(300000);
+        expect(f.errors).to.have.length(5);
+        f.account.getConnectionInfo = async () => ({ accessToken: 'renewed', signature: 'signature',
+            userId: 'user', brokerUrl: 'wss://example.invalid/mqtt', tenant: 'da', expiresAt: f.expiresAt });
+        const retry = f.timers.get(f.cloud.retryTimer);
+        f.timers.delete(f.cloud.retryTimer);
+        retry.callback();
+        await flush();
+        const next = /** @type {any} */ (f.clients.at(-1));
+        next.emit('connect');
+        expect(f.cloud.connected).to.equal(true);
+        expect(f.cloud.attempts).to.equal(0);
+        expect(next.sent.some(item => item.payload.cn === 'setPort')).to.equal(false);
+        f.cloud.destroy();
+        expect(f.timers.size).to.equal(0);
     });
 
     it('cleans pending commands and refreshes credentials before reconnect', async () => {

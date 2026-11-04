@@ -44,8 +44,9 @@ or counter unit is established by these methods.
 ## Conditional standby monitor
 
 Shared `qi1.H1()` reads `D03134`; `qi1.J1(boolean)` writes integer 1/0
-through `aj1.u3`. The adapter exposes this control only after receiving a
-valid reported 0/1 property. Inherited getter defaults do not establish support.
+through `aj1.u3`. The adapter exposes valid reported 0/1 values read-only at the existing
+`control.standbyMonitor` path. Writes remain disabled pending hardware validation.
+Inherited getter defaults and reported values do not establish write support.
 
 `AirSettingsActivity.onCheckedChanged` binds `philipsSetting_monitoring_id`
 to `J1`, separately from `philipsSetting_standby_display_id -> V` (`D03133`).

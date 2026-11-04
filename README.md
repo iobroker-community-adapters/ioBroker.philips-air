@@ -29,7 +29,7 @@ for the matching configuration. Other classic purifiers can use the shared
 
 ### Philips Cloud (Air+ account)
 
-Cloud support uses an unofficial Philips/Versuni API. Provider changes to the
+Cloud support is experimental and uses an unofficial Philips/Versuni API. Provider changes to the
 API or app credentials can interrupt the connection or require an adapter update.
 
 One Cloud instance automatically connects all devices returned by the account.
@@ -124,7 +124,7 @@ Further setup instructions and technical references: [Documentation](docs/README
 ## Changelog
 
 ### **WORK IN PROGRESS**
-- (reloxx13) Added Philips Cloud support
+- (reloxx13) Added experimental Philips Cloud support with login version diagnostics and automatic network recovery
 
 ### 2.4.0 (2026-11-06)
 - (tt-tom17) New device model "AC3737" for the AC3737/10 2-in-1 purifier/humidifier: readings, all three filter pairs, the humidity target, the water tank state, the "no water" error and the preferred index are now named instead of appearing as raw values; writing the mode and the humidity target is confirmed on the device

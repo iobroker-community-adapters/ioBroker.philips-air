@@ -46,7 +46,7 @@ Over CoAP the device pushes its status on its own, so there is no polling. Some 
 | CX7550/01 tower fan | `CX7550` |
 | Anything else, or if you are unsure | `Generic` |
 
-The classic purifiers all report the same plain keys (`pwr`, `om`, `mode` and so on), which is why one entry covers the whole family. Confirmed on real hardware so far: AC2729, AC2889, AC3221, AC3829, AC4236/14, CX3550/01 and CX7550/01. The `AC3737` entry was built from a complete status frame of an AC3737/10 (GitHub #407) and then confirmed on that device: the readings match the app, and writing the mode and the humidity target from ioBroker were both followed by the device. Two notes specific to this 2-in-1: the 4800 h filter pair is the humidifier (wick) filter here, not a HEPA one, and a third filter pair the device reports is still unassigned and therefore stays a raw value.
+The classic purifiers all report the same plain keys (`pwr`, `om`, `mode` and so on), which is why one entry covers the whole family. Confirmed on real hardware so far: AC2729, AC2889, AC3221, AC3829, AC4236/14, CX3550/01 and CX7550/01. The `AC3737` entry was built from a complete status frame of an AC3737/10 (GitHub #407) and then confirmed on that device: the readings match the app, and writing the mode and the humidity target from ioBroker were both followed by the device. Two notes specific to this 2-in-1: all three filter pairs are assigned, but not the way the other new-gen models spell them - the 4800 h pair is the humidifier (wick) filter here and the 2400 h pair is the air filter (`hepaFilter*`), both confirmed against the percentages the app shows. And `status.waterTankPresent` really means "tank seated": with the tank in but empty it stays `true`, while `device.error` switches to `no water`.
 
 The model number on its own tells you nothing about the register set: the AC4236/14 carries a higher number than the AC3221, yet it is a classic device and needs `AC2889`. Pick the entry that matches the keys your device reports, not the one that looks closest to its name.
 
@@ -92,7 +92,7 @@ More details are documented in [docs/CX7550.md](docs/CX7550.md).
 ## Changelog
 
 ### **WORK IN PROGRESS**
-- (tt-tom17) New device model "AC3737" for the AC3737/10 2-in-1 purifier/humidifier: readings, filters, the humidity target, the humidifier water status and the preferred index are now named instead of appearing as raw values; writing the mode and the humidity target is confirmed on the device
+- (tt-tom17) New device model "AC3737" for the AC3737/10 2-in-1 purifier/humidifier: readings, all three filter pairs, the humidity target, the water tank state, the "no water" error and the preferred index are now named instead of appearing as raw values; writing the mode and the humidity target is confirmed on the device
 - (copilot) Adapter requires node.js >= 22.19.0 now
 <!--
     Placeholder for the next version (at the beginning of the line):

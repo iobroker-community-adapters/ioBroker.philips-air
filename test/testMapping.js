@@ -489,13 +489,18 @@ describe('mapping - AC3737', () => {
         expect(reported.temperature, 'temperature').to.equal(23.3);
         expect(reported.preFilterCleanInHours, 'preFilterCleanInHours').to.equal(720);
         expect(reported.preFilterTotalHours, 'preFilterTotalHours').to.equal(720);
-        // The app calls the 4800 pair the humidifier filter (97 % matched 4656/4800 and nothing
-        // else), so this model must NOT inherit the AC3221 'hepaFilter' name for it.
+        // The 4800 pair is the humidifier wick (app: "humidifier filter 97 %" against 4656/4800,
+        // and the reporter's last filter change was the wick), so this model must NOT inherit the
+        // AC3221 'hepaFilter' name for it. With the pre-filter pinned at 720 h and the device
+        // reporting exactly three pairs, the 2400 pair is the remaining air filter by elimination
+        // (#407: 1994/2400 in the first frame, while the other two read 100 %).
         expect(reported.wickFilterReplaceInHours, 'wickFilterReplaceInHours').to.equal(4800);
         expect(reported.wickFilterTotalHours, 'wickFilterTotalHours').to.equal(4800);
-        expect(reported.hepaFilterReplaceInHours, 'no hepaFilter name on this model').to.be.undefined;
-        // Measured by pulling the water tank: 4 = water in place, 2 = tank removed.
-        expect(reported.humidifierReady, 'humidifierReady').to.equal(true);
+        expect(reported.hepaFilterReplaceInHours, 'hepaFilterReplaceInHours').to.equal(1994);
+        expect(reported.hepaFilterTotalHours, 'hepaFilterTotalHours').to.equal(2400);
+        // Measured by pulling the water tank: 4 = tank seated, 2 = tank removed. With the tank in
+        // but empty it stays 4, which is why it is not called 'humidifierReady' (#407, 2026-11-05).
+        expect(reported.waterTankPresent, 'waterTankPresent').to.equal(true);
         // Measured by switching the preferred index in the app: allergen 0, PM2.5 1, humidity 6.
         expect(reported.preferredIndex, 'preferredIndex').to.equal('humidity');
     });
@@ -504,21 +509,39 @@ describe('mapping - AC3737', () => {
     // measurement series could NOT settle, so it must keep falling through to unknownStates.* until
     // somebody measures it (same rule as the AC3221 block).
     it('leaves the unconfirmed registers unmapped so they stay raw', () => {
-        ['D05212', 'D05213', 'D0312B', 'D03240', 'D03106', 'D0310B', 'D0312C', 'D05102'].forEach(key => {
+        ['D0312B', 'D03106', 'D0310B', 'D0312C', 'D05102'].forEach(key => {
             expect(mapping[key], `${key} must stay unmapped`).to.be.undefined;
         });
 
         const reported = frame();
         renameReported(reported);
-        // The roles of this pair are known (total/remaining) but not which filter it belongs to:
-        // rounded up, 553/720 and 1827/2400 both show as the app's single '77 % air filter'.
-        expect(reported.D05212, 'filter pair of unknown kind stays raw').to.equal(2400);
-        expect(reported.D05213, 'filter pair of unknown kind stays raw').to.equal(1994);
-        // kongo09's table says bit 8 of this register means 'water tank empty'. Pulling the tank on
-        // this model left it at 0, so the claim is measured wrong here and must not be named.
-        expect(reported.D03240, 'error code stays raw').to.equal(0);
-        // Follows the tank (6 in, 1 out) but means neither 'tank' nor 'humidifying' - stays raw.
+        // Follows the tank (6 in, 1 out, still 6 with the tank in but empty), so it only duplicates
+        // D0310A in a worse encoding; kongo09's 'humidifying' is ruled out by the CX7550 reporting
+        // 7 here without having a humidifier at all.
         expect(reported.D0312B, 'humidifying candidate stays raw').to.equal(6);
+    });
+
+    // The dry-run series (#407, 2026-11-05) is what lifted this register out of unknownStates.*:
+    // 0 with water, -16128 once the tank ran dry, 0 again after refilling - and -16128 is 0xC100,
+    // which the shared `err` table has called 'no water' all along.
+    it('reads the error register with the classic code numbers, signed', () => {
+        const dry = frame();
+        dry.D03240 = -16128;
+        renameReported(dry);
+        expect(dry.error, 'no water while the tank is dry').to.equal('no water');
+        expect(dry.D03240, 'the raw key is consumed').to.be.undefined;
+
+        const wet = frame();
+        renameReported(wet);
+        expect(wet.error, 'none while the tank has water').to.equal('none');
+
+        // Only the two measured codes are listed. The classic table's 0x8000 / 0xc003 are NOT
+        // guessed in as their signed counterparts, so an unlisted code stays a number and
+        // updateStatus() reports it as 'unknown (<n>)' without raising the maintenance flag.
+        const other = frame();
+        other.D03240 = -16381;
+        renameReported(other);
+        expect(other.error, 'an unmeasured code stays numeric').to.equal(-16381);
     });
 
     it('exposes the humidity target as a control and the sensors read-only', () => {
@@ -541,7 +564,7 @@ describe('mapping - AC3737', () => {
     it('keeps the two measured humidifier registers read-only', () => {
         // D0310A has nothing to write, and the device overrides a written preferred index within
         // seconds while humidifying - a control that visibly does not stick is worse than none.
-        expect(mapping.D0310A.control, 'humidifierReady stays read-only').to.be.undefined;
+        expect(mapping.D0310A.control, 'waterTankPresent stays read-only').to.be.undefined;
         expect(mapping.D0312A.control, 'preferredIndex stays read-only').to.be.undefined;
     });
 });

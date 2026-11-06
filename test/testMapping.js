@@ -554,9 +554,10 @@ describe('mapping - AC3737', () => {
 
     it('offers only the modes this device actually exposes', () => {
         // Measured in the app (#407, 2026-11-03): auto 0, speed1 1, speed2 2, sleep 17, turbo 18.
-        // The AC3221 levels 3/4/5 and 19 are unreachable here and must not sit in the dropdown;
-        // '-16' stays because the family reports it in standby.
-        expect(Object.keys(mapping.D0310C.options).sort()).to.deep.equal(['-16', '0', '1', '17', '18', '2']);
+        // The AC3221 levels 3/4/5 and 19 are unreachable here and must not sit in the dropdown, and
+        // neither must the AC3221's '-16' (off): never reported by this device, and as a control
+        // entry it would write -16 to it (#407, 2026-11-05).
+        expect(Object.keys(mapping.D0310C.options).sort()).to.deep.equal(['0', '1', '17', '18', '2']);
         // Writing the mode is confirmed on hardware, and D0310C alone is enough for it.
         expect(mapping.D0310C.control, 'mode is writable').to.be.true;
     });

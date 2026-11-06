@@ -90,14 +90,14 @@ Tested CX7550/01 functions:
 More details are documented in [docs/CX7550.md](docs/CX7550.md).
 
 ## Changelog
-
-### **WORK IN PROGRESS**
+### 2.4.0 (2026-11-06)
 - (tt-tom17) New device model "AC3737" for the AC3737/10 2-in-1 purifier/humidifier: readings, all three filter pairs, the humidity target, the water tank state, the "no water" error and the preferred index are now named instead of appearing as raw values; writing the mode and the humidity target is confirmed on the device
 - (copilot) Adapter requires node.js >= 22.19.0 now
 <!--
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
+
 ### 2.3.0 (2026-10-26)
 
 - (tt-tom17) A new instance now starts with the device model "Generic" (read-only values, no controls) instead of silently using the AC2889 controls; instances that already have a model keep it
@@ -139,14 +139,6 @@ More details are documented in [docs/CX7550.md](docs/CX7550.md).
 ### 1.5.0 (2026-06-24)
 - (tt-tom17) CoAP connection now stays stable instead of disconnecting every few minutes
 - (tt-tom17) Fixed adapter checker warnings
-
-### 1.4.0 (2026-06-17)
-- (tt-tom17) Connection to CoAP and HTTP devices is much more reliable now: several cases that could crash the adapter, freeze the connection or stop it from reconnecting have been fixed
-- (tt-tom17) Air quality, filter and on/off values are now shown with the correct type and update reliably
-- (tt-tom17) Clearer log messages, including a hint to switch to CoAP when a device does not answer on HTTP
-- (tt-tom17) HTTP mode no longer needs the extra "philips-air" package and its outdated dependencies
-- (tt-tom17) The device address field now accepts an IP address or a hostname and warns about invalid input
-- (tt-tom17) Dependencies updated
 
 [Older changelogs can be found there](CHANGELOG_OLD.md)
 

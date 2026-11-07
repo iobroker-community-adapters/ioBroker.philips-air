@@ -44,3 +44,47 @@ describe('admin config', () => {
         }
     });
 });
+
+
+describe('cloud Admin configuration contract', () => {
+    it('offers generic Cloud without changing local defaults', () => {
+        expect(jsonConfig.items.protocol.options.find(option => option.value === 'cloud').label).to.equal('Philips Cloud');
+        expect(ioPackage.native.protocol).to.equal('coap');
+        expect(ioPackage.native.model).to.equal('Generic');
+        expect(ioPackage.native.cloudCountry).to.equal('');
+        expect(jsonConfig.items.cloudCountry.default).to.equal('');
+        const countryValid = new Function('data', `return (${jsonConfig.items.cloudCountry.validator});`);
+        expect(countryValid({ protocol: 'cloud', cloudCountry: '' })).to.equal(false);
+        expect(countryValid({ protocol: 'cloud', cloudCountry: 'DE' })).to.equal(true);
+        expect(countryValid({ protocol: 'coap', cloudCountry: '' })).to.equal(true);
+        const validate = new Function('data', `return (${jsonConfig.items.host.validator});`);
+        expect(validate({ protocol: 'cloud', host: '' })).to.equal(true);
+        expect(validate({ protocol: 'coap', host: '' })).to.equal(false);
+        expect(validate({ protocol: 'http', host: 'synthetic.invalid' })).to.equal(true);
+        expect(jsonConfig.items).not.to.have.property('_cloudRedirect');
+        expect(jsonConfig.items).not.to.have.property('_cloudComplete');
+        expect(jsonConfig.items).not.to.have.property('_cloudLogin');
+        expect(jsonConfig.items._cloudRequestCode.command).to.equal('cloudRequestCode');
+        expect(jsonConfig.items._cloudConfirmCode.command).to.equal('cloudConfirmCode');
+        expect(jsonConfig.items._cloudConfirmCode.reloadBrowser).to.equal(true);
+        expect(ioPackage.native).not.to.have.property('_cloudCode');
+        expect(ioPackage.native.cloudEmail).to.equal('');
+        expect(jsonConfig.items.cloudEmail.type).to.equal('text');
+        const email = 'test"\\@example.invalid';
+        const data = { cloudEmail: email, _cloudCode: '012345' };
+        for (const [item, expected] of Object.entries({ _cloudRequestCode: { email }, _cloudConfirmCode: { code: '012345' } })) {
+            const interpolate = new Function('data', `return \`${jsonConfig.items[item].jsonData}\`;`);
+            expect(JSON.parse(interpolate(data))).to.deep.equal(expected);
+        }
+        expect(jsonConfig.items).not.to.have.property('_cloudReload');
+        expect(jsonConfig.items._cloudStatus.type).to.equal('textSendTo');
+        expect(jsonConfig.items._cloudStatus.command).to.equal('cloudLoginStatus');
+        const statusData = new Function('_system', `return \`${jsonConfig.items._cloudStatus.jsonData}\`;`);
+        expect(JSON.parse(statusData({ language: 'de' }))).to.deep.equal({ language: 'de' });
+        expect(jsonConfig.items).not.to.have.property('cloudDeviceId');
+        for (const secret of ioPackage.encryptedNative) {
+            expect(ioPackage.protectedNative).to.include(secret);
+            expect(jsonConfig.items).not.to.have.property(secret);
+        }
+    });
+});

@@ -19,6 +19,9 @@ const adapterName = require('./package.json').name.split('.').pop();
  */
 let adapter;
 let airPurifier;
+let cloudAdmin;
+let cloudDevices;
+let stopping = false;
 // The selected purifier class (CoAP or HTTP) is loaded lazily in main() depending on the
 // configured protocol, so a missing optional `philips-air` dependency cannot crash CoAP users.
 let PurifierClass;
@@ -57,19 +60,25 @@ function startAdapter(options) {
             // The ready callback is called when databases are connected and adapter received configuration.
             // start here!
             ready: main, // Main method defined below for readability
+            message: message => cloudAdmin && cloudAdmin.onMessage(message),
 
             // is called when adapter shuts down - callback has to be called under any circumstances!
             unload: callback => {
                 try {
+                    stopping = true;
                     // Tear the transport down FIRST: a status packet arriving after this point would
                     // re-arm timers ("setTimeout called, but adapter is shutting down") and write states
                     // into a database the controller is already closing.
                     airPurifier && airPurifier.destroy();
                     airPurifier = null;
+                    const cloudStopped = cloudDevices ? cloudDevices.destroy() : Promise.resolve();
+                    cloudDevices = null;
+                    const accountStopped = cloudAdmin ? cloudAdmin.destroy() : Promise.resolve();
                     // Await the final write before signalling "done". Reporting completion while the
                     // write is still in flight makes the controller close the database underneath it,
                     // which surfaced as "unhandled promise rejection: DB closed" on every stop.
-                    Promise.resolve(adapter.setState('info.connection', false, true))
+                    Promise.all([cloudStopped, accountStopped])
+                        .then(() => adapter.setState('info.connection', false, true))
                         .catch(() => {})
                         .then(() => callback());
                 } catch {
@@ -92,6 +101,10 @@ function startAdapter(options) {
             // is called if a subscribed state changes
             stateChange: (id, state) => {
                 adapter.log.debug(`State change: ${JSON.stringify(state)}`);
+                if (cloudDevices) {
+                    cloudDevices.stateChange(id, state);
+                    return;
+                }
                 if (state && !state.ack && id.startsWith(`${adapter.namespace}.control.`)) {
                     const name = id.substring(`${adapter.namespace}.control.`.length);
                     const settings =
@@ -131,11 +144,16 @@ const ensuredObjects = new Set();
  * @param value the value to write (always acknowledged)
  */
 async function setDeviceState(id, common, value) {
+    if (stopping) {
+        return;
+    }
     if (!ensuredObjects.has(id)) {
         await adapter.setObjectNotExistsAsync(id, { type: 'state', common, native: {} });
         ensuredObjects.add(id);
     }
-    await adapter.setStateAsync(id, value, true);
+    if (!stopping) {
+        await adapter.setStateAsync(id, value, true);
+    }
 }
 
 /**
@@ -367,7 +385,44 @@ function maybeWarnWrongModel(foreignControlCount) {
 async function main() {
     // Reset the connection indicator during startup
     await adapter.setStateAsync('info.connection', false, true);
+    if (stopping) {
+        return;
+    }
 
+    const cloud = adapter.config.protocol === 'cloud';
+    const CloudAdmin = require('./lib/cloudAdmin');
+    cloudAdmin = new CloudAdmin(adapter);
+    if (cloud) {
+        await cloudAdmin.restoreTokens();
+        if (stopping) {
+            return;
+        }
+        const CloudDevices = require('./lib/cloudDevices');
+        cloudDevices = new CloudDevices(adapter, cloudAdmin.account);
+        await cloudDevices.start();
+        return;
+    }
+
+    for (const [id, name] of Object.entries({
+        control: 'Control air purifier',
+        filter: 'Filter information',
+        status: 'Device status',
+        device: 'Device information',
+        unknownStates: 'Unmapped raw device attributes',
+    })) {
+        await adapter.setObjectNotExistsAsync(id, { type: 'channel', common: { name }, native: {} });
+        if (stopping) {
+            return;
+        }
+    }
+    await adapter.setObjectNotExistsAsync('info.key', {
+        type: 'state',
+        common: { role: 'state', name: 'HTTP secret key', type: 'string', read: true, write: false, def: '' },
+        native: {},
+    });
+    if (stopping) {
+        return;
+    }
     if (!adapter.config.host) {
         return adapter.log.warn('No IP defined');
     }
@@ -388,7 +443,7 @@ async function main() {
 
     // In order to get state updates, you need to subscribe to them. The following line adds a subscription for our variable we have created above.
     adapter.subscribeStates('control.*');
-    adapter.log.debug(`start with ${adapter.config.host} ${JSON.stringify(adapter.config)}`);
+    adapter.log.debug(`Starting protocol ${adapter.config.protocol}`);
 
     // Load only the protocol implementation that is actually used.
     try {

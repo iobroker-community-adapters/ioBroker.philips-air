@@ -22,7 +22,8 @@
   },
   "dependencies": {
     "@iobroker/adapter-core": "^3.4.3",
-    "coap": "^1.6.0"
+    "coap": "^1.6.0",
+    "mqtt": "^5.16.1"
   },
   "devDependencies": {
     "@alcalzone/release-script": "^5.2.1",
@@ -39,6 +40,9 @@
   "main": "main.js",
   "files": [
     "admin/",
+    "docs/README.md",
+    "docs/cloud.md",
+    "docs/devices/",
     "img/",
     "lib/",
     "main.js",

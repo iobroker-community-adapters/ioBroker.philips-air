@@ -26,3 +26,6 @@ admin/i18n/*/flat.txt
 # Claude working files
 .claude/
 CLAUDE.local.md
+
+# Private protocol-analysis tools and APK working files
+/tmp/

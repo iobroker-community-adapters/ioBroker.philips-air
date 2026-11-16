@@ -362,6 +362,41 @@ describe('cloud account OAuth and REST', () => {
         assert.equal(calls[1].init.headers.Authorization, `Bearer ${tokens.accessToken}`);
     });
 
+    it('shares connection requests across 25 devices without caching completed credentials', async () => {
+        for (const expired of [false, true]) {
+            const { account, calls } = fixture();
+            if (expired) account.tokens = { ...tokens, expiresAt: 0 };
+            account.fetch = async (url, init) => {
+                calls.push({ url, init });
+                if (String(url).includes('/configuration?')) return response(routing);
+                if (String(url).endsWith('/token')) return response(tokenReply);
+                if (String(url).endsWith('/signature')) return response({ signature: `signature-${calls.length}` });
+                return response({ id: 'user-id' });
+            };
+            const results = await Promise.all(Array.from({ length: 25 }, () => account.getConnectionInfo()));
+            assert.equal(calls.length, expired ? 4 : 3);
+            assert.ok(results.every(value => value.signature === results[0].signature));
+            assert.ok(results.every(value => value.accessToken === (expired ? 'new-access' : tokens.accessToken)));
+            const next = await account.getConnectionInfo();
+            assert.equal(calls.length, expired ? 6 : 5);
+            assert.notEqual(next.signature, results[0].signature);
+            account.destroy();
+        }
+    });
+
+    it('retries shared connection requests after failure and rejects requests after shutdown', async () => {
+        const { account, calls } = fixture([routing, { id: 'user-id' }, null,
+            { id: 'user-id' }, { signature: 'retried-signature' }]);
+        const results = await Promise.allSettled(Array.from({ length: 25 }, () => account.getConnectionInfo()));
+        assert.ok(results.every(result => result.status === 'rejected' && /invalid_connection_info/.test(result.reason.message)));
+        assert.equal(calls.length, 3);
+        assert.equal((await account.getConnectionInfo()).signature, 'retried-signature');
+        assert.equal(calls.length, 5);
+        account.destroy();
+        await assert.rejects(account.getConnectionInfo(), /stopped/);
+        assert.equal(calls.length, 5);
+    });
+
     it('keeps MQTT expiry paired with its bearer when another request rotates the account', async () => {
         const { account } = fixture([routing, { id: 'user-id' }, { signature: 'signature' }]);
         const fetch = account.fetch;

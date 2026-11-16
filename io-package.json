@@ -142,7 +142,7 @@
     "mode": "daemon",
     "type": "household",
     "compact": true,
-    "connectionType": "local",
+    "connectionType": "cloud",
     "dataSource": "push",
     "adminUI": {
       "config": "json"

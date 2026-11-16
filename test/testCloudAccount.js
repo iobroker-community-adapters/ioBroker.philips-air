@@ -54,6 +54,39 @@ describe('cloud account OAuth and REST', () => {
         account.destroy();
     });
 
+    it('preserves and coalesces token rotation during abandoned or failed OTP attempts', async () => {
+        for (const failure of ['abandoned', 'request', 'verification']) {
+            const { account, saved } = fixture();
+            let finishRefresh = (_reply) => {};
+            let refreshCalls = 0;
+            const oauth = otpFetch([]);
+            account.fetch = async (url, init) => {
+                if (new URLSearchParams(String(init?.body)).get('grant_type') === 'refresh_token') {
+                    refreshCalls++;
+                    return new Promise(resolve => { finishRefresh = resolve; });
+                }
+                if (failure === 'request' && String(url).endsWith('sendCode')) return response({ errorCode: 1 });
+                if (failure === 'verification' && String(url).endsWith('email.login')) return response({ errorCode: 1 });
+                return oauth(url, init);
+            };
+            const refresh = account.ensureAccessToken(true);
+            if (failure === 'request') {
+                await assert.rejects(account.requestOtp('synthetic@example.test', 'admin.0'), /otp_request_failed/);
+            } else {
+                await account.requestOtp('synthetic@example.test', 'admin.0');
+                if (failure === 'verification') {
+                    await assert.rejects(account.completeOtp('123456', 'admin.0'), /otp_invalid/);
+                }
+            }
+            const concurrent = account.ensureAccessToken(true);
+            finishRefresh(response(tokenReply));
+            assert.deepEqual(await Promise.all([refresh, concurrent]), ['new-access', 'new-access']);
+            assert.equal(refreshCalls, 1);
+            assert.equal(saved.length, 1);
+            assert.equal(account.tokens?.refreshToken, 'new-refresh');
+        }
+    });
+
     it('does not let an old refresh overwrite a newly completed account login', async () => {
         const { account, saved } = fixture();
         let finishRefresh = (_reply) => {};
@@ -71,6 +104,50 @@ describe('cloud account OAuth and REST', () => {
         assert.match(await refresh, /login_superseded/);
         assert.deepEqual(saved.map(value => value.accessToken), ['new-account']);
         assert.equal(account.tokens?.accessToken, 'new-account');
+    });
+
+    it('preserves an in-flight rotation when saving a replacement login fails', async () => {
+        const { account, saved } = fixture();
+        const oauth = otpFetch([]);
+        let finishRefresh = (_reply) => {};
+        account.fetch = async (url, init) => {
+            if (new URLSearchParams(String(init?.body)).get('grant_type') === 'refresh_token') {
+                return new Promise(resolve => { finishRefresh = resolve; });
+            }
+            return oauth(url, init);
+        };
+        account.saveTokens = async (value, email) => {
+            if (email) throw new Error('synthetic storage failure');
+            saved.push(value);
+        };
+        const refresh = account.ensureAccessToken(true);
+        await assert.rejects(login(account), /token_storage_failed/);
+        finishRefresh(response(tokenReply));
+        assert.equal(await refresh, 'new-access');
+        assert.equal(saved.length, 1);
+        assert.equal(account.tokens?.refreshToken, 'new-refresh');
+    });
+
+    it('does not save login tokens superseded during the token exchange', async () => {
+        const { account, saved } = fixture();
+        const oauth = otpFetch([]);
+        let finishExchange = (_reply) => {};
+        let exchangeStarted = () => {};
+        const started = new Promise(resolve => { exchangeStarted = () => resolve(undefined); });
+        account.fetch = async (url, init) => {
+            if (String(url).endsWith('/token')) {
+                exchangeStarted();
+                return new Promise(resolve => { finishExchange = resolve; });
+            }
+            return oauth(url, init);
+        };
+        const signingIn = login(account);
+        await started;
+        await account.requestOtp('another@example.test', 'admin.0');
+        finishExchange(response(tokenReply));
+        await assert.rejects(signingIn, /login_superseded/);
+        assert.equal(saved.length, 0);
+        assert.equal(account.tokens?.refreshToken, tokens.refreshToken);
     });
 
     it('serializes an already started native write before a new login saves', async () => {
@@ -94,7 +171,7 @@ describe('cloud account OAuth and REST', () => {
         const signingIn = account.completeOtp('123456', 'admin.0');
         await assert.rejects(account.ensureAccessToken(), /login_in_progress/);
         finishSave();
-        assert.match(await refresh, /login_superseded/);
+        assert.equal(await refresh, 'new-access');
         await signingIn;
         assert.equal(saved.at(-1).accessToken, 'new-account');
         assert.equal(account.tokens?.accessToken, 'new-account');

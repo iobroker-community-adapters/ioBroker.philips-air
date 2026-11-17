@@ -90,6 +90,9 @@ Tested CX7550/01 functions:
 More details are documented in [docs/CX7550.md](docs/CX7550.md).
 
 ## Changelog
+### **WORK IN PROGRESS**
+- (tt-tom17) AC2889 family: the child lock is now written as a boolean, the format the classic devices expect - an AC4236/14 ignored the command before (GitHub #411)
+
 ### 2.4.0 (2026-11-06)
 - (tt-tom17) New device model "AC3737" for the AC3737/10 2-in-1 purifier/humidifier: readings, all three filter pairs, the humidity target, the water tank state, the "no water" error and the preferred index are now named instead of appearing as raw values; writing the mode and the humidity target is confirmed on the device
 - (copilot) Adapter requires node.js >= 22.19.0 now

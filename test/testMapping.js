@@ -49,7 +49,7 @@ describe('mapping - buildControlPayload (AC2889)', () => {
     it('resolves option values back to their raw device codes', () => {
         expect(buildControlPayload({ power: true })).to.deep.equal({ pwr: '1' });
         expect(buildControlPayload({ fanSpeed: 'auto', mode: 'manual' })).to.deep.equal({ om: 'a', mode: 'M' });
-        expect(buildControlPayload({ childLock: false })).to.deep.equal({ cl: '0' });
+        expect(buildControlPayload({ childLock: false })).to.deep.equal({ cl: false });
     });
 
     it('passes through non-option control values', () => {
@@ -370,6 +370,31 @@ describe('mapping - CX7550', () => {
     });
 });
 
+describe('mapping - child lock of the classic family (GitHub #411)', () => {
+    // The AC4236/14 reports `"cl":false` as a JSON boolean next to digit-string switches such as
+    // `"pwr":"1"`, and it ignored the child lock command as long as the adapter wrote `"cl":"1"`.
+    const { renameReported, buildControlPayload, mapping } = createMapping('AC2889');
+
+    it('reads the boolean the device reports and still accepts a digit', () => {
+        const asBoolean = { cl: false };
+        renameReported(asBoolean);
+        expect(asBoolean).to.deep.equal({ childLock: false });
+        const asDigit = { cl: '1' };
+        renameReported(asDigit);
+        expect(asDigit).to.deep.equal({ childLock: true });
+    });
+
+    it('writes a real boolean, not a digit string', () => {
+        expect(mapping.cl).to.include({ control: true, rawType: 'boolean' });
+        expect(buildControlPayload({ childLock: true })).to.deep.equal({ cl: true });
+        expect(buildControlPayload({ childLock: false })).to.deep.equal({ cl: false });
+    });
+
+    it('leaves the digit-string switches of the same family alone', () => {
+        expect(buildControlPayload({ power: true, buttonLight: false })).to.deep.equal({ pwr: '1', uil: '0' });
+    });
+});
+
 describe('mapping - boolean controls written as text', () => {
     // ioBroker states can be written as the string "true"/"false" (script, VIS widget, REST call).
     // Loose equality does not save us here - `false == 'false'` is false - so without normalization
@@ -378,7 +403,7 @@ describe('mapping - boolean controls written as text', () => {
         expect(createMapping('CX7550').buildControlPayload({ power: 'false' })).to.deep.equal({ D03102: 0 });
         expect(createMapping('CX7550').buildControlPayload({ power: 'true' })).to.deep.equal({ D03102: 1 });
         expect(createMapping('CX3550').buildControlPayload({ oscillation: 'false' })).to.deep.equal({ D0320F: 0 });
-        expect(createMapping('AC2889').buildControlPayload({ childLock: 'true' })).to.deep.equal({ cl: '1' });
+        expect(createMapping('AC2889').buildControlPayload({ childLock: 'true' })).to.deep.equal({ cl: true });
     });
 
     it('still rejects a value that is not a valid option', () => {

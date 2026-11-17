@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "philips-air",
-    "version": "2.4.0",
+    "version": "2.4.1",
     "news": {
+      "2.4.1": {
+        "en": "AC2889 family: the child lock is now written as a boolean, the format the classic devices expect - an AC4236/14 ignored the command before (GitHub #411)",
+        "de": "AC2889-Familie: Die Kindersicherung hat jetzt ein boolesches Format — ein AC4236/14 ignorierte den Befehl zuvor (GitHub #411)",
+        "ru": "Семейство AC2889: блокировка от детей теперь записывается в виде логического значения, как и ожидалось на классических устройствах — AC4236/14 ранее эта команда игнорировалась (GitHub #411)",
+        "pt": "Família AC2889: o child lock agora é booleano, no formato esperado pelos dispositivos clássicos — um AC4236/14 ignorou o comando (GitHub #411)",
+        "nl": "AC2889-familie: het kinderslot is nu geschreven als booleaans, het formaat dat de klassieke apparaten verwachten - een AC4236/14 negeerde het commando eerder (GitHub #411)",
+        "fr": "Famille AC2889 : le verrou est désormais écrit en booléen, au format habituel. Un AC4236/14 ignorait la commande auparavant (GitHub #411)",
+        "it": "Famiglia AC2889: il blocco bambini ora è booleano, il formato previsto dai dispositivi classici. Un AC4236/14 ignorava il comando (GitHub #411)",
+        "es": "Familia AC2889: el bloqueo infantil ahora se escribe booleano, el formato que esperan los dispositivos clásicos: un AC4236/14 ignoró el comando antes (GitHub #411)",
+        "pl": "Rodzina AC2889: blokada podrzędna jest teraz zapisywana jako logiczna, format, jakiego oczekują klasyczne urządzenia - AC4236/14 zignorował wcześniej polecenie (GitHub #411)",
+        "uk": "Сімейство AC2889: дитячий замок тепер записується як булевий, формат, який очікують класичні пристрої - AC4236/14 ігнорував команду раніше (GitHub #411)",
+        "zh-cn": "AC2889 系列：子锁现在以布尔值形式编写，这是经典设备所期望的格式-AC4236/14 忽略了之前的命令 (GitHub #411)"
+      },
       "2.4.0": {
         "en": "New device model \"AC3737\" for the AC3737/10 2-in-1 purifier/humidifier\nAdapter requires node.js >= 22.19.0 now",
         "de": "Neues Gerätemodell \"AC3737\" für den AC3737/10 2-in-1-Luftreiniger/Luftbefeuchter\nAdapter benötigt jetzt node.js >= 22.19.0",
@@ -80,19 +93,6 @@
         "pl": "Dodano obsługę wentylatora kolumnowego Philips/Versuni CX3550/01.\nDodano tryby wentylatora CX, oscylację, sygnał dźwiękowy i stan timera tylko do odczytu.\nSterowanie czasowe celowo nie jest ujawniane, ponieważ zapisy lokalnego czasomierza mogą wyłączyć wentylator.",
         "uk": "Додано підтримку вентилятора на підставці Philips/Versuni CX3550/01.\nДодано режими вентилятора CX, коливання, звуковий сигнал та стан таймера лише для читання.\nКерування таймером навмисно не розголошується, оскільки записи локального таймера можуть вимкнути вентилятор.",
         "zh-cn": "新增对飞利浦/Versuni CX3550/01落地扇的支持。\n新增 CX 风扇模式、摆动、蜂鸣和只读定时器状态。\n定时器控制功能故意不对外公开，因为本地定时器写入操作可能会导致风扇关闭。"
-      },
-      "1.5.0": {
-        "en": "CoAP connection now stays stable instead of disconnecting every few minutes\nFixed adapter checker warnings",
-        "de": "Die CoAP-Verbindung bleibt nun stabil, anstatt alle paar Minuten abzubrechen.\nBehobene Warnungen des Adapterprüfers",
-        "ru": "Теперь соединение CoAP остается стабильным, а не обрывается каждые несколько минут.\nИсправлены предупреждения проверки адаптера.",
-        "pt": "A conexão CoAP agora permanece estável em vez de desconectar a cada poucos minutos.\nAvisos corrigidos do verificador de adaptadores",
-        "nl": "De CoAP-verbinding blijft nu stabiel in plaats van om de paar minuten weg te vallen.\nOpgeloste waarschuwingen van de adaptercontrole",
-        "fr": "La connexion CoAP reste désormais stable au lieu de se déconnecter toutes les quelques minutes.\nAvertissements du vérificateur d'adaptateur corrigés",
-        "it": "La connessione CoAP ora rimane stabile invece di disconnettersi ogni pochi minuti.\nAvvisi corretti del controllo dell'adattatore",
-        "es": "La conexión CoAP ahora se mantiene estable en lugar de desconectarse cada pocos minutos.\nSe corrigieron las advertencias del verificador de adaptadores.",
-        "pl": "Połączenie CoAP pozostaje teraz stabilne i nie rozłącza się co kilka minut\nNaprawiono ostrzeżenia modułu sprawdzającego adapter",
-        "uk": "З’єднання CoAP тепер залишається стабільним, а не розривається кожні кілька хвилин.\nВиправлені попередження перевірки адаптерів",
-        "zh-cn": "CoAP 连接现在保持稳定，不会像以前那样每隔几分钟就断开一次。\n修复了适配器检查器警告"
       }
     },
     "titleLang": {

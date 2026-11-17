@@ -1,4 +1,8 @@
 # Older changes
+## 1.5.0 (2026-06-24)
+- (tt-tom17) CoAP connection now stays stable instead of disconnecting every few minutes
+- (tt-tom17) Fixed adapter checker warnings
+
 ## 1.4.0 (2026-06-17)
 - (tt-tom17) Connection to CoAP and HTTP devices is much more reliable now: several cases that could crash the adapter, freeze the connection or stop it from reconnecting have been fixed
 - (tt-tom17) Air quality, filter and on/off values are now shown with the correct type and update reliably

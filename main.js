@@ -42,6 +42,17 @@ let wrongModelWarned = false;
 // Raw attribute keys we already logged once as "unknown" this adapter run, so a device that keeps
 // reporting the same unmapped D-code does not spam the log on every status frame.
 const loggedUnknownKeys = new Set();
+// A device answers every control POST with {"status":"success"}, also when it ignores the value
+// (GitHub #414) - "success" only means "request parsed". The real confirmation is a status frame that
+// reports the written value. Written control states wait here (keyed by state id, e.g.
+// "control.childLock") for that frame.
+/** @typedef {{ name: string, expected: any, lastReported: any, timer: any }} PendingControl */
+/** @type {Map<string, PendingControl>} */
+const pendingControls = new Map();
+// How long a written control waits for a status frame with the new value before a warning is logged.
+// Generous on purpose: a mismatching frame (e.g. a heartbeat sent just before the device applies the
+// value) only updates lastReported, and devices that push rarely must not produce false warnings.
+const CONFIRM_TIMEOUT = 10000;
 
 /**
  * Starts the adapter instance
@@ -61,6 +72,10 @@ function startAdapter(options) {
             // is called when adapter shuts down - callback has to be called under any circumstances!
             unload: callback => {
                 try {
+                    for (const pending of pendingControls.values()) {
+                        adapter.clearTimeout(pending.timer);
+                    }
+                    pendingControls.clear();
                     // Tear the transport down FIRST: a status packet arriving after this point would
                     // re-arm timers ("setTimeout called, but adapter is shutting down") and write states
                     // into a database the controller is already closing.
@@ -98,18 +113,30 @@ function startAdapter(options) {
                         name === 'function'
                             ? { function: state.val ? 'humidification' : 'purification' }
                             : { [name]: state.val };
+                    const stateId = `control.${name}`;
                     try {
+                        // Armed before the command is sent: the confirming status frame can arrive
+                        // before the POST reply resolves the promise.
+                        const pending = airPurifier && expectControl(stateId, name, state.val);
                         const result = airPurifier && airPurifier.control(settings);
                         // control() returns a promise - catch async failures too, otherwise a failed
                         // command produces an unhandled rejection that crashes the adapter.
-                        if (result && typeof result.catch === 'function') {
-                            result.catch(err =>
-                                adapter.log.warn(
-                                    `Could not control ${name}: ${err && err.message ? err.message : err}`,
-                                ),
-                            );
+                        if (result && typeof result.then === 'function') {
+                            result
+                                .then(reply => {
+                                    if (reply && reply.status === 'failed') {
+                                        throw new Error(`device replied ${JSON.stringify(reply)}`);
+                                    }
+                                })
+                                .catch(err => {
+                                    cancelPendingControl(stateId, pending);
+                                    adapter.log.warn(
+                                        `Could not control ${name}: ${err && err.message ? err.message : err}`,
+                                    );
+                                });
                         }
                     } catch (err) {
+                        cancelPendingControl(stateId);
                         adapter.log.warn(`Could not control ${name}: ${err.message}`);
                     }
                 }
@@ -136,6 +163,80 @@ async function setDeviceState(id, common, value) {
         ensuredObjects.add(id);
     }
     await adapter.setStateAsync(id, value, true);
+    confirmPendingControl(id, value);
+}
+
+/**
+ * Start waiting for the status frame that confirms a written control (see pendingControls). A
+ * previous wait for the same state is replaced. On timeout only a warning is logged - no retry and no
+ * reset of the state: a wrong reset is worse than a state that stays `ack:false`.
+ *
+ * @param id the state id (e.g. "control.childLock")
+ * @param name the control name used in the log
+ * @param expected the written value
+ * @returns the new pending entry
+ */
+function expectControl(id, name, expected) {
+    cancelPendingControl(id);
+    /** @type {PendingControl} */
+    const pending = { name, expected, lastReported: undefined, timer: null };
+    pending.timer = adapter.setTimeout(() => {
+        if (pendingControls.get(id) !== pending) {
+            return;
+        }
+        pendingControls.delete(id);
+        if (pending.lastReported !== undefined) {
+            adapter.log.warn(
+                `Device accepted ${name}=${expected} but did not apply it (reports ${pending.lastReported})`,
+            );
+        } else {
+            adapter.log.warn(
+                `No status update from the device within ${CONFIRM_TIMEOUT / 1000}s after writing ${name}; the command may have been ignored`,
+            );
+        }
+    }, CONFIRM_TIMEOUT);
+    pendingControls.set(id, pending);
+    return pending;
+}
+
+/**
+ * Stop waiting for a control confirmation.
+ *
+ * @param id the state id
+ * @param [pending] only cancel if this entry is still the current one (a newer write may replace it)
+ */
+function cancelPendingControl(id, pending) {
+    const current = pendingControls.get(id);
+    if (!current || (pending && current !== pending)) {
+        return;
+    }
+    adapter.clearTimeout(current.timer);
+    pendingControls.delete(id);
+}
+
+/**
+ * Compare a reported (already mapped and coerced) value with a pending control write. A match ends the
+ * wait - the normal acknowledged state update already confirms it. A mismatch is only remembered: a
+ * heartbeat can arrive just before the device applies the value.
+ *
+ * @param id the state id
+ * @param value the value just reported by the device
+ */
+function confirmPendingControl(id, value) {
+    const pending = pendingControls.get(id);
+    if (!pending) {
+        return;
+    }
+    const expected = pending.expected;
+    const matches =
+        typeof value === 'boolean'
+            ? value === (expected === true || expected === 'true' || Number(expected) === 1)
+            : String(value) === String(expected);
+    if (matches) {
+        cancelPendingControl(id, pending);
+    } else {
+        pending.lastReported = value;
+    }
 }
 
 /**

@@ -90,6 +90,9 @@ Tested CX7550/01 functions:
 More details are documented in [docs/CX7550.md](docs/CX7550.md).
 
 ## Changelog
+### **WORK IN PROGRESS**
+- (GermanBluefox) Warn when the device accepts a control command but does not apply it (#414)
+
 ### 2.4.1 (2026-11-17)
 - (tt-tom17) AC2889 family: the child lock is now written as a boolean, the format the classic devices expect - an AC4236/14 ignored the command before (GitHub #411)
 
